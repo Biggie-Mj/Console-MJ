@@ -1,0 +1,25 @@
+[
+  {
+    "name": "Squelette de garde",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 13,
+    "hp": 13,
+    "initiative": 2,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "poison ; épuisement ; empoisonné",
+    "senses": "Vision dans le noir 18 m",
+    "traits": [],
+    "actions": [
+      {"name":"Épée courte","detail":"Attaque de corps à corps.","kind":"attack","bonus":4,"damage":"1d6+2","damageType":"perforants"},
+      {"name":"Arc court","detail":"Attaque à distance.","kind":"attack","bonus":4,"damage":"1d6+2","damageType":"perforants"}
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "phases": [],
+    "notes": "Exemple de fichier externe à importer ou modifier."
+  }
+]

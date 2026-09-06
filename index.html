@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0c0b0b">
+  <title>ENCOUNTER — Console MJ D&D 5e</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">⚔</div>
+      <div>
+        <h1>ENCOUNTER</h1>
+        <p>Console MJ · D&D 5e</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost" id="btnNewEncounter">Nouvelle rencontre</button>
+      <button class="ghost" id="btnImport">Importer</button>
+      <button class="ghost" id="btnExport">Exporter</button>
+      <button class="danger ghost" id="btnReset">Réinitialiser</button>
+    </div>
+  </header>
+
+  <section class="roundbar">
+    <div class="round-left">
+      <span class="eyebrow">RENCONTRE</span>
+      <input id="encounterName" class="encounter-name" value="Rencontre sans titre" aria-label="Nom de la rencontre">
+    </div>
+    <div class="round-center">
+      <div class="round-box"><span>Round</span><strong id="roundNumber">1</strong></div>
+      <div id="initiativeRibbon" class="initiative-ribbon"></div>
+    </div>
+    <button id="btnNextTurn" class="primary next-turn">Tour suivant →</button>
+  </section>
+
+  <main class="layout">
+    <aside class="panel library-panel">
+      <div class="panel-head">
+        <div><span class="eyebrow">BIBLIOTHÈQUE</span><h2>Adversaires</h2></div>
+        <button id="btnCreateMonster" class="icon-btn" title="Créer un adversaire">＋</button>
+      </div>
+      <div class="search-row">
+        <input id="monsterSearch" type="search" placeholder="Rechercher…">
+      </div>
+      <div id="monsterLibrary" class="monster-library"></div>
+    </aside>
+
+    <section class="panel combat-panel">
+      <div class="panel-head combat-head">
+        <div><span class="eyebrow">COMBAT</span><h2>Participants</h2></div>
+        <div class="combat-actions">
+          <button id="btnAddPlayer" class="ghost small">+ PJ / PNJ</button>
+          <button id="btnSortInitiative" class="ghost small">Trier l’initiative</button>
+        </div>
+      </div>
+      <div id="combatList" class="combat-list empty-state"></div>
+    </section>
+
+    <aside class="panel detail-panel">
+      <div id="activeDetail" class="active-detail empty-detail">
+        <div class="empty-crest">✦</div>
+        <h2>Aucune créature sélectionnée</h2>
+        <p>Ajoute un adversaire depuis la bibliothèque ou un PJ/PNJ manuel.</p>
+      </div>
+    </aside>
+  </main>
+
+  <section class="journal-shell">
+    <div class="journal-head">
+      <div><span class="eyebrow">JOURNAL</span><h2>Historique du combat</h2></div>
+      <div class="journal-actions">
+        <button id="btnUndo" class="ghost small">↶ Annuler</button>
+        <button id="btnClearLog" class="ghost small">Effacer</button>
+      </div>
+    </div>
+    <div id="combatLog" class="combat-log"></div>
+  </section>
+
+  <dialog id="monsterEditor" class="modal wide">
+    <form method="dialog" id="monsterForm">
+      <div class="modal-head">
+        <div><span class="eyebrow">ÉDITEUR</span><h2 id="monsterEditorTitle">Nouvel adversaire</h2></div>
+        <button value="cancel" class="icon-btn">×</button>
+      </div>
+      <div class="editor-grid">
+        <label>Nom<input name="name" required></label>
+        <label>Type<input name="type" placeholder="Aberration, humanoïde…"></label>
+        <label>Taille<input name="size" placeholder="M, G, TG…"></label>
+        <label>FP<input name="cr" placeholder="8"></label>
+        <label>CA<input name="ac" type="number" min="0"></label>
+        <label>PV max<input name="hp" type="number" min="1" required></label>
+        <label>Initiative<input name="initiative" type="number" value="0"></label>
+        <label>Vitesse<input name="speed" placeholder="9 m"></label>
+        <label>Actions légendaires max<input name="legendaryMax" type="number" min="0" value="0"></label>
+        <label class="span2">Sauvegardes<input name="saves" placeholder="FOR +7, DEX +3, CON +8"></label>
+        <label class="span2">Résistances<input name="resistances" placeholder="froid ; dégâts non magiques…"></label>
+        <label class="span2">Immunités<input name="immunities" placeholder="poison ; charmé…"></label>
+        <label class="span2">Sens & langues<input name="senses" placeholder="vision dans le noir 18 m ; commun…"></label>
+      </div>
+
+      <div class="editor-section">
+        <div class="editor-section-head"><h3>Traits</h3><button type="button" class="ghost small" data-add-row="traits">+ Trait</button></div>
+        <div id="traitsRows" class="dynamic-rows"></div>
+      </div>
+      <div class="editor-section">
+        <div class="editor-section-head"><h3>Actions</h3><button type="button" class="ghost small" data-add-row="actions">+ Action</button></div>
+        <div id="actionsRows" class="dynamic-rows"></div>
+      </div>
+      <div class="editor-section">
+        <div class="editor-section-head"><h3>Réactions</h3><button type="button" class="ghost small" data-add-row="reactions">+ Réaction</button></div>
+        <div id="reactionsRows" class="dynamic-rows"></div>
+      </div>
+      <div class="editor-section">
+        <div class="editor-section-head"><h3>Actions légendaires</h3><button type="button" class="ghost small" data-add-row="legendaryActions">+ Action légendaire</button></div>
+        <div id="legendaryRows" class="dynamic-rows"></div>
+      </div>
+      <div class="editor-section">
+        <div class="editor-section-head"><h3>Phases de boss</h3><button type="button" class="ghost small" data-add-row="phases">+ Phase</button></div>
+        <div id="phasesRows" class="dynamic-rows"></div>
+      </div>
+      <label class="block-label">Notes MJ<textarea name="notes" rows="4"></textarea></label>
+      <input type="hidden" name="monsterId">
+      <div class="modal-actions">
+        <button value="cancel" class="ghost">Annuler</button>
+        <button type="button" id="btnDeleteMonster" class="danger ghost hidden">Supprimer</button>
+        <button type="submit" class="primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="addMonsterDialog" class="modal">
+    <form method="dialog" id="addMonsterForm">
+      <div class="modal-head"><div><span class="eyebrow">AJOUTER AU COMBAT</span><h2 id="addMonsterName">Adversaire</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <div class="editor-grid">
+        <label>Nombre<input name="count" type="number" min="1" max="50" value="1"></label>
+        <label>Initiative<input name="initiative" type="number" value="10"></label>
+        <label class="span2 check-label"><input name="sharedInitiative" type="checkbox" checked> Initiative commune pour le groupe</label>
+      </div>
+      <input type="hidden" name="monsterId">
+      <div class="modal-actions"><button value="cancel" class="ghost">Annuler</button><button type="submit" class="primary">Ajouter</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="addPlayerDialog" class="modal">
+    <form method="dialog" id="addPlayerForm">
+      <div class="modal-head"><div><span class="eyebrow">PARTICIPANT</span><h2>Ajouter PJ / PNJ</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <div class="editor-grid">
+        <label>Nom<input name="name" required placeholder="Pik Ekrok"></label>
+        <label>Initiative<input name="initiative" type="number" value="10"></label>
+        <label>CA<input name="ac" type="number" value="15"></label>
+        <label>PV max<input name="hp" type="number" min="1" value="50"></label>
+      </div>
+      <div class="modal-actions"><button value="cancel" class="ghost">Annuler</button><button type="submit" class="primary">Ajouter</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="importDialog" class="modal wide">
+    <form method="dialog" id="importForm">
+      <div class="modal-head"><div><span class="eyebrow">IMPORT / EXPORT</span><h2>Importer des données JSON</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <p class="muted">Colle un export ENCOUNTER ou un objet de créature compatible. Les données locales actuelles restent intactes sauf si l’export contient un état complet.</p>
+      <textarea id="importText" rows="18" spellcheck="false" placeholder='{"name":"Gobelin vétéran", ...}'></textarea>
+      <div class="modal-actions"><button value="cancel" class="ghost">Annuler</button><button type="submit" class="primary">Importer</button></div>
+    </form>
+  </dialog>
+
+  <template id="abilityRowTemplate">
+    <div class="dynamic-row ability-row">
+      <input data-field="name" placeholder="Nom">
+      <input data-field="detail" placeholder="Texte / effet">
+      <select data-field="kind">
+        <option value="text">Texte</option>
+        <option value="attack">Attaque</option>
+        <option value="save">Sauvegarde</option>
+        <option value="recharge">Recharge</option>
+      </select>
+      <input data-field="bonus" type="number" placeholder="Bonus">
+      <input data-field="damage" placeholder="Dégâts ex. 2d10+5">
+      <input data-field="damageType" placeholder="Type dégâts">
+      <input data-field="dc" type="number" placeholder="DD">
+      <input data-field="save" placeholder="JS ex. DEX">
+      <input data-field="cost" type="number" min="1" value="1" placeholder="Coût">
+      <input data-field="recharge" placeholder="5-6">
+      <button type="button" class="danger ghost small remove-row">Suppr.</button>
+    </div>
+  </template>
+
+  <template id="phaseRowTemplate">
+    <div class="dynamic-row phase-row">
+      <input data-field="name" placeholder="Phase II">
+      <input data-field="threshold" type="number" min="0" placeholder="Seuil PV">
+      <input data-field="ac" type="number" min="0" placeholder="CA optionnelle">
+      <input data-field="note" placeholder="Effet / rappel de phase">
+      <button type="button" class="danger ghost small remove-row">Suppr.</button>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
