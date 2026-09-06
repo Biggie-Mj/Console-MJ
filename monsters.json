@@ -1,6 +1,200 @@
 [
   {
-    "name": "Squelette de garde",
+    "id": "srd-gobelin",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Gobelin",
+    "type": "Humanoïde (gobelin)",
+    "size": "P",
+    "cr": "1/4",
+    "ac": 15,
+    "hp": 7,
+    "initiative": 2,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · Perception passive 9 · commun, gobelin",
+    "traits": [
+      {
+        "name": "Fuite agile",
+        "detail": "Peut entreprendre Se cacher ou Se désengager par une action bonus.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Cimeterre",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Arc court",
+        "detail": "Distance.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-kobold",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Kobold",
+    "type": "Humanoïde (kobold)",
+    "size": "P",
+    "cr": "1/8",
+    "ac": 12,
+    "hp": 5,
+    "initiative": 2,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · Perception passive 8 · commun, draconique",
+    "traits": [
+      {
+        "name": "Sensibilité au soleil",
+        "detail": "Sous la lumière du soleil, désavantage aux jets d’attaque et aux tests de Sagesse (Perception) basés sur la vue.",
+        "kind": "text"
+      },
+      {
+        "name": "Tactique de meute",
+        "detail": "Avantage à l’attaque si au moins un allié non neutralisé se trouve à 1,50 m de la cible.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d4+2",
+        "damageType": "perforants"
+      },
+      {
+        "name": "Fronde",
+        "detail": "Distance.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d4+2",
+        "damageType": "contondants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-orc",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Orc",
+    "type": "Humanoïde (orc)",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 13,
+    "hp": 15,
+    "initiative": 1,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · Perception passive 10 · commun, orc",
+    "traits": [
+      {
+        "name": "Agressivité",
+        "detail": "Action bonus : se déplace de sa vitesse ou moins vers une créature hostile qu’il voit.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Hache à deux mains",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d12+3",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Javeline",
+        "detail": "Mêlée ou distance 9/36 m.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-ogre",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Ogre",
+    "type": "Géant",
+    "size": "G",
+    "cr": "2",
+    "ac": 11,
+    "hp": 59,
+    "initiative": -1,
+    "speed": "12 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · Perception passive 8 · commun, géant",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Massue",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 6,
+        "damage": "2d8+4",
+        "damageType": "contondants"
+      },
+      {
+        "name": "Javeline",
+        "detail": "Mêlée ou distance 9/36 m.",
+        "kind": "attack",
+        "bonus": 6,
+        "damage": "2d6+4",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-squelette",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Squelette",
     "type": "Mort-vivant",
     "size": "M",
     "cr": "1/4",
@@ -10,16 +204,729 @@
     "speed": "9 m",
     "saves": "",
     "resistances": "",
-    "immunities": "poison ; épuisement ; empoisonné",
-    "senses": "Vision dans le noir 18 m",
+    "immunities": "Dégâts : poison · États : empoisonné, épuisement",
+    "senses": "Vision dans le noir 18 m · Perception passive 9",
+    "vulnerabilities": "contondants",
     "traits": [],
     "actions": [
-      {"name":"Épée courte","detail":"Attaque de corps à corps.","kind":"attack","bonus":4,"damage":"1d6+2","damageType":"perforants"},
-      {"name":"Arc court","detail":"Attaque à distance.","kind":"attack","bonus":4,"damage":"1d6+2","damageType":"perforants"}
+      {
+        "name": "Épée courte",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants"
+      },
+      {
+        "name": "Arc court",
+        "detail": "Distance.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants"
+      }
     ],
     "reactions": [],
     "legendaryActions": [],
+    "legendaryMax": 0,
     "phases": [],
-    "notes": "Exemple de fichier externe à importer ou modifier."
+    "resources": [],
+    "notes": "Vulnérabilité : dégâts contondants. Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-zombi",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Zombi",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 8,
+    "hp": 22,
+    "initiative": -2,
+    "speed": "6 m",
+    "saves": "SAG +0",
+    "resistances": "",
+    "immunities": "Dégâts : poison · État : empoisonné",
+    "senses": "Vision dans le noir 18 m · Perception passive 8 · comprend ses langues de son vivant mais ne parle pas",
+    "traits": [
+      {
+        "name": "Robustesse de la non-vie",
+        "detail": "Si des dégâts le font tomber à 0 PV : JS CON DD 5 + dégâts subis, sauf dégâts radiants ou coup critique. Réussite : reste à 1 PV.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Coup",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d6+1",
+        "damageType": "contondants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-goule",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Goule",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "1",
+    "ac": 12,
+    "hp": 22,
+    "initiative": 2,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "Dégâts : poison · États : charmé, empoisonné, épuisement",
+    "senses": "Vision dans le noir 18 m · Perception passive 10 · commun",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Griffes",
+        "detail": "Une cible autre qu’un elfe ou un mort-vivant fait un JS CON DD 10 ou est paralysée 1 minute ; nouveau JS à la fin de chacun de ses tours.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "2d4+2",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Morsure",
+        "detail": "Mêlée.",
+        "kind": "attack",
+        "bonus": 2,
+        "damage": "2d6+2",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-araignee-geante",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Araignée géante",
+    "type": "Bête",
+    "size": "G",
+    "cr": "1",
+    "ac": 14,
+    "hp": 26,
+    "initiative": 3,
+    "speed": "9 m · escalade 9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception aveugle 3 m · vision dans le noir 18 m",
+    "traits": [
+      {
+        "name": "Pattes d’araignée",
+        "detail": "Peut escalader les surfaces difficiles, y compris au plafond, sans test.",
+        "kind": "text"
+      },
+      {
+        "name": "Sens de la toile",
+        "detail": "Connaît l’emplacement de toute créature en contact avec la même toile.",
+        "kind": "text"
+      },
+      {
+        "name": "Marche dans les toiles",
+        "detail": "Ignore les restrictions de déplacement imposées par les toiles.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Morsure",
+        "detail": "Sur une touche, résous ensuite « Poison de morsure ».",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "perforants"
+      },
+      {
+        "name": "Poison de morsure",
+        "detail": "Après une Morsure réussie : JS CON DD 11. Réussite : moitié des dégâts de poison. Si le poison fait tomber la cible à 0 PV, elle est stable, empoisonnée 1 h et paralysée tant qu’elle reste empoisonnée.",
+        "kind": "save",
+        "dc": 11,
+        "save": "CON",
+        "damage": "2d8",
+        "damageType": "poison"
+      },
+      {
+        "name": "Toile",
+        "detail": "Recharge 5–6. Attaque à distance +5, portée 9/18 m ; la cible est entravée. Action + test FOR DD 12 pour se libérer.",
+        "kind": "recharge",
+        "bonus": 5,
+        "recharge": "5-6"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-loup-sanguinaire",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Loup sanguinaire",
+    "type": "Bête",
+    "size": "G",
+    "cr": "1",
+    "ac": 14,
+    "hp": 37,
+    "initiative": 2,
+    "speed": "15 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 13",
+    "traits": [
+      {
+        "name": "Odorat et ouïe aiguisés",
+        "detail": "Avantage aux tests de Sagesse (Perception) basés sur l’ouïe ou l’odorat.",
+        "kind": "text"
+      },
+      {
+        "name": "Tactique de meute",
+        "detail": "Avantage à l’attaque si au moins un allié non neutralisé se trouve à 1,50 m de la cible.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Morsure",
+        "detail": "Si la cible est une créature : JS FOR DD 13 ou elle tombe à terre.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "2d6+3",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-ombre",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Ombre",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 12,
+    "hp": 16,
+    "initiative": 2,
+    "speed": "12 m",
+    "saves": "",
+    "resistances": "Acide, feu, foudre, froid, tonnerre ; contondants, perforants et tranchants d’attaques non magiques",
+    "immunities": "Dégâts : nécrotiques, poison · États : à terre, agrippé, effrayé, empoisonné, entravé, épuisement, paralysé, pétrifié",
+    "senses": "Vision dans le noir 18 m · Perception passive 10",
+    "vulnerabilities": "radiants",
+    "traits": [
+      {
+        "name": "Discrétion dans les ombres",
+        "detail": "Sous lumière faible ou ténèbres, peut Se cacher par une action bonus.",
+        "kind": "text"
+      },
+      {
+        "name": "Informe",
+        "detail": "Peut se déplacer dans un espace étroit d’au moins 2,5 cm sans se faufiler.",
+        "kind": "text"
+      },
+      {
+        "name": "Morsure du soleil",
+        "detail": "En lumière vive du soleil : désavantage aux attaques, tests de caractéristique et sauvegardes.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ponction de force",
+        "detail": "La FOR de la cible est réduite de 1d4 ; si elle atteint 0, la cible meurt. La réduction dure jusqu’à un repos court ou long.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "2d6+2",
+        "damageType": "nécrotiques"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Vulnérabilité : radiants. Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-bandit",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Bandit",
+    "type": "Humanoïde (toute race)",
+    "size": "M",
+    "cr": "1/8",
+    "ac": 12,
+    "hp": 11,
+    "initiative": 1,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 10 · une langue (souvent commun)",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Cimeterre",
+        "detail": "Attaque de mêlée.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d6+1",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Arbalète légère",
+        "detail": "Portée 24/96 m.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d8+1",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1. Humanoïde polyvalent pour brigands, pirates et hommes de main."
+  },
+  {
+    "id": "srd-cultiste",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Sectateur",
+    "type": "Humanoïde (toute race)",
+    "size": "M",
+    "cr": "1/8",
+    "ac": 12,
+    "hp": 9,
+    "initiative": 1,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 10 · une langue (souvent commun)",
+    "traits": [
+      {
+        "name": "Dévotion obscure",
+        "detail": "Avantage aux jets de sauvegarde contre les états charmé et effrayé.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Cimeterre",
+        "detail": "Attaque de mêlée.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d6+1",
+        "damageType": "tranchants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1."
+  },
+  {
+    "id": "srd-malfrat",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Malfrat",
+    "type": "Humanoïde (toute race)",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 11,
+    "hp": 32,
+    "initiative": 0,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 10 · une langue (souvent commun)",
+    "traits": [
+      {
+        "name": "Tactique de meute",
+        "detail": "Avantage à l’attaque contre une créature si au moins un allié non neutralisé se trouve à 1,50 m de cette cible.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattaque",
+        "detail": "Effectue deux attaques de masse.",
+        "kind": "text"
+      },
+      {
+        "name": "Masse",
+        "detail": "Attaque de mêlée.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "contondants"
+      },
+      {
+        "name": "Arbalète lourde",
+        "detail": "Portée 30/120 m.",
+        "kind": "attack",
+        "bonus": 2,
+        "damage": "1d10",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1 français."
+  },
+  {
+    "id": "srd-veteran",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Vétéran",
+    "type": "Humanoïde (toute race)",
+    "size": "M",
+    "cr": "3",
+    "ac": 17,
+    "hp": 58,
+    "initiative": 1,
+    "speed": "9 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 12 · une langue (souvent commun)",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Multiattaque",
+        "detail": "Effectue deux attaques d’épée longue et, s’il a une épée courte dégainée, une attaque d’épée courte supplémentaire.",
+        "kind": "text"
+      },
+      {
+        "name": "Épée longue",
+        "detail": "À une main : 1d8+3 ; à deux mains : 1d10+3.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Épée courte",
+        "detail": "Attaque de mêlée.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "perforants"
+      },
+      {
+        "name": "Arbalète lourde",
+        "detail": "Portée 30/120 m.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d10+1",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1. Excellent soldat professionnel ou mercenaire."
+  },
+  {
+    "id": "srd-loup",
+    "category": "enemy",
+    "source": "SRD 5.1 · CC-BY-4.0",
+    "name": "Loup",
+    "type": "Bête",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 13,
+    "hp": 11,
+    "initiative": 2,
+    "speed": "12 m",
+    "saves": "",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Perception passive 13",
+    "traits": [
+      {
+        "name": "Ouïe et odorat aiguisés",
+        "detail": "Avantage aux tests de Sagesse (Perception) basés sur l’ouïe ou l’odorat.",
+        "kind": "text"
+      },
+      {
+        "name": "Tactique de meute",
+        "detail": "Avantage à l’attaque si au moins un allié non neutralisé se trouve à 1,50 m de la cible.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Morsure",
+        "detail": "Si la cible est une créature : JS FOR DD 11 ou elle tombe à terre.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "2d4+2",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Profil SRD 5.1."
+  },
+  {
+    "id": "gobelin-veteran",
+    "category": "enemy",
+    "source": "Démo maison",
+    "name": "Gobelin vétéran",
+    "type": "Humanoïde (gobelinoïde)",
+    "size": "P",
+    "cr": "2",
+    "ac": 17,
+    "hp": 36,
+    "initiative": 3,
+    "speed": "9 m",
+    "saves": "DEX +5",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · commun, gobelin",
+    "traits": [
+      {
+        "name": "Évasion agile",
+        "detail": "Peut Se désengager ou Se cacher par une action bonus.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Cimeterre",
+        "detail": "Attaque de corps à corps.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "tranchants"
+      },
+      {
+        "name": "Arc court",
+        "detail": "Portée 24/96 m.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "perforants"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Adversaire maison de démonstration."
+  },
+  {
+    "id": "ogre-des-ruines",
+    "category": "enemy",
+    "source": "Démo maison",
+    "name": "Ogre des ruines",
+    "type": "Géant",
+    "size": "G",
+    "cr": "5",
+    "ac": 15,
+    "hp": 105,
+    "initiative": 0,
+    "speed": "12 m",
+    "saves": "FOR +7, CON +6",
+    "resistances": "",
+    "immunities": "",
+    "senses": "Vision dans le noir 18 m · géant, commun",
+    "traits": [
+      {
+        "name": "Brute",
+        "detail": "Ses attaques de mêlée sont particulièrement lourdes.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Massue de siège",
+        "detail": "Attaque de corps à corps.",
+        "kind": "attack",
+        "bonus": 7,
+        "damage": "2d8+5",
+        "damageType": "contondants"
+      },
+      {
+        "name": "Rocher",
+        "detail": "Attaque à distance, portée 18/72 m.",
+        "kind": "attack",
+        "bonus": 7,
+        "damage": "2d10+5",
+        "damageType": "contondants"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Balayage brutal",
+        "detail": "Lorsqu’une créature quitte sa portée, l’ogre effectue une attaque.",
+        "kind": "attack",
+        "bonus": 7,
+        "damage": "2d8+5",
+        "damageType": "contondants"
+      }
+    ],
+    "legendaryActions": [],
+    "legendaryMax": 0,
+    "phases": [],
+    "resources": [],
+    "notes": "Exemple maison de brute intermédiaire."
+  },
+  {
+    "id": "fausse-hydre-demo",
+    "category": "enemy",
+    "source": "Démo maison",
+    "name": "Fausse hydre — Démo",
+    "type": "Aberration",
+    "size": "TG",
+    "cr": "12",
+    "ac": 17,
+    "hp": 220,
+    "initiative": 4,
+    "speed": "9 m",
+    "saves": "FOR +9, CON +9, SAG +7",
+    "resistances": "psychiques",
+    "immunities": "charmé, effrayé",
+    "senses": "Perception aveugle 18 m · télépathie 36 m",
+    "traits": [
+      {
+        "name": "Chant d’oubli",
+        "detail": "Les créatures qui perçoivent son chant peinent à conserver les souvenirs liés à ses victimes.",
+        "kind": "text"
+      },
+      {
+        "name": "Têtes multiples",
+        "detail": "La créature peut exercer une pression sur plusieurs zones du champ de bataille.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Morsure",
+        "detail": "Une tête mord une cible à portée.",
+        "kind": "attack",
+        "bonus": 9,
+        "damage": "2d10+5",
+        "damageType": "perforants"
+      },
+      {
+        "name": "Cri de dissonance",
+        "detail": "Toutes les créatures choisies dans la zone effectuent un JS de Sagesse.",
+        "kind": "save",
+        "dc": 17,
+        "save": "SAG",
+        "damage": "4d8",
+        "damageType": "psychiques"
+      },
+      {
+        "name": "Hurlement mnésique",
+        "detail": "Recharge 5–6.",
+        "kind": "recharge",
+        "recharge": "5-6",
+        "dc": 17,
+        "save": "SAG",
+        "damage": "6d8",
+        "damageType": "psychiques"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Cou réflexe",
+        "detail": "Lorsqu’elle est attaquée au corps à corps, une tête libre peut riposter.",
+        "kind": "attack",
+        "bonus": 9,
+        "damage": "1d10+5",
+        "damageType": "contondants"
+      }
+    ],
+    "legendaryActions": [
+      {
+        "name": "Déplacement",
+        "detail": "Se déplace sans provoquer d’attaque d’opportunité.",
+        "kind": "text",
+        "cost": 1
+      },
+      {
+        "name": "Morsure",
+        "detail": "Effectue une Morsure.",
+        "kind": "attack",
+        "bonus": 9,
+        "damage": "2d10+5",
+        "damageType": "perforants",
+        "cost": 1
+      },
+      {
+        "name": "Chant discordant",
+        "detail": "Une cible effectue un JS de SAG.",
+        "kind": "save",
+        "dc": 17,
+        "save": "SAG",
+        "damage": "3d8",
+        "damageType": "psychiques",
+        "cost": 2
+      }
+    ],
+    "legendaryMax": 3,
+    "phases": [
+      {
+        "name": "Phase II — Le chant se brise",
+        "threshold": 150,
+        "ac": 18,
+        "note": "La fausse hydre se cabre et devient plus agressive."
+      },
+      {
+        "name": "Phase III — Faim absolue",
+        "threshold": 70,
+        "ac": 19,
+        "note": "Les cous s’entrelacent et la créature abandonne toute prudence."
+      }
+    ],
+    "resources": [],
+    "notes": "Boss maison de démonstration en trois phases."
   }
 ]
