@@ -1,0 +1,4885 @@
+'use strict';
+
+// ENCOUNTER V4.1 — profils de campagne transcrits des dossiers utilisateur et du module Maharles.
+// Zanror : seule la version FP 22 fournie directement par l’utilisateur est incluse.
+const ENCOUNTER_CAMPAIGN_MAHARLES = [
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Rage",
+        "detail": "Action bonus · 4/repos long · jusqu’à 1 minute. Avantage aux tests/JS de FOR, +3 dégâts aux attaques de mêlée utilisant la FOR, résistance contondants/perforants/tranchants ; pas de sorts ni concentration.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Attaque téméraire",
+        "detail": "Décision sur la première attaque du tour : avantage aux attaques de mêlée de FOR du tour ; les attaques contre Nans ont avantage jusqu’au début de son prochain tour.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Sens du danger",
+        "detail": "Avantage aux JS DEX contre les effets visibles s’il n’est pas aveuglé, assourdi ou incapable.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Instinct sauvage",
+        "detail": "Avantage à l’initiative. S’il est surpris, peut agir normalement au premier tour s’il entre en Rage avant toute autre chose.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Rage aveugle",
+        "detail": "Pendant la Rage, Nans ne peut pas être charmé ni effrayé ; un état déjà actif est suspendu.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Critique brutal",
+        "detail": "Sur un critique de mêlée : +1 dé de dégâts de l’arme. Avec la hache 1d12, noyau du critique = 3d12 avant autres dés/modificateurs.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Robuste",
+        "detail": "+20 PV au niveau 10, déjà intégrés dans les 125 PV.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Don de l’Écorce",
+        "detail": "Bénéfice permanent : +1 aux JS SAG. Écorce du Serment 1/repos long : action bonus, 20 PV temporaires 1 min ; tant qu’ils subsistent, résistance C/P/T des attaques non magiques ; Échardes vengeresses 1d6 perforants à un attaquant de mêlée adjacent, une fois/tour/créature.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Volto-Fendoir — accumulation",
+        "detail": "Mode épée/bouclier : chaque attaque réussie charge la fiole. 3 touches = jaune ; 5 = rouge ; 6+ sans transfert : perte temporaire des propriétés magiques jusqu’au repos court/long. Changement de mode et transfert : action bonus.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Anneau de la Surcharge Furieuse",
+        "detail": "Sur attaque à deux mains touchée : +1d6 dégâts (type non documenté) en subissant 1d4 force. À 62 PV ou moins : +1 dégâts d’arme.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Volto — épée",
+        "detail": "Mode épée/bouclier. Dégâts déjà calculés avec Rage +3 et bonus magique +1.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d6+8",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Volto — hache",
+        "detail": "Arme lourde à deux mains.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d12+8",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Volto — hache + Cogneur lourd",
+        "detail": "−5 à l’attaque pour +10 dégâts ; Rage incluse.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 4,
+        "damage": "1d12+18",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Hache chargée",
+        "detail": "Le +1d6 foudre ne s’applique qu’une fois par tour.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d12+8+1d6",
+        "damageType": "tranchants / foudre",
+        "target": "enemy"
+      },
+      {
+        "name": "Impact chargé",
+        "detail": "Action : attaque à la hache en dépensant toute l’énergie. Sur touche : dégâts normaux +3d6 foudre (jaune) ou +5d6 (rouge) ; créatures à 3 m : JS DEX DD 13 ou à terre. Après : énergie perdue et retour requis au mode Épée.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Présence intimidante",
+        "detail": "9 m · une créature visible qui voit/entend Nans : JS SAG DD 12 ou effrayée jusqu’à fin du prochain tour. Action aux tours suivants pour prolonger. Réussite initiale : immunisée 24 h.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 12,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Fracas de guerre — Cor Dormant",
+        "detail": "1 charge · cône 4,50 m · JS CON DD 12 · 3d8 tonnerre, moitié en réussite ; échec : repoussée 3 m. Déclenche la Tentation du Grand Saccageur.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 12,
+        "save": "CON",
+        "damage": "3d8",
+        "damageType": "tonnerre",
+        "target": "enemy"
+      },
+      {
+        "name": "Hurlement du Grand Saccageur — Cor Éveillé",
+        "detail": "2 charges · ennemis choisis à 18 m qui entendent Nans · JS SAG DD 12 ; échec : effrayé 1 min et utilise réaction pour s’éloigner si possible.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 12,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Appel des ancêtres guerriers — Cor Éveillé",
+        "detail": "3 charges · 1/repos long · 1 minute. Esprits guerriers traités comme Esprits gardiens centrés sur Nans ; sans concentration selon la lecture retenue du dossier.",
+        "kind": "text",
+        "economy": "action"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Parade de vent — Cape",
+        "detail": "1/repos long : lorsqu’une attaque à distance vise Nans, +2 CA contre cette attaque.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Rages",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Écorce du Serment",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Parade de vent",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Charges du Cor — état Éveillé",
+        "max": 5,
+        "start": 5,
+        "reset": "tombée de la nuit"
+      },
+      {
+        "name": "Touches Volto",
+        "max": 5,
+        "start": 0,
+        "reset": "manuel"
+      },
+      {
+        "name": "Énergie Volto — jaune/rouge",
+        "max": 2,
+        "start": 0,
+        "reset": "manuel"
+      }
+    ],
+    "phases": [],
+    "notes": "Référence : dossier Nans Pointud niveau 10. CA active 18 avec Volto en mode épée/bouclier. Le Cor possède des états Dormant et Éveillé documentés ; état Exalté non documenté et non inventé. Le type du +1d6 de l’Anneau de Surcharge n’est pas documenté.",
+    "id": "pj-nans-pointud",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ"
+    ],
+    "name": "Nans Pointud",
+    "subtitle": "Humain · Barbare 10 · Berserker",
+    "type": "Humain · Barbare Berserker",
+    "size": "M",
+    "cr": "",
+    "ac": 18,
+    "hp": 125,
+    "initiative": 2,
+    "speed": "12 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 18,
+      "DEX": 14,
+      "CON": 16,
+      "INT": 8,
+      "SAG": 8,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": 8,
+      "DEX": 2,
+      "CON": 7,
+      "INT": -1,
+      "SAG": 0,
+      "CHA": 0
+    },
+    "saves": "FOR +8, DEX +2, CON +7, INT −1, SAG +0 (Don de l’Écorce), CHA +0",
+    "skills": {
+      "athletisme": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "acrobaties": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "escamotage": {
+        "mod": 2
+      },
+      "discretion": {
+        "mod": 2
+      },
+      "arcanes": {
+        "mod": -1
+      },
+      "histoire": {
+        "mod": -1
+      },
+      "investigation": {
+        "mod": -1
+      },
+      "nature": {
+        "mod": -1
+      },
+      "religion": {
+        "mod": -1
+      },
+      "dressage": {
+        "mod": -1
+      },
+      "intuition": {
+        "mod": -1
+      },
+      "medecine": {
+        "mod": -1
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 0
+      },
+      "representation": {
+        "mod": 0
+      },
+      "tromperie": {
+        "mod": 0
+      }
+    },
+    "senses": "Perception passive 13 · Intuition 9 · Investigation 9",
+    "damageResistances": [
+      "En Rage : contondants, perforants et tranchants"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Attaque supplémentaire",
+        "detail": "Quand Brack choisit l’action Attaquer, il effectue deux attaques.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Style Défense",
+        "detail": "Tant qu’il porte une armure : +1 CA. Plate du Duergar 18 → CA finale 19.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Résistance naine",
+        "detail": "Avantage aux JS contre le poison et résistance aux dégâts de poison.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Sentinelle",
+        "detail": "Attaque d’opportunité touchée : vitesse 0 ; Désengager provoque quand même ; réaction pour attaquer une créature adjacente qui attaque une autre cible.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "PyroMerlin — Éveillé",
+        "detail": "État actuel confirmé : marteau de guerre +2 ; résistance feu ; aura 2d6 feu aux ennemis adjacents au début de leur tour ; Souffle de la forge 1/jour.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Cogneur lourd — réserve",
+        "detail": "PyroMerlin est un marteau de guerre standard et n’est pas naturellement lourd : le dossier n’applique pas automatiquement −5/+10 à PyroMerlin.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "PyroMerlin éveillé",
+        "detail": "Marteau de guerre +2.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 11,
+        "damage": "1d10+7+2d8",
+        "damageType": "contondants / feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Pôpa",
+        "detail": "Ancienne hache de guerre. Propriétés supplémentaires non documentées.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "1d12+5",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Gorlock",
+        "detail": "Type/propriétés précises non documentés.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "2d6+2",
+        "damageType": "non documenté",
+        "target": "enemy"
+      },
+      {
+        "name": "Souffle de la forge",
+        "detail": "1/jour · cône 9 m · JS DEX DD 16 · 6d6 feu, moitié en réussite.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "DEX",
+        "damage": "6d6",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Second souffle",
+        "detail": "Action bonus · 1/repos court ou long · récupère 1d10+10 PV.",
+        "kind": "heal",
+        "economy": "bonus",
+        "damage": "1d10+10",
+        "damageType": "PV",
+        "target": "self"
+      },
+      {
+        "name": "Fougue",
+        "detail": "1/repos court ou long : gagne immédiatement une action supplémentaire. Une seconde action Attaquer permet encore deux attaques.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Croc-en-jambe",
+        "detail": "Sur touche · 1d10 supériorité : +d10 dégâts ; cible G ou inférieure : JS FOR DD17 ou à terre.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Attaque précise",
+        "detail": "1d10 supériorité ajouté au jet d’attaque après avoir vu le d20, avant résolution.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Diversion",
+        "detail": "Sur touche · +1d10 dégâts ; prochaine attaque contre la cible par une autre créature a avantage avant début prochain tour de Brack.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Instruction",
+        "detail": "Action Attaquer + action bonus + renoncer à une attaque +1d10 supériorité : allié qui voit/entend utilise sa réaction pour attaquer et ajoute d10 aux dégâts.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Attaque menaçante",
+        "detail": "Sur touche · +1d10 dégâts · JS SAG DD17 ou effrayée jusqu’à fin prochain tour de Brack.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Attaque de poussée",
+        "detail": "Sur touche · +1d10 dégâts · cible G ou inférieure : JS FOR DD17 ou repoussée jusqu’à 4,50 m.",
+        "kind": "text",
+        "economy": "action"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Riposte",
+        "detail": "Quand une créature rate Brack au corps à corps : dépense 1d10 supériorité, attaque de mêlée ; touche = +d10 dégâts.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Sentinelle",
+        "detail": "Réaction de contrôle selon le don Sentinelle.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Dés de supériorité d10",
+        "max": 5,
+        "start": 5,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Fougue",
+        "max": 1,
+        "start": 1,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Second souffle",
+        "max": 1,
+        "start": 1,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Indomptable",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Souffle de la forge",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Force 21 fournie par le Ceinturon géant des collines ; valeur naturelle non documentée. PyroMerlin Exalté est mentionné par une carte mais ses propriétés ne sont pas fournies : aucune règle n’est inventée. Pôpa et Gorlock conservent uniquement leurs lignes d’attaque documentées.",
+    "id": "pj-brack-mard",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ"
+    ],
+    "name": "Brack Mard",
+    "subtitle": "Nain · Guerrier 10 · Maître de Guerre",
+    "type": "Nain · Guerrier Maître de Guerre",
+    "size": "M",
+    "cr": "",
+    "ac": 19,
+    "hp": 104,
+    "initiative": 1,
+    "speed": "7,5 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 21,
+      "DEX": 12,
+      "CON": 18,
+      "INT": 8,
+      "SAG": 13,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": 9,
+      "DEX": 1,
+      "CON": 8,
+      "INT": -1,
+      "SAG": 1,
+      "CHA": 0
+    },
+    "saves": "FOR +9, DEX +1, CON +8, INT −1, SAG +1, CHA +0",
+    "skills": {
+      "athletisme": {
+        "mod": 9,
+        "status": "Maîtrise"
+      },
+      "acrobaties": {
+        "mod": 1
+      },
+      "escamotage": {
+        "mod": 1
+      },
+      "discretion": {
+        "mod": 1
+      },
+      "arcanes": {
+        "mod": -1
+      },
+      "histoire": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "investigation": {
+        "mod": -1
+      },
+      "nature": {
+        "mod": -1
+      },
+      "religion": {
+        "mod": -1
+      },
+      "dressage": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 1
+      },
+      "medecine": {
+        "mod": 1
+      },
+      "perception": {
+        "mod": 1
+      },
+      "survie": {
+        "mod": 1
+      },
+      "intimidation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 0
+      },
+      "representation": {
+        "mod": 0
+      },
+      "tromperie": {
+        "mod": 0
+      }
+    },
+    "senses": "Vision dans le noir 18 m · Perception passive 11 · Intuition 11 · Investigation 9 · commun, nain",
+    "damageResistances": [
+      "feu",
+      "poison"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Ascendance féerique",
+        "detail": "Avantage aux JS contre charmé ; la magie ne peut pas l’endormir.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Résistance draconique",
+        "detail": "+10 PV déjà intégrés ; sans armure CA = 13 + DEX = 14.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Affinité élémentaire — froid",
+        "detail": "Quand un sort inflige froid : +3 à un seul jet de dégâts ; 1 point de sorcellerie pour résistance froid 1 h.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Adepte élémentaire — froid",
+        "detail": "Les sorts ignorent la résistance au froid ; les 1 sur les dés de dégâts de froid comptent comme 2. N’ignore pas l’immunité.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Fiole sanguine +2",
+        "detail": "+2 attaques de sorts d’ensorceleur et DD. 1/jour, quand Samoth dépense des dés de vie pour se soigner : récupère 5 points de sorcellerie.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Bâton de Givre de la Confluence",
+        "detail": "+1 aux attaques de sort et DD ; résistance froid ; 10 charges, récupère 1d6+4 à l’aube ; dernière charge : d20, sur 1 le bâton devient eau et est détruit.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Flammes de la magie pure",
+        "detail": "1/jour : ajoute 1d10 radiants par niveau du sort lancé. Aucun bonus à un tour de magie.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Rayon de givre",
+        "detail": "18 m ; vitesse cible −3 m jusqu’au début prochain tour de Samoth.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "2d8",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Gelure",
+        "detail": "JS CON DD18 ; 2d6 froid ; échec : désavantage à prochaine attaque d’arme avant fin prochain tour.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "CON",
+        "damage": "2d6",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Projectile magique N1",
+        "detail": "3 projectiles, chacun 1d4+1 force, touchent automatiquement ; répartissables. +1 projectile/niveau au-dessus.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Orbe chromatique N1",
+        "detail": "+10 · 3d8 acide/froid/feu/foudre/poison/tonnerre. Choix froid active la spécialisation.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "3d8",
+        "damageType": "au choix",
+        "target": "enemy"
+      },
+      {
+        "name": "Hâte",
+        "detail": "N3 · concentration 1 min · cible consentante : +2 CA, avantage JS DEX, vitesse doublée, action supplémentaire limitée.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      },
+      {
+        "name": "Vortex de froid",
+        "detail": "N3 · sphère rayon 6 m à 45 m · JS DEX DD18 · 8d6 froid, moitié réussite. +1d6/niveau supérieur.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "8d6",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Invisibilité supérieure",
+        "detail": "N4 · contact · concentration jusqu’à 1 min.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      },
+      {
+        "name": "Rayonnement écœurant",
+        "detail": "N4 · sphère 9 m · concentration jusqu’à 10 min · JS CON ; échec 4d10 radiants + épuisement propre au sort.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "CON",
+        "damage": "4d10",
+        "damageType": "radiants",
+        "target": "enemy"
+      },
+      {
+        "name": "Tempête de grêle",
+        "detail": "N4 · cylindre 6 m × 12 m · JS DEX DD18 · 2d8 contondants +4d6 froid, moitié réussite ; terrain difficile temporaire.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "2d8+4d6",
+        "damageType": "contondants / froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Cône de froid",
+        "detail": "N5 · cône 18 m · JS CON DD18 · 8d8 froid, moitié réussite.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "CON",
+        "damage": "8d8",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Soins",
+        "detail": "Présent du Dragon Métallique : 1 utilisation gratuite/repos long, puis via emplacements. N1 : 1d8+3 PV.",
+        "kind": "heal",
+        "economy": "action",
+        "damage": "1d8+3",
+        "damageType": "PV",
+        "target": "ally"
+      },
+      {
+        "name": "Convocation d’esprit draconique",
+        "detail": "Sort additionnel de campagne N5 · concentration jusqu’à 1 h. Esprit métallique argenté : CA19, PV50, vol18m ; 2 Déchirements + Souffle ; agit juste après Samoth.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Cône de froid — Bâton",
+        "detail": "5 charges.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "CON",
+        "damage": "8d8",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Vortex de froid — Bâton",
+        "detail": "3 charges.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "8d6",
+        "damageType": "froid",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Bouclier",
+        "detail": "N1 : +5 CA jusqu’au début du prochain tour, y compris contre l’attaque déclenchante ; annule Projectile magique.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Absorption des éléments",
+        "detail": "Réaction quand Samoth subit acide/froid/feu/foudre/tonnerre : résistance au type jusqu’au début prochain tour ; première attaque mêlée touchée ensuite +1d6 du type.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Contresort",
+        "detail": "N3 · 18 m. Niveau 3 ou moins annulé ; au-dessus test CHA +3 contre DD 10+niveau sauf emplacement suffisant.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Ailes protectrices",
+        "detail": "4/repos long : quand une créature visible à 1,50 m, Samoth compris, est touchée : +4 CA contre cette attaque seulement.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Emplacements N1",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N2",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N3",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N4",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N5",
+        "max": 2,
+        "start": 2,
+        "reset": "repos long"
+      },
+      {
+        "name": "Points de sorcellerie",
+        "max": 10,
+        "start": 10,
+        "reset": "repos long"
+      },
+      {
+        "name": "Adepte métamagie",
+        "max": 2,
+        "start": 2,
+        "reset": "repos long"
+      },
+      {
+        "name": "Charges Bâton",
+        "max": 10,
+        "start": 10,
+        "reset": "1d6+4 à l’aube"
+      },
+      {
+        "name": "Ailes protectrices",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Flammes de magie pure",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Soins gratuit",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Fiole — regain 5 SP",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Valeurs finales +10/DD18 avec Fiole sanguine +2 et Bâton +1. Convocation d’esprit draconique est documentée comme sort additionnel de campagne, distinct des 11 sorts connus standards. La Couronne de Malachor est possédée mais rien n’établit qu’elle soit harmonisée : ses pouvoirs ne sont pas intégrés à la fiche active.",
+    "id": "pj-samoth-drakhys",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ",
+      "Porteur d’Étincelle"
+    ],
+    "name": "Samoth Drakhys",
+    "subtitle": "Demi-elfe · Ensorceleur 10 · Ascendance draconique d’argent",
+    "type": "Demi-elfe · Ensorceleur draconique",
+    "size": "M",
+    "cr": "",
+    "ac": 14,
+    "hp": 72,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 13,
+      "CON": 14,
+      "INT": 12,
+      "SAG": 10,
+      "CHA": 17
+    },
+    "saveMods": {
+      "FOR": -1,
+      "DEX": 1,
+      "CON": 6,
+      "INT": 1,
+      "SAG": 0,
+      "CHA": 7
+    },
+    "saves": "FOR −1, DEX +1, CON +6, INT +1, SAG +0, CHA +7",
+    "skills": {
+      "athletisme": {
+        "mod": -1
+      },
+      "acrobaties": {
+        "mod": 1
+      },
+      "escamotage": {
+        "mod": 1
+      },
+      "discretion": {
+        "mod": 1
+      },
+      "arcanes": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "histoire": {
+        "mod": 1
+      },
+      "investigation": {
+        "mod": 1
+      },
+      "nature": {
+        "mod": 1
+      },
+      "religion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "dressage": {
+        "mod": 0
+      },
+      "intuition": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "medecine": {
+        "mod": 0
+      },
+      "perception": {
+        "mod": 0
+      },
+      "survie": {
+        "mod": 0
+      },
+      "intimidation": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "representation": {
+        "mod": 3
+      },
+      "tromperie": {
+        "mod": 7,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Vision dans le noir 18 m · Perception passive 10 · Intuition 14 · Investigation 11",
+    "damageResistances": [
+      "froid (tant que le Bâton est tenu ; sources identiques ne se cumulent pas)"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Attaque sournoise",
+        "detail": "+5d6, 1 fois par tour. Attaque finesse/distance avec avantage, ou sans avantage si un ennemi de la cible est à 1,50 m, non incapable, et Rufus n’a pas désavantage. Peut aussi se produire sur une réaction hors de son tour.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Assassinat",
+        "detail": "Avantage aux attaques contre les créatures qui n’ont pas encore joué ; toute attaque qui touche une créature surprise est un critique.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Esquive totale",
+        "detail": "JS DEX pour moitié : 0 dégâts sur réussite, moitié sur échec.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Chanceux",
+        "detail": "3 points/repos long : après son jet attaque/test/JS, lance un d20 supplémentaire et choisit ; ou intervient sur une attaque contre lui selon le don.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Vision de la Vérité",
+        "detail": "Pouvoir maison · concentration · cible visible 18 m · 1 min : avantage contre elle, critiques 17–20, apprend une résistance/immunité/vulnérabilité pertinente. JS SAG DD 10 + utilisations précédentes après chaque usage ; échec : désavantage aux JS SAG jusqu’au repos long, cumulatif.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague spectrale",
+        "detail": "Le dossier conserve « DD CON 13 : désavantage » sans déclencheur/durée documentés.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d4+5",
+        "damageType": "perforants",
+        "target": "enemy"
+      },
+      {
+        "name": "Hexen Blade",
+        "detail": "5 charges ; 3 sorts d’illusion dont noms/coûts/paramètres non documentés.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d6+5",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Dague psychique",
+        "detail": "Portée 18 m, pas de portée longue ; seconde attaque possible en action bonus selon la fiche.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "1d6+4",
+        "damageType": "psychiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Vision de la Vérité",
+        "detail": "Active le pouvoir maison sur une cible prioritaire.",
+        "kind": "text",
+        "economy": "action",
+        "target": "enemy"
+      },
+      {
+        "name": "Lame du Feu Caché",
+        "detail": "1/jour : prochaine Attaque sournoise réussie +2d6 feu ; JS CON DD16 ou aveuglé jusqu’à fin prochain tour.",
+        "kind": "text",
+        "economy": "action"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Esquive instinctive",
+        "detail": "Quand un attaquant visible le touche : réduit de moitié les dégâts de cette attaque.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Attaque d’opportunité",
+        "detail": "Peut permettre une seconde Attaque sournoise au cours du round si les conditions sont réunies.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Chance",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Lame du Feu Caché",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Hexen Blade — charges",
+        "max": 5,
+        "start": 5,
+        "reset": "selon objet"
+      },
+      {
+        "name": "Linceul — Jugement différé",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Corbeau Pèlerin",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Ombre du Corbeau",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      }
+    ],
+    "phases": [],
+    "notes": "Archétype actif : Assassin. Les Dagues psychiques sont conservées comme pouvoir autonome de campagne, sans réintroduire les autres capacités d’Âme Acérée. CA active 15 avec cuir normal. Linceul du Jugement Noir : Dormant donnerait CA17, Éveillé CA18, mais l’état actuel n’est pas explicitement coché ; la console ne remplace donc pas silencieusement CA15. Les 3 sorts de la Hexen Blade ne sont pas inventés.",
+    "id": "pj-rufus-le-renard",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ",
+      "Maison Medani"
+    ],
+    "name": "Rufus « Le Renard »",
+    "subtitle": "Ruvius D. Medani · Humain · Roublard 10 · Assassin",
+    "type": "Humain · Roublard Assassin",
+    "size": "M",
+    "cr": "",
+    "ac": 15,
+    "hp": 53,
+    "initiative": 4,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 18,
+      "CON": 10,
+      "INT": 13,
+      "SAG": 13,
+      "CHA": 15
+    },
+    "saveMods": {
+      "FOR": -1,
+      "DEX": 8,
+      "CON": 0,
+      "INT": 5,
+      "SAG": 1,
+      "CHA": 2
+    },
+    "saves": "FOR −1, DEX +8, CON +0, INT +5, SAG +1, CHA +2",
+    "skills": {
+      "athletisme": {
+        "mod": -1
+      },
+      "acrobaties": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "escamotage": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 12,
+        "status": "Expertise"
+      },
+      "arcanes": {
+        "mod": 1
+      },
+      "histoire": {
+        "mod": 1
+      },
+      "investigation": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "nature": {
+        "mod": 1
+      },
+      "religion": {
+        "mod": 1
+      },
+      "dressage": {
+        "mod": 1
+      },
+      "intuition": {
+        "mod": 1
+      },
+      "medecine": {
+        "mod": 1
+      },
+      "perception": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 1
+      },
+      "intimidation": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 10,
+        "status": "Expertise"
+      },
+      "representation": {
+        "mod": 2
+      },
+      "tromperie": {
+        "mod": 6,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive 15 · Intuition 11 · Investigation 15"
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Vitalité des morts-vivants",
+        "detail": "Résistance nécrotique ; avantage aux sauvegardes contre Empoisonné et maladies ; vulnérabilité radiant.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Lame assoiffée",
+        "detail": "Quand Kentaro utilise l’action Attaquer avec son arme de pacte : deux attaques.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Malédiction de la Lame Maudite",
+        "detail": "Action bonus · 9 m · 1/repos court ou long · 1 min : +4 dégâts contre cible, critique 19–20, récupère 14 PV si elle meurt.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Châtiment occulte",
+        "detail": "Une fois par tour après une touche avec arme de pacte : dépense emplacement N5 → +6d8 force ; cible TG ou inférieure peut être mise à terre.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Esprit occulte",
+        "detail": "Avantage aux JS CON pour maintenir la concentration.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Vision de la Pierre",
+        "detail": "1/jour, 12 s : voit à travers illusions et objets solides 18 m ; avantage à sa prochaine attaque.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Kane",
+        "detail": "Épée longue +1 ; 1d8+5 (ou 1d10+5 à deux mains) +2d6 feu selon la fiche.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 9,
+        "damage": "1d8+5+2d6",
+        "damageType": "tranchants / feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Solinar — éveillée",
+        "detail": "Fiche consolidée : +10, 1d8+6 tranchants +1d6 radiants. L’état exact actuel des Lames n’est pas explicitement coché.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "1d8+6+1d6",
+        "damageType": "tranchants / radiants",
+        "target": "enemy"
+      },
+      {
+        "name": "Sélhane — éveillée",
+        "detail": "Fiche consolidée : +10, 1d8+6 tranchants +1d6 psychiques. L’état exact actuel des Lames n’est pas explicitement coché.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "1d8+6+1d6",
+        "damageType": "tranchants / psychiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Décharge occulte — rayon",
+        "detail": "2 rayons au niveau 10 ; jet séparé par rayon.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "1d10+4",
+        "damageType": "force",
+        "target": "enemy"
+      },
+      {
+        "name": "Morsure",
+        "detail": "Cible neutralisée ou empoignée : 1 perforant ; si sang et cible valide : +4 nécrotiques et autant de PV temporaires, gain 1/repos court ou long.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 4,
+        "damage": "1+4",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Armure d’Agathys N5",
+        "detail": "25 PV temporaires ; tant qu’ils persistent, attaquant de mêlée qui touche subit 25 froid.",
+        "kind": "text",
+        "economy": "action",
+        "target": "self"
+      },
+      {
+        "name": "Suggestion",
+        "detail": "N2 lancé avec emplacement N5 · 9 m · concentration · JS SAG DD16.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Bannissement",
+        "detail": "N4 lancé avec emplacement N5 : 2 créatures · JS CHA DD16 · concentration.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "CHA",
+        "target": "enemy"
+      },
+      {
+        "name": "Jeter une malédiction",
+        "detail": "Via Signe de mauvais augure, emplacement N5 : 8 h, sans concentration · JS SAG DD16.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Porte dimensionnelle",
+        "detail": "N4 · 150 m · peut emmener une créature consentante taille ≤ Kentaro.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Ombre d’égarement",
+        "detail": "N4 · personnelle · concentration 1 min : lourdement voilé, résistance radiant ; attaquant à 3 m qui touche subit 2d8 nécrotiques.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Châtiment de bannissement",
+        "detail": "N5 · action bonus · concentration 1 min : prochaine attaque d’arme touchée +5d10 force ; si cible ≤50 PV ensuite, bannissement.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Armure des maléfices",
+        "detail": "Quand la cible de la Malédiction touche Kentaro : 1d6 ; sur 4–6 l’attaque rate.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Tombeau de Lazarus — option à confirmer",
+        "detail": "Présent dans une version étendue, absent du dernier grimoire : réaction 1/repos court/long pour 100 PV temporaires et neutralisation jusqu’à fin prochain tour. Ne considérer actif que si la table le valide.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Emplacements de pacte N5",
+        "max": 2,
+        "start": 2,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Malédiction Lame Maudite",
+        "max": 1,
+        "start": 1,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Spectre maudit",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Soif ténébreuse — PV temp",
+        "max": 1,
+        "start": 1,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Vision de la Pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "CA18 = demi-plate + DEX + cape +1. FOR10 est la valeur active avec bracelet +2 ; base retrouvée 8. Les Lames jumelles Dormant/Éveillé sont toutes deux documentées, mais l’état exact actuel n’est pas explicitement coché. Armure de sang est inscrite mais sans règle mécanique : non inventée. Tombeau de Lazarus est une option à confirmer.",
+    "id": "pj-kentaro-amane",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ",
+      "Dhampire"
+    ],
+    "name": "Kentaro Amane",
+    "subtitle": "Dhampire · Occultiste 10 · Lame Maudite",
+    "type": "Dhampire · Occultiste Lame Maudite",
+    "size": "M",
+    "cr": "",
+    "ac": 18,
+    "hp": 103,
+    "initiative": 2,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 14,
+      "CON": 16,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 18
+    },
+    "saveMods": {
+      "FOR": 0,
+      "DEX": 2,
+      "CON": 3,
+      "INT": 0,
+      "SAG": 4,
+      "CHA": 8
+    },
+    "saves": "FOR +0, DEX +2, CON +3, INT +0, SAG +4, CHA +8",
+    "skills": {
+      "athletisme": {
+        "mod": 0
+      },
+      "acrobaties": {
+        "mod": 2
+      },
+      "escamotage": {
+        "mod": 2
+      },
+      "discretion": {
+        "mod": 2,
+        "note": "Désavantage en demi-plate"
+      },
+      "arcanes": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "histoire": {
+        "mod": 0
+      },
+      "investigation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "nature": {
+        "mod": 0
+      },
+      "religion": {
+        "mod": 0
+      },
+      "dressage": {
+        "mod": 0
+      },
+      "intuition": {
+        "mod": 0
+      },
+      "medecine": {
+        "mod": 0
+      },
+      "perception": {
+        "mod": 0
+      },
+      "survie": {
+        "mod": 0
+      },
+      "intimidation": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "representation": {
+        "mod": 4
+      },
+      "tromperie": {
+        "mod": 8,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Vision dans le noir 18 m · Perception passive 10 · Intuition 10 · Investigation 14",
+    "damageResistances": [
+      "nécrotiques"
+    ],
+    "damageVulnerabilities": [
+      "radiants"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Aura de protection",
+        "detail": "Rayon 3 m, conscient : Zéphyr et alliés ajoutent +4 aux JS. Les valeurs de sauvegarde de sa fiche l’incluent déjà.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Aura de conquête",
+        "detail": "Créature terrorisée par Zéphyr dans 3 m : vitesse 0 ; commence son tour dans l’aura : 5 psychiques.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Aura de bravoure",
+        "detail": "Zéphyr et alliés à 3 m ne peuvent pas être terrorisés tant qu’il est conscient.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Marque d’Asmodeus",
+        "detail": "Après Injonction via le Décret : tant que la Marque subsiste, Imposition des mains sur autrui réduit le maximum de PV de Zéphyr de la moitié des PV restaurés, plancher 42 PV ; disparaît après repos long + prière sincère.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Ceinture de géant du feu",
+        "detail": "Force active 25 ; valeur naturelle non inventée.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Poings de paladin",
+        "detail": "Attaque principale de la fiche.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 11,
+        "damage": "1d8+7",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Présence conquérante",
+        "detail": "Conduit divin · action · rayon 9 m · créatures choisies visibles : JS SAG DD16 ou terrorisées 1 min ; nouveau JS fin de tour.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Imposition des mains",
+        "detail": "Réserve 50 PV · contact. Peut dépenser 5 points pour neutraliser une maladie ou un poison.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      },
+      {
+        "name": "Injonction",
+        "detail": "N1 · 18 m · JS SAG DD16 · ordre d’un mot. Le Décret permet 1 lancement gratuit/repos long et une version en réaction au début du tour adverse.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Bénédiction",
+        "detail": "N1 · 9 m · concentration 1 min · jusqu’à 3 créatures +1d4 attaques/JS.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      },
+      {
+        "name": "Peur",
+        "detail": "N3 · cône 9 m · JS SAG DD16 · concentration ; synergie Aura de conquête.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Jeter une malédiction",
+        "detail": "N3 · contact · JS SAG DD16 · concentration 1 min.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 16,
+        "save": "SAG",
+        "target": "enemy"
+      },
+      {
+        "name": "Revivifier",
+        "detail": "N3 · contact · diamant 300 po consommé · créature morte depuis <1 min revient à 1 PV.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      },
+      {
+        "name": "Aura de vitalité",
+        "detail": "N3 · concentration 1 min · aura 9 m ; action bonus à chaque tour pour rendre 2d6 PV.",
+        "kind": "text",
+        "economy": "action",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Style Protection",
+        "detail": "Bouclier requis : quand une créature visible attaque une cible autre que Zéphyr à 1,50 m, impose désavantage.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Représailles infernales",
+        "detail": "Créature visible à 18 m qui blesse Zéphyr : JS DEX DD16 ; échec 2d10 feu, réussite moitié.",
+        "kind": "save",
+        "economy": "reaction",
+        "dc": 16,
+        "save": "DEX",
+        "damage": "2d10",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Injonction infernale — Décret",
+        "detail": "1/repos long sans emplacement ; peut être utilisée comme réaction quand une créature visible à portée commence son tour.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Imposition des mains",
+        "max": 50,
+        "start": 50,
+        "reset": "repos long"
+      },
+      {
+        "name": "Sens divin",
+        "max": 5,
+        "start": 5,
+        "reset": "repos long"
+      },
+      {
+        "name": "Conduit divin",
+        "max": 1,
+        "start": 1,
+        "reset": "repos court/long"
+      },
+      {
+        "name": "Emplacements N1",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N2",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N3",
+        "max": 2,
+        "start": 2,
+        "reset": "repos long"
+      },
+      {
+        "name": "Décret",
+        "max": 1,
+        "start": 1,
+        "reset": "repos long"
+      },
+      {
+        "name": "Ancre sacrée",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "CA21 active = cotte de mailles16 + Bouclier +3 (bonus total +5). BINAH est un Vestige séparé : les sources ne disent pas qu’il est le Bouclier +3 ; ne pas fusionner. CHA19 via le Décret, modificateur reste +4, donc DD16/+8 inchangés. Les autres traits tieffelins classiques non présents dans la fiche ne sont pas ajoutés.",
+    "id": "pj-zephyr",
+    "category": "character",
+    "source": "Dossier utilisateur · Niveau 10",
+    "tags": [
+      "Compagnie Créole",
+      "Niveau 10",
+      "PJ",
+      "Porteur d’Étincelle"
+    ],
+    "name": "Zéphyr",
+    "subtitle": "Tieffelin · Paladin 10 · Serment de Conquête",
+    "type": "Tieffelin · Paladin de Conquête",
+    "size": "M",
+    "cr": "",
+    "ac": 21,
+    "hp": 84,
+    "initiative": -1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 25,
+      "DEX": 8,
+      "CON": 15,
+      "INT": 9,
+      "SAG": 8,
+      "CHA": 19
+    },
+    "saveMods": {
+      "FOR": 11,
+      "DEX": 3,
+      "CON": 6,
+      "INT": 3,
+      "SAG": 7,
+      "CHA": 12
+    },
+    "saves": "FOR +11, DEX +3, CON +6, INT +3, SAG +7, CHA +12 (Aura de protection incluse)",
+    "skills": {
+      "athletisme": {
+        "mod": 7
+      },
+      "acrobaties": {
+        "mod": -1
+      },
+      "escamotage": {
+        "mod": -1
+      },
+      "discretion": {
+        "mod": -1
+      },
+      "arcanes": {
+        "mod": -1
+      },
+      "histoire": {
+        "mod": -1
+      },
+      "investigation": {
+        "mod": -1
+      },
+      "nature": {
+        "mod": -1
+      },
+      "religion": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "dressage": {
+        "mod": -1
+      },
+      "intuition": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "medecine": {
+        "mod": -1
+      },
+      "perception": {
+        "mod": -1
+      },
+      "survie": {
+        "mod": -1
+      },
+      "intimidation": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "representation": {
+        "mod": 4
+      },
+      "tromperie": {
+        "mod": 4
+      }
+    },
+    "senses": "Perception passive 9 · Intuition 13 · Investigation 9",
+    "damageResistances": [
+      "feu"
+    ],
+    "conditionImmunities": [
+      "maladies"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Magie sucrée",
+        "detail": "Tous ses sorts prennent une apparence de confiserie. Le type de dégâts ne change pas sauf indication contraire.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Incantation",
+        "detail": "Lanceur de sorts niveau 10 · CHA · DD18 · +10 attaques de sort · Bâton-Sucette comme focaliseur.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Bonbons médicinaux",
+        "detail": "Quand Felipe rend des PV avec un sort ou une aptitude, la cible gagne aussi 5 PV temporaires, une fois par tour maximum.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Vigueur sirupeuse",
+        "detail": "Avantage aux JS contre poison et effets de mise à terre ; créature qui le touche au corps à corps : JS FOR DD15 ou vitesse −3 m jusqu’à fin prochain tour.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Odeur de fête foraine",
+        "detail": "Alliés à 3 m : avantage aux JS contre effrayé, sauf si Felipe leur est hostile.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bâton-Sucette de Dofil",
+        "detail": "Mêlée ou attaque à distance avec sort · allonge1,50 m ou 36/108 m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "4d6+4",
+        "damageType": "force",
+        "target": "enemy"
+      },
+      {
+        "name": "Rafale de dragées",
+        "detail": "Jusqu’à 3 créatures à 36 m · JS DEX DD18 · échec 4d6 force ; échec de 5+ : vitesse moitié jusqu’au début prochain tour de Felipe.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "4d6",
+        "damageType": "force",
+        "target": "enemy"
+      },
+      {
+        "name": "Bonbon de secours",
+        "detail": "4/jour · créature à18 m récupère 4d6+4 PV +5 PV temp.",
+        "kind": "heal",
+        "economy": "action",
+        "damage": "4d6+4",
+        "damageType": "PV",
+        "target": "ally"
+      },
+      {
+        "name": "Déluge de confiseries",
+        "detail": "Recharge5-6 · rayon6 m à36 m. Ennemis : JS DEX18, échec8d6 contondants magiques + vitesse −3 m ; réussite moitié. Alliés : récupèrent4d6 PV.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "8d6",
+        "damageType": "contondants magiques",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Invocation des Golems-Bonbons",
+        "detail": "1/jour : jusqu’à 4 Golems-Bonbons dans des espaces à18 m, durée1 min, jouent juste après lui, obéissent et protègent Felipe sans ordre. Bâton-Sucette requis.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Trait de feu",
+        "detail": "Tour de magie.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "2d10",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Rayon de givre",
+        "detail": "Tour de magie.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 10,
+        "damage": "2d8",
+        "damageType": "froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Boule de feu",
+        "detail": "N3 · JS DEX DD18.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "DEX",
+        "damage": "8d6",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Soin de groupe",
+        "detail": "N5.",
+        "kind": "heal",
+        "economy": "action",
+        "damage": "3d8+5",
+        "damageType": "PV",
+        "target": "ally"
+      },
+      {
+        "name": "Immobilisation de monstre",
+        "detail": "N5 · JS SAG DD18.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 18,
+        "save": "SAG",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Caramel protecteur",
+        "detail": "Quand une créature à18 m subit des dégâts : réduit de 2d8+4 ; si dégâts tombent à0, cible gagne5 PV temp.",
+        "kind": "text",
+        "economy": "reaction",
+        "target": "ally"
+      },
+      {
+        "name": "Contresort sucré",
+        "detail": "Felipe lance Contresort.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Points de sorcellerie",
+        "max": 10,
+        "start": 10,
+        "reset": "repos long"
+      },
+      {
+        "name": "Bonbon de secours",
+        "max": 4,
+        "start": 4,
+        "reset": "jour"
+      },
+      {
+        "name": "Sucre pétillant",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Invocation Golems",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Emplacements N1",
+        "max": 4,
+        "start": 4,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N2",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N3",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N4",
+        "max": 3,
+        "start": 3,
+        "reset": "repos long"
+      },
+      {
+        "name": "Emplacements N5",
+        "max": 2,
+        "start": 2,
+        "reset": "repos long"
+      }
+    ],
+    "phases": [],
+    "notes": "Armure du mage active : CA15 ; sans armure CA12. Sorts connus : tours Trait de feu, Rayon de givre, Prestidigitation, Main du mage, Message, Lumière ; N1 Armure du mage, Soin des blessures, Mot de guérison, Projectile magique ; N2 Rayon ardent, Restauration partielle, Pas brumeux ; N3 Boule de feu, Hâte, Contresort ; N4 Tempête de grêle, Porte dimensionnelle ; N5 Soin de groupe, Immobilisation de monstre.",
+    "id": "npc-felipe-dofil",
+    "category": "npc",
+    "source": "Dossier Felipe Dofil",
+    "tags": [
+      "Maharles",
+      "PNJ",
+      "Compagnie Créole",
+      "Niveau 10"
+    ],
+    "name": "Felipe Dofil",
+    "subtitle": "Humain · Ensorceleur 10 · Magie des Bonbons",
+    "type": "Humain · Ensorceleur",
+    "size": "M",
+    "cr": "10",
+    "ac": 15,
+    "hp": 135,
+    "initiative": 2,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 12,
+      "DEX": 14,
+      "CON": 16,
+      "INT": 13,
+      "SAG": 12,
+      "CHA": 20
+    },
+    "saveMods": {
+      "FOR": 1,
+      "DEX": 2,
+      "CON": 8,
+      "INT": 1,
+      "SAG": 6,
+      "CHA": 10
+    },
+    "saves": "CON +8, SAG +6, CHA +10",
+    "skills": {
+      "athletisme": {
+        "mod": 1
+      },
+      "acrobaties": {
+        "mod": 2
+      },
+      "escamotage": {
+        "mod": 2
+      },
+      "discretion": {
+        "mod": 2
+      },
+      "arcanes": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "histoire": {
+        "mod": 1
+      },
+      "investigation": {
+        "mod": 1
+      },
+      "nature": {
+        "mod": 1
+      },
+      "religion": {
+        "mod": 1
+      },
+      "dressage": {
+        "mod": 1
+      },
+      "intuition": {
+        "mod": 1
+      },
+      "medecine": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 1
+      },
+      "survie": {
+        "mod": 1
+      },
+      "intimidation": {
+        "mod": 5
+      },
+      "persuasion": {
+        "mod": 10,
+        "status": "Maîtrise"
+      },
+      "representation": {
+        "mod": 10,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 10,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive 11 · Intuition 11 · Investigation 11 · commun, gnome, draconique, sylvestre",
+    "damageResistances": [
+      "poison",
+      "feu tant qu’il tient le Bâton-Sucette"
+    ],
+    "conditionImmunities": [
+      "empoisonné"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Corps de sucre durci",
+        "detail": "Peut traverser l’espace d’un allié. S’il subit feu : vitesse −3 m jusqu’à fin prochain tour.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Rempart collant",
+        "detail": "Terrain difficile pour les ennemis à 1,50 m.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Explosion de sucre",
+        "detail": "À 0 PV : ennemis à1,50 m JS DEX DD13 ou 2d6 perforants magiques ; alliés gagnent5 PV temp.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Coup de poing collant",
+        "detail": "JS FOR DD13 ou vitesse −3 m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Étreinte de nougat",
+        "detail": "Cible agrippée, DD13 pour s’échapper.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "contondants",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Invocation de Felipe : jusqu’à 4, durée 1 min, jouent juste après lui.",
+    "id": "comp-golem-bonbon",
+    "category": "companion",
+    "source": "Dossier Felipe Dofil",
+    "tags": [
+      "Felipe Dofil",
+      "Compagnon",
+      "Maharles"
+    ],
+    "name": "Golem-Bonbon",
+    "subtitle": "Compagnon de Felipe · Créature artificielle",
+    "type": "Créature artificielle",
+    "size": "M",
+    "cr": "3",
+    "ac": 15,
+    "hp": 58,
+    "initiative": 2,
+    "speed": "6 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 16,
+      "DEX": 8,
+      "CON": 15,
+      "INT": 3,
+      "SAG": 10,
+      "CHA": 5
+    },
+    "saves": "",
+    "damageResistances": [
+      "contondants, perforants, tranchants non magiques"
+    ],
+    "damageVulnerabilities": [
+      "feu"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "charmé",
+      "empoisonné",
+      "épuisement",
+      "effrayé"
+    ],
+    "senses": "Vision aveugle 18 m · comprend Felipe"
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Masse sucrée",
+        "detail": "Alliés à1,50 m bénéficient d’un abri partiel contre attaques à distance.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Corps collant",
+        "detail": "Créature qui le touche au corps à corps : JS FOR DD15 ou agrippée jusqu’à fin de son prochain tour.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Coup de poing collant",
+        "detail": "Deux attaques par action ; JS FOR DD15 ou vitesse moitié.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "1d10+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Projection de nougat",
+        "detail": "Portée9/18 m ; JS DEX DD15 ou entravé jusqu’à fin prochain tour.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "1d8+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Rempart de caramel",
+        "detail": "Quand un allié à1,50 m est touché : impose désavantage au jet d’attaque.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "",
+    "id": "comp-golem-bonbon-superieur",
+    "category": "companion",
+    "source": "Dossier Felipe Dofil",
+    "tags": [
+      "Felipe Dofil",
+      "Compagnon",
+      "Maharles"
+    ],
+    "name": "Golem-Bonbon supérieur",
+    "subtitle": "Compagnon de Felipe · Créature artificielle",
+    "type": "Créature artificielle",
+    "size": "G",
+    "cr": "6",
+    "ac": 16,
+    "hp": 126,
+    "initiative": 2,
+    "speed": "6 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 20,
+      "DEX": 8,
+      "CON": 20,
+      "INT": 3,
+      "SAG": 10,
+      "CHA": 5
+    },
+    "damageResistances": [
+      "contondants, perforants, tranchants non magiques"
+    ],
+    "damageVulnerabilities": [
+      "feu"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "charmé",
+      "empoisonné",
+      "épuisement",
+      "effrayé",
+      "paralysé"
+    ],
+    "senses": "Vision aveugle 18 m · comprend son invocateur"
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Carrure puissante",
+        "detail": "Compte comme une taille supérieure pour charge/pousser/tirer/soulever.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Capture avant meurtre",
+        "detail": "Peut infliger non létal avec mêlée sans pénalité ; avantage Athlétisme pour maintenir une créature agrippée.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Harpon-chaîne",
+        "detail": "Mêlée ou portée6/18m ; une fois/tour cible G ou inférieure : JS FOR DD13 ou tirée1,50m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "perforants",
+        "target": "enemy"
+      },
+      {
+        "name": "Filet lesté",
+        "detail": "Recharge5-6 · cible G ou inférieure à6m · JS DEX13 ou entravée ; action Athlétisme/Acrobaties13 pour sortir ; filet CA10 PV8.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 13,
+        "save": "DEX",
+        "recharge": "5-6",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Endurance de pierre",
+        "detail": "1/jour : réduit dégâts de 1d12+3.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Endurance de pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nMÂCHOIRE DE LA HARDE — FP 2\n\n\nHumanoïde (goliath) de taille M, loyal neutre\n\n\n\n\n                                                        2\nClasse d’armure 15 (armure de peaux renforcée, rondache)\nPoints de vie 52 (7d8 + 21)\nVitesse 9 m\n\n\n                            FOR        DEX       CON           INT      SAG       CHA\n\n                         17 (+3)    13 (+1)    16 (+3)       9 (−1)   12 (+1)   10 (+0)\n\n\nJets de sauvegarde For +5, Con +5\nCompétences Athlétisme +5, Perception +3, Survie +3\nRésistances aux dégâts froid\nSens Perception passive 13\nLangues commun, géant\nFacteur de puissance 2 (450 PX)\nBonus de maîtrise +2\n\n\nCarrure puissante. La Mâchoire compte comme une créature d’une catégorie de taille supérieure pour\ndéterminer sa capacité de charge et le poids qu’elle peut pousser, tirer ou soulever.\n\n\nCapture avant meurtre. La Mâchoire peut infliger des dégâts non létaux avec chacune de ses attaques\nde corps à corps sans subir de pénalité. Elle est avantagée aux tests de Force (Athlétisme) effectués\npour maintenir une créature agrippée.\n\n\nActions\n\n\nAttaques multiples. La Mâchoire effectue deux attaques de Harpon-chaîne.\n\n\nHarpon-chaîne. Attaque d’arme au corps à corps ou à distance : +5 pour toucher, allonge 1,50 m ou\nportée 6/18 m, une cible. Touché : 7 (1d8 + 3) dégâts perforants. Une fois par tour, si la cible est de taille\nG ou inférieure, elle doit réussir un JS de Force DD 13 ou être tirée de 1,50 m vers la Mâchoire.\n\n\nFilet lesté (recharge 5–6). Une créature de taille G ou inférieure que la Mâchoire voit dans un rayon de\n6 m doit réussir un JS de Dextérité DD 13 sous peine d’être entravée. La créature peut consacrer son\naction à un test de Force (Athlétisme) ou Dextérité (Acrobaties) DD 13, mettant fin à l’effet en cas de\nréussite. Le filet peut également être détruit : CA 10, 8 PV.\n\n\nRéactions\n\n\nEndurance de pierre (1/jour). Lorsque la Mâchoire subit des dégâts, elle réduit ces dégâts de 1d12 + 3.\n\n\nRôle et mise en scène. Une Mâchoire n’essaie normalement pas de tuer un PJ : elle le harponne, l’isole\npuis le ligote pendant que ses camarades bloquent les secours. Elle crie des ordres très courts : «\nDebout », « Vivant », « Celui-là ».\n\n\nÉquipement et butin. Harpon-chaîne, filet marqué du clan, 1d4 attaches de prisonnier. Une Mâchoire\npeut porter un jeton d’affectation au Colisée indiquant le prochain transfert de captifs.\n\n\nAjustement. Pour un groupe niveau 5 fragile, retirez 14 PV et l’Endurance de pierre. Pour une Mâchoire\nd’élite, donnez-lui 65 PV et faites recharger son Filet sur 4–6.\n\n\n\n\n                                                         3\nRéférence officielle. Le châssis se situe entre un combattant professionnel de type Vétéran et les traits\nphysiques du goliath 2014 ; le Vétéran officiel est FP 3 et possède une forte CA et plusieurs attaques,\ntandis que le goliath legacy fournit la thématique d’endurance et de puissance physique. 8",
+    "id": "maharles-machoire-harde",
+    "name": "Mâchoire de la Harde",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "2",
+    "ac": 15,
+    "hp": 52,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 17,
+      "DEX": 13,
+      "CON": 16,
+      "INT": 9,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": 5,
+      "CON": 5
+    },
+    "saves": "FOR +5, CON +5",
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive 13 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Charge démolissante",
+        "detail": "Après 6m ligne droite + Marteau-bélier touché : +2d6 contondants et JS FOR15 ou à terre.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Immobile comme le roc",
+        "detail": "Avantage aux jets/tests pour résister à poussée ou mise à terre.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Marteau-bélier",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "2d6+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Heurt d’épaule",
+        "detail": "Cible G ou inférieure : JS FOR15 ou repoussée3m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "1d8+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Endurance de pierre",
+        "detail": "1/jour : réduit dégâts de 1d12+4.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Endurance de pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nBRISE-CORNE DE LA HARDE — FP 4\n\n\nHumanoïde (goliath) de taille M, neutre\n\n\nClasse d’armure 16 (cuirasse tribale)\nPoints de vie 85 (10d8 + 40)\nVitesse 9 m\n\n\n                           FOR        DEX        CON          INT      SAG       CHA\n\n                         20 (+5)    10 (+0)   18 (+4)       8 (−1)   11 (+0)   12 (+1)\n\n\nJets de sauvegarde For +7, Con +6\nCompétences Athlétisme +7, Intimidation +3\nRésistances aux dégâts froid\nSens Perception passive 10\nLangues commun, géant\nFP 4 (1 100 PX)\nBonus de maîtrise +2\n\n\nCharge démolissante. Si le Brise-Corne parcourt au moins 6 m en ligne droite vers une créature puis la\ntouche avec son Marteau-bélier au même tour, la cible subit 7 (2d6) dégâts contondants\nsupplémentaires et doit réussir un JS de Force DD 15 ou tomber à terre.\n\n\nImmobile comme le roc. Le Brise-Corne est avantagé aux jets et tests effectués pour résister à une\npoussée ou pour éviter d’être jeté à terre.\n\n\nActions\n\n\nAttaques multiples. Le Brise-Corne effectue deux attaques de Marteau-bélier.\n\n\nMarteau-bélier. Attaque d’arme au corps à corps : +7 pour toucher, allonge 1,50 m, une cible. Touché : 12\n(2d6 + 5) dégâts contondants.\n\n\nHeurt d’épaule. Attaque d’arme au corps à corps : +7 pour toucher, allonge 1,50 m, une créature. Touché :\n9 (1d8 + 5) dégâts contondants. Si la cible est de taille G ou inférieure, elle doit réussir un JS de Force DD\n15 ou être repoussée de 3 m.\n\n\nRéactions\n\n\nEndurance de pierre (1/jour). Le Brise-Corne réduit de 1d12 + 4 les dégâts qu’il vient de subir.\n\n\nRôle et mise en scène. Il choisit le personnage qui « tient la ligne » et fait de sa destruction une affaire\npersonnelle. Sa fonction n’est pas de maximiser les dégâts, mais de désorganiser la géométrie du\ncombat : paladin renversé, magicien exposé, passage dégagé.\n\n\n\n\n                                                        4\nÉquipement et butin. Marteau-bélier, plaque de défi gravée, petit sachet de poussière de pierre. Une\nplaque peut porter le nom d’un combattant du Colisée que Zanror souhaite affronter.\n\n\nAjustement. Version allégée : 68 PV et aucun dégât supplémentaire sur Charge. Version d’arène : 100\nPV et la Charge peut repousser également la cible de 1,50 m.\n\n\nRéférence officielle. Le Gladiateur FP 5 officiel fournit le meilleur repère de combattant physique\nspécialisé dans l’arène, avec forte Force, plusieurs attaques et contrôle par mise à terre ; le Brise-Corne\nen est une version moins polyvalente et plus axée sur la collision. 9",
+    "id": "maharles-brise-corne",
+    "name": "Brise-Corne de la Harde",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "4",
+    "ac": 16,
+    "hp": 85,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 20,
+      "DEX": 10,
+      "CON": 18,
+      "INT": 8,
+      "SAG": 11,
+      "CHA": 12
+    },
+    "saveMods": {
+      "FOR": 7,
+      "CON": 6
+    },
+    "saves": "FOR +7, CON +6",
+    "skills": {
+      "athletisme": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive 10 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Voix de la Harde",
+        "detail": "Alliés Harde à6m qui l’entendent : avantage JS contre effrayé.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Éclat d’orage",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "3d8",
+        "damageType": "tonnerre",
+        "target": "enemy"
+      },
+      {
+        "name": "Bâton tonnant",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d8+3+1d6",
+        "damageType": "contondants / tonnerre",
+        "target": "enemy"
+      },
+      {
+        "name": "Cri d’orage",
+        "detail": "Recharge5-6 · cône6m · JS CON13 · 4d8 tonnerre ; échec push3m + pas de réaction ; réussite moitié.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 13,
+        "save": "CON",
+        "damage": "4d8",
+        "damageType": "tonnerre",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Ralliement de la montagne",
+        "detail": "Action bonus 1/j : jusqu’à3 alliés à9m gagnent5 PV temp et se déplacent1,50m sans OA.",
+        "kind": "text",
+        "economy": "bonus",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Réplique tonnante",
+        "detail": "2/j : attaquant mêlée à3m qui touche subit1d10 tonnerre.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Ralliement",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Réplique tonnante",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nCRIEUR D’ORAGE — FP 4\n\n\nHumanoïde (goliath) de taille M, loyal neutre\n\n\nClasse d’armure 15 (peaux runiques)\nPoints de vie 71 (11d8 + 22)\nVitesse 9 m\n\n\n                           FOR        DEX         CON            INT      SAG       CHA\n\n                        14 (+2)    12 (+1)      14 (+2)       10 (+0)   16 (+3)   16 (+3)\n\nJets de sauvegarde Con +4, Sag +5, Cha +5\nCompétences Intimidation +5, Perception +5, Religion +4\nRésistances aux dégâts froid, foudre, tonnerre\nSens Perception passive 15\nLangues commun, géant\nFP 4 (1 100 PX)\nBonus de maîtrise +2\n\n\nVoix de la Harde. Les alliés de la Harde situés dans un rayon de 6 m du Crieur sont avantagés aux JS\ncontre l’état effrayé, à condition de pouvoir l’entendre.\n\n\nActions\n\n\nAttaques multiples. Le Crieur effectue deux attaques d’Éclat d’orage ou deux attaques de Bâton\ntonnant.\n\n\nÉclat d’orage. Attaque de sort à distance : +5 pour toucher, portée 18 m, une cible. Touché : 13 (3d8)\ndégâts de tonnerre.\n\n\nBâton tonnant. Attaque de sort au corps à corps : +5 pour toucher, allonge 1,50 m, une cible. Touché : 10\n(1d8 + 3 plus 1d6) dégâts, répartis en contondants et tonnerre.\n\n\nCri d’orage (recharge 5–6). Le Crieur pousse un hurlement rituel dans un cône de 6 m. Toute créature\ndans la zone effectue un JS de Constitution DD 13. En cas d’échec, elle subit 18 (4d8) dégâts de tonnerre,\nest repoussée de 3 m et ne peut pas jouer de réaction jusqu’au début de son prochain tour. En cas de\nréussite, elle subit la moitié des dégâts et n’est ni repoussée ni privée de réaction.\n\n\nActions bonus\n\n\n\n\n                                                          5\nRalliement de la montagne (1/jour). Jusqu’à trois alliés de la Harde que le Crieur voit dans un rayon de\n9 m reçoivent chacun 5 PV temporaires et peuvent immédiatement se déplacer de 1,50 m sans\nprovoquer d’attaque d’opportunité.\n\n\nRéactions\n\n\nRéplique tonnante (2/jour). Lorsqu’une créature située à 3 m ou moins touche le Crieur avec une\nattaque de corps à corps, l’attaquant subit 5 (1d10) dégâts de tonnerre.\n\n\nRôle et mise en scène. Il reste derrière les Brise-Cornes et transforme une troupe banale en unité\ncohérente. Le Cri d’orage est particulièrement efficace au bord d’une citerne, d’une fosse ou des\ngradins.\n\n\nÉquipement et butin. Bâton rituel, plaques sonores de bronze, éclat de fulgurite. Ses runes peuvent\nrévéler que les chants récents de la Harde ont été modifiés par quelqu’un d’extérieur au clan.\n\n\nAjustement. Pour diminuer sa puissance, retirez Réplique tonnante. Pour une version FP 5\napproximative, passez à 90 PV et DD 14.\n\n\nRéférence officielle. La structure d’un soutien religieux s’inspire du Fanatique de secte officiel, tandis\nque sa solidité est relevée vers celle des combattants martiaux intermédiaires ; le Fanatique officiel est\nFP 2 et combine magie, résistance mentale et attaques multiples. 10",
+    "id": "maharles-crieur-orage",
+    "name": "Crieur d’Orage",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "4",
+    "ac": 15,
+    "hp": 71,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 14,
+      "DEX": 12,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 16,
+      "CHA": 16
+    },
+    "saveMods": {
+      "CON": 4,
+      "SAG": 5,
+      "CHA": 5
+    },
+    "saves": "CON +4, SAG +5, CHA +5",
+    "skills": {
+      "intimidation": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid",
+      "foudre",
+      "tonnerre"
+    ],
+    "senses": "Perception passive 15 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Habitué aux fumées",
+        "detail": "Lumière faible, brouillard et fumées non magiques ne désavantagent pas Perception.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Aiguille noire",
+        "detail": "Mêlée ou6/18m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3+1d4",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Clou de sel noir",
+        "detail": "2/j · 6/18m · sur touche JS CON13 ; échec : pas de récupération PV jusqu’au début prochain tour Porte-Nuit.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3+2d6",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Brume de sel noir",
+        "detail": "Recharge5-6 · nuage rayon3m à12m, fortement obscurci ; début tour dedans JS CON13 ou vitesse moitié + pas de réaction jusqu’à fin tour.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 13,
+        "save": "CON",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Se fondre dans la fumée",
+        "detail": "Action bonus : Se cacher si pénombre/ténèbres/zone obscurcie.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Repli dans la brume",
+        "detail": "Quand une attaque mêlée rate dans pénombre/ténèbres/obscurci : déplacement3m sans OA.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Clou de sel noir",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nPORTE-NUIT AU SEL NOIR — FP 3\n\n\nHumanoïde (goliath) de taille M, neutre mauvais\n\n\nClasse d’armure 15 (cuir noirci)\nPoints de vie 60 (8d8 + 24)\nVitesse 9 m\n\n\n                          FOR        DEX       CON            INT      SAG       CHA\n\n                       13 (+1)     17 (+3)   16 (+3)       12 (+1)   14 (+2)   10 (+0)\n\nJets de sauvegarde Dex +5, Con +5\nCompétences Discrétion +7, Perception +4, Survie +4\nRésistances aux dégâts froid, poison\nSens vision dans le noir 18 m, Perception passive 14\nLangues commun, géant\nFP 3 (700 PX)\nBonus de maîtrise +2\n\n\nHabitué aux fumées. La lumière faible, le brouillard et les fumées non magiques ne désavantagent pas\nles tests de Perception du Porte-Nuit.\n\n\nActions\n\n\nAttaques multiples. Le Porte-Nuit effectue deux attaques d’Aiguille noire.\n\n\n\n\n                                                       6\nAiguille noire. Attaque d’arme au corps à corps ou à distance : +5 pour toucher, allonge 1,50 m ou portée\n6/18 m, une cible. Touché : 8 (1d6 + 3 perforants plus 1d4 nécrotiques).\n\n\nClou de sel noir (2/jour). Attaque d’arme à distance : +5 pour toucher, portée 6/18 m, une créature.\nTouché : 13 (1d6 + 3 perforants plus 2d6 nécrotiques). La cible doit réussir un JS de Constitution DD 13.\nEn cas d’échec, elle ne peut regagner de PV jusqu’au début du prochain tour du Porte-Nuit.\n\n\nBrume de sel noir (recharge 5–6). Le Porte-Nuit crée un nuage de 3 m de rayon centré sur un point\nsitué dans un rayon de 12 m. La zone est fortement obscurcie jusqu’au début du prochain tour du\nPorte-Nuit. Toute autre créature qui commence son tour dans le nuage doit réussir un JS de\nConstitution DD 13 ; en cas d’échec, sa vitesse est réduite de moitié et elle ne peut jouer de réaction\njusqu’à la fin de son tour.\n\n\nActions bonus\n\n\nSe fondre dans la fumée. Le Porte-Nuit entreprend l’action Se cacher s’il est dans la pénombre, les\nténèbres ou une zone obscurcie.\n\n\nRéactions\n\n\nRepli dans la brume. Lorsqu’une attaque de corps à corps rate le Porte-Nuit alors qu’il est dans la\npénombre, les ténèbres ou une zone obscurcie, celui-ci peut se déplacer de 3 m sans provoquer\nd’attaque d’opportunité.\n\n\nRôle et mise en scène. C’est le spécialiste que tu sors lorsque tu veux que la rencontre sente la capture\nplanifiée, pas le simple affrontement. Il cherche le soigneur et Nymvorra en priorité.\n\n\nÉquipement et butin. 1d3 Clous de sel noir inutilisés, masque filtrant, fiole de sel noir très dilué. Un\nmasque porte éventuellement le sceau de Nuël Nocram ou un numéro renvoyant à la citerne.\n\n\nAjustement. La Brume est l’élément le plus puissant : retire-la pour un Porte-Nuit affaibli. Pour un élite,\nle Clou passe à 3/jour et ses PV à 72.\n\n\nRéférence officielle. Les repères sont l’Éclaireur et l’Espion officiels pour la mobilité, la Discrétion et les\nrôles d’infiltration, mais les mécanismes de sel noir sont originaux. 11",
+    "id": "maharles-porte-nuit",
+    "name": "Porte-Nuit au sel noir",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "3",
+    "ac": 15,
+    "hp": 60,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 13,
+      "DEX": 17,
+      "CON": 16,
+      "INT": 12,
+      "SAG": 14,
+      "CHA": 10
+    },
+    "saveMods": {
+      "DEX": 5,
+      "CON": 5
+    },
+    "saves": "DEX +5, CON +5",
+    "skills": {
+      "discretion": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid",
+      "poison"
+    ],
+    "senses": "Vision dans le noir18m · Perception passive14 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Maître des entraves",
+        "detail": "Avantage Athlétisme lié à lutte ; jusqu’à2 créatures agrippées par ses chaînes.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Chaîne à crochets",
+        "detail": "Allonge3m ; peut agripper cible G ou inférieure (évasion DD14) à la place d’un déplacement normal.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 6,
+        "damage": "1d6+4",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Massue de dressage",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 6,
+        "damage": "1d8+4",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Serrer les fers",
+        "detail": "Action bonus : cible agrippée JS CON13 ou 2d6 contondants + entravée jusqu’au début prochain tour du Dresseur.",
+        "kind": "save",
+        "economy": "bonus",
+        "dc": 13,
+        "save": "CON",
+        "damage": "2d6",
+        "damageType": "contondants",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Parade de chaîne",
+        "detail": "+2 CA contre attaque mêlée qui devrait toucher, s’il voit l’assaillant.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nDRESSEUR DE CHAÎNES — FP 3\n\n\nHumanoïde (goliath) de taille M, loyal neutre\n\n\nClasse d’armure 16 (cotte renforcée)\nPoints de vie 75 (10d8 + 30)\nVitesse 9 m\n\n\n                           FOR        DEX         CON            INT      SAG       CHA\n\n                        18 (+4)    12 (+1)      16 (+3)       10 (+0)   12 (+1)   13 (+1)\n\nJets de sauvegarde For +6, Con +5\nCompétences Athlétisme +6, Intimidation +3, Perception +3\n\n\n\n\n                                                          7\nRésistances aux dégâts froid\nSens Perception passive 13\nLangues commun, géant\nFP 3 (700 PX)\nBonus de maîtrise +2\n\n\nMaître des entraves. Le Dresseur est avantagé aux tests de Force (Athlétisme) liés à une lutte. Il peut\nmaintenir simultanément jusqu’à deux créatures agrippées par ses chaînes.\n\n\nActions\n\n\nAttaques multiples. Le Dresseur effectue deux attaques de Chaîne à crochets.\n\n\nChaîne à crochets. Attaque d’arme au corps à corps : +6 pour toucher, allonge 3 m, une cible. Touché : 7\n(1d6 + 4) dégâts tranchants. À la place de déplacer la cible normalement, le Dresseur peut tenter de\nl’agripper si elle est de taille G ou inférieure (évasion DD 14).\n\n\nMassue de dressage. Attaque d’arme au corps à corps : +6 pour toucher, allonge 1,50 m. Touché : 8 (1d8 +\n4) dégâts contondants.\n\n\nActions bonus\n\n\nSerrer les fers. Une créature agrippée par le Dresseur doit réussir un JS de Constitution DD 13 ou subir\n7 (2d6) dégâts contondants et être entravée jusqu’au début du prochain tour du Dresseur.\n\n\nRéactions\n\n\nParade de chaîne. Le Dresseur ajoute 2 à sa CA contre une attaque de corps à corps qui devrait le\ntoucher, à condition de voir l’assaillant.\n\n\nRôle et mise en scène. Il est fait pour l’enclos : une Mâchoire amène une victime, le Dresseur la\nverrouille. Deux Dresseurs ensemble peuvent devenir frustrants ; évite de les multiplier sans espace de\nmanœuvre.\n\n\nÉquipement et butin. Chaînes de capture, clés des colliers, marteau de geôlier. Ses clés peuvent ouvrir\nune section précise des enclos sans ouvrir l’ensemble du complexe.\n\n\nAjustement. Pour une rencontre plus souple, une créature entravée par Serrer les fers peut refaire\nimmédiatement le test lorsqu’elle subit des dégâts. Version élite : 90 PV et CA 17.\n\n\nRéférence officielle. Les valeurs défensives se calent volontairement entre le Vétéran FP 3 et le\nChevalier FP 3, tous deux des combattants professionnels à forte CA ; leurs capacités sont remplacées\npar une identité entièrement orientée vers l’entrave. 12\n\n\nFigures majeures et bannis de la Harde",
+    "id": "maharles-dresseur-chaines",
+    "name": "Dresseur de chaînes",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "3",
+    "ac": 16,
+    "hp": 75,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 18,
+      "DEX": 12,
+      "CON": 16,
+      "INT": 10,
+      "SAG": 12,
+      "CHA": 13
+    },
+    "saveMods": {
+      "FOR": 6,
+      "CON": 5
+    },
+    "saves": "FOR +6, CON +5",
+    "skills": {
+      "athletisme": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive13 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Traqueuse infatigable",
+        "detail": "Avantage aux tests pour retrouver une créature vue dans les dernières24h.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Faux-harpon",
+        "detail": "Allonge3m ; 1/tour tire cible G ou inférieure1,50m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "1d8+4",
+        "damageType": "perforants",
+        "target": "enemy"
+      },
+      {
+        "name": "Filet de chasse",
+        "detail": "2/j · cible G ou inférieure à9m · JS DEX14 ou entravée ; action Athlétisme/Acrobaties14 pour finir.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 14,
+        "save": "DEX",
+        "target": "enemy"
+      },
+      {
+        "name": "Marque de capture",
+        "detail": "Action bonus · cible à18m · 1min : première touche à chacun des tours de Svara +1d6 ; avantage pour pister ; une seule cible.",
+        "kind": "text",
+        "economy": "bonus",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Endurance de pierre",
+        "detail": "1/j : réduit dégâts1d12+4.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Pas de la traqueuse",
+        "detail": "Quand cible marquée s’éloigne volontairement : avance moitié vitesse vers elle sans OA.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Filet de chasse",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      },
+      {
+        "name": "Endurance de pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nSVARA BRISE-NEIGE — FP 5\n\n\nHumanoïde (goliath) de taille M, loyal neutre\n\n\n\n\n                                                    8\nClasse d’armure 17\nPoints de vie 93 (11d8 + 44)\nVitesse 10,50 m\n\n\n                           FOR         DEX       CON            INT      SAG       CHA\n\n                        18 (+4)     16 (+3)    18 (+4)       11 (+0)   15 (+2)   13 (+1)\n\nJets de sauvegarde Dex +6, Con +7, Sag +5\nCompétences Athlétisme +7, Discrétion +6, Perception +5, Survie +8\nRésistances aux dégâts froid\nSens Perception passive 15\nLangues commun, géant\nFP 5 (1 800 PX)\nBonus de maîtrise +3\n\n\nTraqueuse infatigable. Svara est avantagée aux tests destinés à retrouver une créature qu’elle a vue au\ncours des dernières 24 heures.\n\n\nActions\n\n\nAttaques multiples. Svara effectue trois attaques de Faux-harpon.\n\n\nFaux-harpon. Attaque d’arme au corps à corps : +7 pour toucher, allonge 3 m, une cible. Touché : 8 (1d8 +\n4) dégâts perforants. Une fois par tour, Svara peut tirer la cible de 1,50 m vers elle si celle-ci est de taille\nG ou inférieure.\n\n\nFilet de chasse (2/jour). Une créature de taille G ou inférieure située à 9 m ou moins doit réussir un JS\nde Dextérité DD 14 ou être entravée. Une action et un test d’Athlétisme ou Acrobaties DD 14 mettent fin\nà l’effet.\n\n\nActions bonus\n\n\nMarque de capture. Svara désigne une créature qu’elle voit dans un rayon de 18 m. Pendant 1 minute,\nla première fois à chacun de ses tours qu’elle touche cette cible, elle lui inflige 4 (1d6) dégâts\nsupplémentaires. Elle est avantagée pour la pister. Une seule créature peut être marquée à la fois.\n\n\nRéactions\n\n\nEndurance de pierre (1/jour). Svara réduit les dégâts reçus de 1d12 + 4.\n\n\nPas de la traqueuse. Lorsque la créature marquée s’éloigne volontairement de Svara, celle-ci peut\navancer de la moitié de sa vitesse vers elle sans provoquer d’attaque d’opportunité.\n\n\nRôle et mise en scène. Svara n’est pas une fanatique. Elle observe les PJ, apprend leurs habitudes et\ncesse un combat devenu inutile. Elle fonctionne particulièrement bien comme antagoniste récurrente.\n\n\nÉquipement et butin. Faux-harpon finement ouvragé, deux filets, carnet de captures. Son carnet peut\ncontenir les noms de Roland, Nymvorra, des porteurs d’étincelles et d’un prisonnier mystérieusement\nrayé de la liste par ordre impérial.\n\n\n\n\n                                                         9\nAjustement. Pour des PJ niveau 5, retirez la troisième attaque. Pour des PJ niveau 8, passez à 110 PV et\nautorisez deux utilisations de l’Endurance de pierre.\n\n\nRéférence officielle. Elle combine le rôle de traque de l’Éclaireur officiel avec la présence martiale d’un\nGladiateur, mais sans reprendre l’énorme spécialisation en dégâts de ce dernier. 13",
+    "id": "maharles-svara",
+    "name": "Svara Brise-Neige",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "5",
+    "ac": 17,
+    "hp": 93,
+    "initiative": 3,
+    "speed": "10,50 m",
+    "attacksPerAction": 3,
+    "abilities": {
+      "FOR": 18,
+      "DEX": 16,
+      "CON": 18,
+      "INT": 11,
+      "SAG": 15,
+      "CHA": 13
+    },
+    "saveMods": {
+      "DEX": 6,
+      "CON": 7,
+      "SAG": 5
+    },
+    "saves": "DEX +6, CON +7, SAG +5",
+    "skills": {
+      "athletisme": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 8,
+        "status": "Expertise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive15 · commun, géant",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Autorité du vieux chef",
+        "detail": "Alliés Harde à9m qui l’entendent : avantage JS charmé/effrayé.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Indomptable",
+        "detail": "1/j : relance un JS raté.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Marteau des Anciens",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "2d8+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Pierre de guerre",
+        "detail": "Portée12/48m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 8,
+        "damage": "2d10+5",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Ordre de la montagne",
+        "detail": "Recharge5-6 · jusqu’à2 alliés à18m : chacun réaction pour se déplacer moitié vitesse ; l’un peut attaquer immédiatement.",
+        "kind": "recharge",
+        "economy": "action",
+        "recharge": "5-6",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Parade du patriarche",
+        "detail": "+3 CA contre attaque mêlée censée toucher.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Endurance de pierre",
+        "detail": "2/j : réduit dégâts1d12+4.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Indomptable",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Endurance de pierre",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nTORGAR, VIEUX CHEF DE LA HARDE — FP 7\n\n\nHumanoïde (goliath) de taille M, loyal neutre\n\n\nClasse d’armure 18 (armure cérémonielle)\nPoints de vie 136 (16d8 + 64)\nVitesse 9 m\n\n\n                           FOR        DEX         CON             INT      SAG       CHA\n\n                        21 (+5)    10 (+0)      18 (+4)        13 (+1)   16 (+3)   17 (+3)\n\nJets de sauvegarde For +8, Con +7, Sag +6, Cha +6\nCompétences Athlétisme +8, Intimidation +6, Intuition +6, Perception +6\nRésistances aux dégâts froid\nSens Perception passive 16\nLangues commun, géant, nain\nFP 7 (2 900 PX)\nBonus de maîtrise +3\n\n\nAutorité du vieux chef. Les alliés de la Harde situés dans un rayon de 9 m et capables d’entendre\nTorgar sont avantagés aux JS contre les états charmé et effrayé.\n\n\nIndomptable (1/jour). Torgar peut relancer un JS raté.\n\n\nActions\n\n\nAttaques multiples. Torgar effectue trois attaques de Marteau des Anciens.\n\n\nMarteau des Anciens. Attaque d’arme au corps à corps : +8 pour toucher, allonge 1,50 m. Touché : 14\n(2d8 + 5) dégâts contondants.\n\n\nPierre de guerre. Attaque d’arme à distance : +8 pour toucher, portée 12/48 m. Touché : 16 (2d10 + 5)\ndégâts contondants.\n\n\nOrdre de la montagne (recharge 5–6). Torgar choisit jusqu’à deux alliés capables de l’entendre dans un\nrayon de 18 m. Chacun peut utiliser sa réaction pour se déplacer de la moitié de sa vitesse. L’un des\ndeux peut ensuite effectuer immédiatement une attaque d’arme.\n\n\nRéactions\n\n\nParade du patriarche. Torgar ajoute 3 à sa CA contre une attaque de corps à corps censée le toucher.\n\n\nEndurance de pierre (2/jour). À la place de Parade, Torgar réduit les dégâts reçus de 1d12 + 4.\n\n\n\n                                                          10\nRôle et mise en scène. Torgar doit donner l’impression d’un homme qui a déjà été ce que Zanror\nprétend devenir. Il n’est pas lent parce qu’il est faible ; il est lent parce qu’il n’a plus rien à prouver.\n\n\nÉquipement et butin. Marteau ancestral, torque de chef, sceau tribal ancien. Son torque peut\nconstituer une preuve que le rite de Zanror déforme une tradition beaucoup plus ancienne.\n\n\nAjustement. Pour qu’il ne puisse pas dominer une scène politique, retirez Ordre de la montagne hors\ncombat. Si Torgar est déjà blessé avant le combat, commencez-le à 85 PV.\n\n\nRéférence officielle. Le Chevalier officiel illustre le rôle de commandant martial via une aptitude de\ncommandement et une parade, tandis que le Gladiateur sert de comparaison pour un combattant\nd’élite ; Torgar augmente ensuite les PV et la puissance brute pour atteindre son rôle de chef FP 7. 14",
+    "id": "maharles-torgar",
+    "name": "Torgar, vieux chef de la Harde",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "7",
+    "ac": 18,
+    "hp": 136,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 3,
+    "abilities": {
+      "FOR": 21,
+      "DEX": 10,
+      "CON": 18,
+      "INT": 13,
+      "SAG": 16,
+      "CHA": 17
+    },
+    "saveMods": {
+      "FOR": 8,
+      "CON": 7,
+      "SAG": 6,
+      "CHA": 6
+    },
+    "saves": "FOR +8, CON +7, SAG +6, CHA +6",
+    "skills": {
+      "athletisme": {
+        "mod": 8,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 6,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive16 · commun, géant, nain",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Aura de calme",
+        "detail": "Nezhar et alliés choisis à3m : avantage JS charmé/effrayé.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bâton de la trêve",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "1d8+4+1d6",
+        "damageType": "contondants / tonnerre",
+        "target": "enemy"
+      },
+      {
+        "name": "Parole qui arrête",
+        "detail": "Recharge5-6 · jusqu’à3 créatures à9m qui entendent : JS SAG14 ; échec vitesse0 + pas réaction jusqu’au début prochain tour Nezhar.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 14,
+        "save": "SAG",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Souffle de trêve",
+        "detail": "Action bonus 2/j : autre créature à9m récupère2d8+3 PV.",
+        "kind": "heal",
+        "economy": "bonus",
+        "damage": "2d8+3",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Prendre le coup",
+        "detail": "Allié à1,50m touché : Nezhar devient cible puis réduit dégâts1d10+3.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Endurance de pierre",
+        "detail": "1/j : réduit dégâts1d12+3.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Souffle de trêve",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      },
+      {
+        "name": "Endurance de pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nNEZHAR BRISE-CALME — FP 5\n\n\nHumanoïde (goliath) de taille M, neutre bon\n\n\nClasse d’armure 16\nPoints de vie 90 (12d8 + 36)\nVitesse 9 m\n\n\n                          FOR        DEX        CON             INT      SAG       CHA\n\n                       18 (+4)    12 (+1)     16 (+3)        12 (+1)   17 (+3)   15 (+2)\n\nJets de sauvegarde For +7, Sag +6, Cha +5\nCompétences Athlétisme +7, Intuition +6, Persuasion +5, Religion +4\nRésistances aux dégâts froid\nSens Perception passive 13\nLangues commun, géant\nFP 5 (1 800 PX)\nBonus de maîtrise +3\n\n\nAura de calme. Nezhar et les alliés de son choix situés dans un rayon de 3 m sont avantagés aux JS\ncontre les états charmé et effrayé.\n\n\nActions\n\n\nAttaques multiples. Nezhar effectue deux attaques de Bâton de la trêve.\n\n\nBâton de la trêve. Attaque d’arme au corps à corps : +7 pour toucher, allonge 1,50 m. Touché : 12 (1d8 + 4\ncontondants plus 1d6 tonnerre).\n\n\nParole qui arrête (recharge 5–6). Jusqu’à trois créatures que Nezhar voit dans un rayon de 9 m et qui\npeuvent l’entendre doivent réussir un JS de Sagesse DD 14. En cas d’échec, leur vitesse devient 0 et elles\nne peuvent jouer de réaction jusqu’au début du prochain tour de Nezhar.\n\n\nActions bonus\n\n\nSouffle de trêve (2/jour). Une créature autre que Nezhar située à 9 m ou moins récupère 12 (2d8 + 3)\nPV.\n\n\nRéactions\n\n\nPrendre le coup. Lorsqu’un allié situé à 1,50 m de Nezhar est touché par une attaque, Nezhar devient la\ncible de l’attaque à sa place puis réduit les dégâts subis de 1d10 + 3.\n\n\nEndurance de pierre (1/jour). Nezhar réduit autrement les dégâts qu’il subit de 1d12 + 3.\n\n\n\n\n                                                        13\nRôle et mise en scène. Nezhar est l’antithèse de Zanror : il est physiquement capable de violence\nmais refuse de confondre puissance et autorité. Son statblock est donc meilleur pour garder\nquelqu’un vivant que pour tuer vite.\n\n\nÉquipement et butin. Bâton rituel, ancien symbole de la Harde, corde de bannissement. S’il fait\nconfiance aux PJ, il peut leur remettre son symbole comme preuve qu’ils agissent sous la protection\nd’un ancien du clan.\n\n\nAjustement. Comme allié, ne le fais pas résoudre le combat à la place des PJ : utilise en priorité Souffle\nde trêve et Prendre le coup. S’il doit devenir ennemi, ses 90 PV et son contrôle suffisent au FP 5.\n\n\nRéférence officielle. Le Chevalier sert ici de référence de combattant protecteur avec commandement\net parade, tandis que la robustesse physique vient du goliath 2014. 16\n\n\nCrevards et Dépouillés",
+    "id": "maharles-nezhar",
+    "category": "npc",
+    "name": "Nezhar Brise-Calme",
+    "type": "Humanoïde (goliath)",
+    "size": "M",
+    "cr": "5",
+    "ac": 16,
+    "hp": 90,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 18,
+      "DEX": 12,
+      "CON": 16,
+      "INT": 12,
+      "SAG": 17,
+      "CHA": 15
+    },
+    "saveMods": {
+      "FOR": 7,
+      "SAG": 6,
+      "CHA": 5
+    },
+    "saves": "FOR +7, SAG +6, CHA +5",
+    "skills": {
+      "athletisme": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive13 · commun, géant",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Faim aveugle",
+        "detail": "Avantage aux attaques mêlée contre cible à ≤ moitié PV max.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Aversion à la lumière",
+        "detail": "Lumière vive : désavantage Perception basée sur vue.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Griffes",
+        "detail": "JS CON11 ou pas de réaction jusqu’au début prochain tour.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Morsure",
+        "detail": "Si cible agrippée/entravée/neutralisée : récupère PV = dégâts nécrotiques infligés.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3+1d6",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Ruée affamée",
+        "detail": "Action bonus : demi-vitesse vers créature visible à ≤ moitié PV.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nCREVARD — FP 1\n\n\nMort-vivant de taille M, sans alignement\n\n\nClasse d’armure 13\nPoints de vie 30 (4d8 + 12)\nVitesse 9 m, escalade 6 m\n\n\n                              FOR      DEX      CON        INT      SAG      CHA\n\n                         14 (+2)    16 (+3)   16 (+3)    4 (−3)   10 (+0)   6 (−2)\n\nCompétences Discrétion +5, Perception +2\nRésistances aux dégâts nécrotiques\nImmunités aux dégâts poison\nImmunités aux états charmé, empoisonné, épuisement\nSens vision dans le noir 18 m, Perception passive 12\nLangues comprend les langues qu’il connaissait de son vivant mais ne peut pas parler\nFP 1 (200 PX)\nBonus de maîtrise +2\n\n\nFaim aveugle. Le Crevard est avantagé aux attaques de corps à corps contre une créature qui n’a pas\nplus de la moitié de ses PV maximum.\n\n\nAversion à la lumière. Sous une lumière vive, le Crevard est désavantagé aux tests de Sagesse\n(Perception) reposant sur la vue.\n\n\nActions\n\n\nGriffes. Attaque d’arme au corps à corps : +5 pour toucher, allonge 1,50 m. Touché : 6 (1d6 + 3) dégâts\ntranchants. La cible doit réussir un JS de Constitution DD 11 ou ne peut jouer de réaction jusqu’au début\nde son prochain tour.\n\n\n\n\n                                                    14\nMorsure. Attaque d’arme au corps à corps : +5 pour toucher, allonge 1,50 m. Touché : 10 (1d6 + 3\nperforants plus 1d6 nécrotiques). Si la cible est agrippée, entravée ou neutralisée, le Crevard récupère\nun nombre de PV égal aux dégâts nécrotiques infligés.\n\n\nActions bonus\n\n\nRuée affamée. Le Crevard se déplace d’un maximum de la moitié de sa vitesse vers une créature qu’il\nvoit et qui n’a pas plus de la moitié de ses PV.\n\n\nRôle et mise en scène. Le citoyen est toujours vaguement reconnaissable : vêtements civils, alliance,\ninsigne professionnel, cheveux encore coiffés. Ce qui a disparu est l’individu derrière les yeux. Il\nn’élabore pas de tactique ; il sent le sang, bondit et mange.\n\n\nButin et indices. Aucun trésor volontaire. Il peut porter une clé de maison, un médaillon familial,\nquelques pièces ou une marque récente des Dépouillés. C’est précisément ce butin banal qui doit\nrappeler qu’il s’agissait d’un habitant de Maharles.\n\n\nAjustement. Pour en utiliser 6 à 10 à la fois, baisse les PV à 18 et supprime la résistance nécrotique.\nPour des Crevards plus terrifiants sans changer de FP, conserve les 30 PV mais ne mets jamais plus de\nquatre individus simultanément.\n\n\nRéférence officielle. La Goule officielle française est FP 1, possède vision dans le noir et plusieurs\nimmunités classiques de mort-vivant, et ses griffes peuvent paralyser ; j’ai volontairement remplacé la\nparalysie franche par une gêne beaucoup plus légère et ajouté le comportement vampirique de\nmorsure afin de mieux correspondre à tes Crevards. 17",
+    "id": "maharles-crevard",
+    "name": "Crevard",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "1",
+    "ac": 13,
+    "hp": 30,
+    "initiative": 3,
+    "speed": "9 m · escalade 6 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 14,
+      "DEX": 16,
+      "CON": 16,
+      "INT": 4,
+      "SAG": 10,
+      "CHA": 6
+    },
+    "skills": {
+      "discretion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "nécrotiques"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "charmé",
+      "empoisonné",
+      "épuisement"
+    ],
+    "senses": "Vision dans le noir18m · Perception passive12 · comprend anciennes langues, ne parle pas",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Faim aveugle",
+        "detail": "Avantage mêlée contre créature à moitié PV ou moins.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Grimpeur monstrueux",
+        "detail": "Escalade surfaces difficiles sans test.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Griffes",
+        "detail": "Peut agripper G ou inférieure (évasion DD14) à la place des dégâts.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 6,
+        "damage": "1d6+4",
+        "damageType": "tranchants",
+        "target": "enemy"
+      },
+      {
+        "name": "Morsure",
+        "detail": "Éligible en remplacement d’une attaque si cible agrippée/entravée/à terre/neutralisée ; soigne = dégâts nécrotiques.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 6,
+        "damage": "1d8+4+1d6",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Réflexe de prédateur",
+        "detail": "Quand créature à6m tombe à moitié PV ou moins : déplacement3m vers elle sans OA.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nCREVARD SUPÉRIEUR — FP 3\n\n\nMort-vivant de taille M, sans alignement\n\n\nClasse d’armure 14\nPoints de vie 68 (8d8 + 32)\nVitesse 12 m, escalade 9 m\n\n\n                            FOR        DEX      CON        INT      SAG      CHA\n\n                         17 (+3)    18 (+4)   18 (+4)    6 (−2)   12 (+1)   8 (−1)\n\nJets de sauvegarde Dex +6, Con +6\nCompétences Discrétion +6, Perception +3\nRésistances aux dégâts nécrotiques\nImmunités aux dégâts poison\nImmunités aux états charmé, empoisonné, épuisement\nSens vision dans le noir 24 m, Perception passive 13\nLangues comprend ses anciennes langues mais ne parle pas\nFP 3 (700 PX)\nBonus de maîtrise +2\n\n\nFaim aveugle. Le Crevard supérieur est avantagé aux attaques de corps à corps contre les créatures à\nla moitié de leurs PV ou moins.\n\n\n\n\n                                                    15\nGrimpeur monstrueux. Il peut escalader les surfaces difficiles sans test de caractéristique.\n\n\nActions\n\n\nAttaques multiples. Le Crevard supérieur effectue trois attaques de Griffes. Il peut remplacer une\nattaque par une Morsure si la cible de cette Morsure est agrippée, entravée, à terre ou neutralisée.\n\n\nGriffes. Attaque d’arme au corps à corps : +6 pour toucher. Touché : 7 (1d6 + 4) dégâts tranchants. À la\nplace d’infliger les dégâts, le Crevard peut agripper une créature de taille G ou inférieure (évasion DD\n14).\n\n\nMorsure. Attaque d’arme au corps à corps : +6 pour toucher. Touché : 12 (1d8 + 4 perforants plus 1d6\nnécrotiques). Le Crevard supérieur récupère un nombre de PV égal aux dégâts nécrotiques infligés.\n\n\nRéactions\n\n\nRéflexe de prédateur. Lorsqu’une créature située à 6 m ou moins tombe à la moitié de ses PV\nmaximum ou moins, le Crevard supérieur peut se déplacer de 3 m vers elle sans provoquer d’attaque\nd’opportunité.\n\n\nRôle et mise en scène. Celui-ci est plus grand, plus longiligne et clairement vampirique : mâchoire\ndistendue, doigts exagérément longs, peau presque blanche, déplacements trop rapides. C’est le type\nde Crevard que tu peux utiliser comme « monstre de ruelle » individuel.\n\n\nButin et indices. Morceau de chaîne d’enclos, aiguille des Dépouillés plantée sous la peau, reste d’un\nuniforme de garde. Un supérieur peut être un ancien combattant capturé puis transformé.\n\n\nAjustement. Version affamée : 45 PV. Version alpha : 82 PV et la Morsure inflige 2d6 nécrotiques au lieu\nde 1d6, ce qui la rapproche d’un FP 4.\n\n\nRéférence officielle. La Blême officielle est FP 2, renforce le thème de la goule avec davantage de\nrobustesse, résistance nécrotique et capacités supplémentaires ; le Crevard supérieur abandonne la\npuanteur et la paralysie pour gagner vitesse, lutte et alimentation vampirique. 17",
+    "id": "maharles-crevard-superieur",
+    "name": "Crevard supérieur",
+    "type": "Mort-vivant",
+    "size": "M",
+    "cr": "3",
+    "ac": 14,
+    "hp": 68,
+    "initiative": 4,
+    "speed": "12 m · escalade 9 m",
+    "attacksPerAction": 3,
+    "abilities": {
+      "FOR": 17,
+      "DEX": 18,
+      "CON": 18,
+      "INT": 6,
+      "SAG": 12,
+      "CHA": 8
+    },
+    "saveMods": {
+      "DEX": 6,
+      "CON": 6
+    },
+    "saves": "DEX +6, CON +6",
+    "skills": {
+      "discretion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "nécrotiques"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "charmé",
+      "empoisonné",
+      "épuisement"
+    ],
+    "senses": "Vision dans le noir24m · Perception passive13 · comprend anciennes langues, ne parle pas",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Dévotion au secret",
+        "detail": "Avantage JS charmé/effrayé.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Collecteur d’étincelles",
+        "detail": "Quand créature vivante autre qu’un Moissonneur tombe à0 PV à6m : gagne7 PV temp.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Lame d’oubli",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3+2d6",
+        "damageType": "perforants / nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Moisson de mémoire",
+        "detail": "Recharge5-6 · cible18m JS SAG14 ; échec4d8 psychiques + −1d4 au prochain attaque/test/JS avant fin prochain tour ; réussite moitié sans pénalité.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 14,
+        "save": "SAG",
+        "damage": "4d8",
+        "damageType": "psychiques",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Marque de dépouillement",
+        "detail": "Action bonus · cible9m jusqu’au début prochain tour : prochaine attaque de Crevard touchée +1d6 nécrotiques.",
+        "kind": "text",
+        "economy": "bonus",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Négation du nom",
+        "detail": "2/j : quand créature à18m devrait regagner PV, réduit soins de2d8+3, minimum0.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Négation du nom",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nMOISSONNEUR DES DÉPOUILLÉS — FP 4\n\n\nHumanoïde de taille M, neutre mauvais\n\n\nClasse d’armure 15\nPoints de vie 71 (11d8 + 22)\nVitesse 9 m\n\n\n                          FOR        DEX       CON            INT      SAG       CHA\n\n                       10 (+0)    16 (+3)   14 (+2)        16 (+3)   14 (+2)   15 (+2)\n\nJets de sauvegarde Dex +5, Int +5, Sag +4\nCompétences Arcanes +5, Discrétion +5, Religion +5, Tromperie +4\nRésistances aux dégâts nécrotiques\nSens Perception passive 12\n\n\n\n\n                                                      16\nLangues commun plus deux langues au choix\nFP 4 (1 100 PX)\nBonus de maîtrise +2\n\n\nDévotion au secret. Le Moissonneur est avantagé aux JS contre les états charmé et effrayé.\n\n\nCollecteur d’étincelles. Lorsqu’une créature vivante autre qu’un Moissonneur tombe à 0 PV dans un\nrayon de 6 m, le Moissonneur gagne 7 PV temporaires.\n\n\nActions\n\n\nAttaques multiples. Le Moissonneur effectue deux attaques de Lame d’oubli.\n\n\nLame d’oubli. Attaque d’arme au corps à corps : +5 pour toucher. Touché : 13 (1d6 + 3 perforants plus 2d6\nnécrotiques).\n\n\nMoisson de mémoire (recharge 5–6). Une créature que le Moissonneur voit dans un rayon de 18 m\neffectue un JS de Sagesse DD 14. En cas d’échec, elle subit 18 (4d8) dégâts psychiques et doit soustraire\n1d4 au prochain jet d’attaque, test de caractéristique ou JS qu’elle effectue avant la fin de son prochain\ntour. En cas de réussite, elle subit la moitié des dégâts sans pénalité.\n\n\nLors d’un échec, le Moissonneur perçoit également un souvenir bref chargé d’émotion. Cet effet n’efface\npas le souvenir.\n\n\nActions bonus\n\n\nMarque de dépouillement. Le Moissonneur marque une créature située à 9 m ou moins jusqu’au\ndébut de son prochain tour. La prochaine attaque d’un Crevard qui touche cette cible inflige 3 (1d6)\ndégâts nécrotiques supplémentaires.\n\n\nRéactions\n\n\nNégation du nom (2/jour). Lorsqu’une créature située dans un rayon de 18 m devrait regagner des PV,\nle Moissonneur réduit les PV récupérés de 12 (2d8 + 3), jusqu’à un minimum de 0.\n\n\nRôle et mise en scène. Un Moissonneur ne veut pas nécessairement tuer vite. Il veut que les victimes\nrestent conscientes assez longtemps pour révéler quelque chose. Au combat, il marque une cible\npuis se cache derrière les Crevards.\n\n\nÉquipement et butin. Lame d’oubli non magique hors de ses mains, masque incomplet, 1d3 aiguilles\nde mémoire, fragment écrit d’un secret volé. Excellent porteur d’une Page du phylactère-nexus.\n\n\nAjustement. Négation du nom est la première capacité à retirer si le groupe manque de soins. Pour\nune version élite, 85 PV et DD 15 pour Moisson de mémoire.\n\n\nRéférence officielle. Le Fanatique de secte officiel FP 2 fournit la structure d’un cultiste spécialisé et le\nMage FP 6 celle d’un lanceur de sorts plus dangereux ; le Moissonneur est volontairement placé entre\nles deux, avec des pouvoirs fixes plutôt qu’une longue liste de sorts. 18\n\n\n\n\n                                                      17",
+    "id": "maharles-moissonneur",
+    "name": "Moissonneur des Dépouillés",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "4",
+    "ac": 15,
+    "hp": 71,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 16,
+      "CON": 14,
+      "INT": 16,
+      "SAG": 14,
+      "CHA": 15
+    },
+    "saveMods": {
+      "DEX": 5,
+      "INT": 5,
+      "SAG": 4
+    },
+    "saves": "DEX +5, INT +5, SAG +4",
+    "skills": {
+      "arcanes": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "nécrotiques"
+    ],
+    "senses": "Perception passive12 · commun +2 langues",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Résistance à la magie",
+        "detail": "Avantage JS contre sorts et autres effets magiques.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Maîtresse de la faim",
+        "detail": "Crevards ne la considèrent jamais hostile tant qu’elle est consciente sauf contrainte magique.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Aiguille d’os",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "2d8+4",
+        "damageType": "nécrotiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Vol de souvenir",
+        "detail": "Recharge5-6 · cible18m JS SAG15 ; échec6d8 psychiques, pas de réaction, désavantage JS INT/SAG jusqu’à fin prochain tour ; réussite moitié. Échec de5+ révèle aussi souvenir/secret pertinent sans l’effacer.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 15,
+        "save": "SAG",
+        "damage": "6d8",
+        "damageType": "psychiques",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Déchirure des noms",
+        "detail": "1/j · cône6m · JS SAG15 · échec4d6 psychiques + effrayé jusqu’à fin prochain tour ; réussite moitié sans état.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 15,
+        "save": "SAG",
+        "damage": "4d6",
+        "damageType": "psychiques",
+        "target": "enemy"
+      },
+      {
+        "name": "Ordonner la faim",
+        "detail": "Action bonus : un Crevard à18m se déplace moitié vitesse + attaque Griffes.",
+        "kind": "text",
+        "economy": "bonus",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Secret douloureux",
+        "detail": "3/j : après jet attaque/test/JS d’une créature à18m mais avant résultat, soustrait1d6.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Déchirure des noms",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Secret douloureux",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nSŒUR VELLANE AU MASQUE D’OS — FP 7\n\n\nHumanoïde de taille M, neutre mauvais\n\n\nClasse d’armure 16\nPoints de vie 110 (13d8 + 52)\nVitesse 9 m\n\n\n                          FOR       DEX        CON         INT       SAG       CHA\n\n                        9 (−1)    16 (+3)   18 (+4)    17 (+3)    16 (+3)    18 (+4)\n\n\nJets de sauvegarde Con +7, Sag +6, Cha +7\nCompétences Arcanes +6, Intuition +6, Religion +6, Tromperie +7\nRésistances aux dégâts nécrotiques, psychiques\nImmunités aux états effrayé\nSens vision dans le noir 18 m, Perception passive 13\nLangues commun plus trois langues, télépathie 18 m avec une créature dont elle connaît au moins un\nsecret important\nFP 7 (2 900 PX)\nBonus de maîtrise +3\n\n\nRésistance à la magie. Vellane est avantagée aux JS contre les sorts et autres effets magiques.\n\n\nMaîtresse de la faim. Les Crevards ne considèrent jamais Vellane comme une cible hostile tant qu’elle\nest consciente, sauf si un effet magique les y contraint.\n\n\nActions\n\n\nAttaques multiples. Vellane effectue deux attaques d’Aiguille d’os.\n\n\nAiguille d’os. Attaque de sort à distance : +7 pour toucher, portée 18 m. Touché : 13 (2d8 + 4) dégâts\nnécrotiques.\n\n\nVol de souvenir (recharge 5–6). Une créature que Vellane voit dans un rayon de 18 m doit effectuer un\nJS de Sagesse DD 15. En cas d’échec, elle subit 27 (6d8) dégâts psychiques, ne peut jouer de réaction et\nest désavantagée à ses JS d’Intelligence et de Sagesse jusqu’à la fin de son prochain tour. En cas de\nréussite, elle subit la moitié des dégâts sans autre effet.\n\n\nSi le jet échoue de 5 ou plus, Vellane découvre également un souvenir important ou un secret lié à la\nmotivation actuelle de la cible, au choix du MJ. Elle ne l’efface pas.\n\n\nDéchirure des noms (1/jour). Vellane déploie une onde mentale dans un cône de 6 m. Chaque créature\ndans la zone effectue un JS de Sagesse DD 15, subissant 14 (4d6) dégâts psychiques et devenant\neffrayée de Vellane jusqu’à la fin de son prochain tour en cas d’échec. Réussite : moitié des dégâts,\naucun état.\n\n\nActions bonus\n\n\n\n\n                                                      18\nOrdonner la faim. Un Crevard que Vellane voit dans un rayon de 18 m peut immédiatement se\ndéplacer de la moitié de sa vitesse et effectuer une attaque de Griffes.\n\n\nRéactions\n\n\nSecret douloureux (3/jour). Lorsqu’une créature que Vellane voit dans un rayon de 18 m effectue un jet\nd’attaque, un test ou un JS, Vellane peut, après le jet mais avant d’en connaître le résultat, soustraire 1d6\nau résultat.\n\n\nRôle et mise en scène. Vellane ne devrait presque jamais commencer une rencontre en première ligne.\nElle parle pendant que les Crevards se déplacent autour des PJ. Elle est plus terrifiante lorsqu’elle\nprononce un fait qu’elle ne devrait pas pouvoir connaître.\n\n\nElle n’a pas d’actions légendaires : avec deux à quatre Crevards, son économie d’actions est déjà\nexcellente.\n\n\nÉquipement et butin. Masque d’os, aiguilles de mémoire, page du nexus, sceau des Dépouillés. Son\nmasque peut contenir un compartiment renfermant un souvenir cristallisé appartenant à un PNJ\nconnu des PJ.\n\n\nAjustement. Contre quatre PJ niveau 5, utilise 85 PV, retire Résistance à la magie et limite Secret\ndouloureux à 1/jour. Contre des PJ niveau 8, le profil complet fonctionne bien avec deux Crevards\nordinaires ; quatre Crevards ou davantage rendent rapidement la rencontre beaucoup plus sévère à\ncause de l’action bonus de Vellane.\n\n\nRéférence officielle. Le Mage officiel est FP 6 avec une forte puissance magique mais seulement 40 PV\ndans le profil 2014 ; Vellane échange la polyvalence d’une longue liste de sorts contre davantage de\nsurvie, des pouvoirs psychiques fixes et une synergie avec ses serviteurs. 19 Le Fanatique de secte\nfournit le second repère thématique. 20\n\n\nAlliés, Zomik et forces impériales",
+    "id": "maharles-vellane",
+    "name": "Sœur Vellane au Masque d’Os",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "7",
+    "ac": 16,
+    "hp": 110,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 9,
+      "DEX": 16,
+      "CON": 18,
+      "INT": 17,
+      "SAG": 16,
+      "CHA": 18
+    },
+    "saveMods": {
+      "CON": 7,
+      "SAG": 6,
+      "CHA": 7
+    },
+    "saves": "CON +7, SAG +6, CHA +7",
+    "skills": {
+      "arcanes": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 7,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "nécrotiques",
+      "psychiques"
+    ],
+    "conditionImmunities": [
+      "effrayé"
+    ],
+    "senses": "Vision dans le noir18m · Perception passive13 · commun +3 langues · télépathie18m avec créature dont elle connaît un secret important",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Aura de résolution",
+        "detail": "Roland et alliés choisis à3m : +2 JS contre effrayé.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Flamme intacte",
+        "detail": "1/tour quand touche avec épée : +1d8 radiant inclus dans ligne d’attaque.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Épée de la Flamme fissurée",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "1d8+4+1d8",
+        "damageType": "tranchants / radiants",
+        "target": "enemy"
+      },
+      {
+        "name": "Châtiment de la dernière lumière",
+        "detail": "3/j sur touche : +2d8 radiants.",
+        "kind": "text",
+        "economy": "action"
+      },
+      {
+        "name": "Imposition des mains",
+        "detail": "3/j : rend15 PV ou met fin à poison/maladie sans soins.",
+        "kind": "heal",
+        "economy": "action",
+        "damage": "15",
+        "target": "ally"
+      },
+      {
+        "name": "Relèvement",
+        "detail": "Action bonus 1/j : allié à0 PV à9m récupère1 PV.",
+        "kind": "heal",
+        "economy": "bonus",
+        "damage": "1",
+        "target": "ally"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Égide fissurée",
+        "detail": "Allié à1,50m touché : +3 CA contre l’attaque, pouvant la faire échouer.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Châtiment",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Imposition des mains",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Relèvement",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Le statblock donne PV max85 mais recommande de commencer la session à48/85 PV. ENCOUNTER conserve 85 comme maximum ; ajuste l’instance à48 PV au lancement de la scène.\nTranscription du statblock Maharles :\nROLAND, PALADIN BRISÉ — FP 5\n\n\nHumanoïde (humain) de taille M, loyal bon\n\n\nClasse d’armure 18 (armure lourde et bouclier)\nPoints de vie maximum 85 (10d8 + 40)\nPoints de vie conseillés au début de la session 48\nVitesse 7,50 m\n\n\n                          FOR        DEX       CON             INT      SAG       CHA\n\n                        18 (+4)   10 (+0)    18 (+4)        11 (+0)   14 (+2)   17 (+3)\n\nJets de sauvegarde Con +7, Sag +5, Cha +6\nCompétences Athlétisme +7, Intuition +5, Persuasion +6, Religion +3\nSens Perception passive 12\nLangues commun plus deux langues\n\n\n\n\n                                                       19\nFP 5 (1 800 PX)\nBonus de maîtrise +3\n\n\nAura de résolution. Roland et les alliés de son choix situés dans un rayon de 3 m reçoivent un bonus de\n+2 aux JS contre l’état effrayé.\n\n\nFlamme intacte. Une fois par tour lorsque Roland touche avec son épée, l’attaque inflige 4 (1d8) dégâts\nradiants supplémentaires, inclus ci-dessous.\n\n\nActions\n\n\nAttaques multiples. Roland effectue deux attaques d’Épée de la Flamme fissurée.\n\n\nÉpée de la Flamme fissurée. Attaque d’arme au corps à corps : +7 pour toucher. Touché : 13 (1d8 + 4\ntranchants plus 1d8 radiants).\n\n\nChâtiment de la dernière lumière (3/jour). Lorsqu’il touche avec son épée, Roland inflige 9 (2d8)\ndégâts radiants supplémentaires.\n\n\nImposition des mains (3/jour). Roland touche une créature et lui rend 15 PV. À la place, il peut mettre\nfin à un poison ou une maladie affectant la cible, sans lui rendre de PV.\n\n\nActions bonus\n\n\nRelèvement (1/jour). Une créature alliée à 0 PV que Roland voit dans un rayon de 9 m récupère 1 PV.\n\n\nRéactions\n\n\nÉgide fissurée. Lorsqu’un allié situé à 1,50 m est touché par une attaque, Roland lui confère +3 CA\ncontre cette attaque, ce qui peut la faire échouer.\n\n\nRôle et mise en scène. Le chiffre important est 48/85 PV. Son bloc indique ce qu’il pourrait être, mais\nson état actuel signifie qu’il commence presque à moitié détruit. Il se bat comme quelqu’un qui sait\nexactement combien de coups son corps peut encore encaisser.\n\n\nÉquipement et butin. Épée, bouclier marqué de la Flamme d’Argent, chapelet fissuré, ampoule d’eau\nbénite. Son chapelet n’est pas un trésor à piller ; il peut devenir un cadeau si Roland estime qu’un PJ\nreprend le combat qu’il n’est plus capable de mener.\n\n\nAjustement. Pour qu’il reste un PNJ d’appui, limite ses Châtiments à un seul durant la scène. Pour le\njouer à son apogée lors d’un flashback, commence à 85 PV et rends-lui ses trois utilisations.\n\n\nRéférence officielle. Le Chevalier FP 3 est un excellent châssis de défenseur lourd avec\ncommandement et parade ; Roland augmente la puissance vers FP 5 et remplace ces outils par soins et\ndégâts radiants. 21",
+    "id": "maharles-roland",
+    "category": "npc",
+    "name": "Roland, paladin brisé",
+    "type": "Humanoïde (humain)",
+    "size": "M",
+    "cr": "5",
+    "ac": 18,
+    "hp": 85,
+    "initiative": 0,
+    "speed": "7,50 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 18,
+      "DEX": 10,
+      "CON": 18,
+      "INT": 11,
+      "SAG": 14,
+      "CHA": 17
+    },
+    "saveMods": {
+      "CON": 7,
+      "SAG": 5,
+      "CHA": 6
+    },
+    "saves": "CON +7, SAG +5, CHA +6",
+    "skills": {
+      "athletisme": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive12 · commun +2 langues",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Petit et introuvable",
+        "detail": "Peut traverser l’espace d’une créature M ou supérieure.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "perforants",
+        "target": "enemy"
+      },
+      {
+        "name": "Fronde",
+        "detail": "Portée9/36m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Décrochage",
+        "detail": "Action bonus : Se cacher ou Se désengager.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Par ici !",
+        "detail": "1/j : allié à6m pris pour cible peut se déplacer3m immédiatement.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Par ici !",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nZOMIK ÉCLAIREUR — FP 1/2\n\n\nHumanoïde de taille P, chaotique bon\n\n\n\n\n                                                   20\nClasse d’armure 14\nPoints de vie 22 (5d6 + 5)\nVitesse 9 m, escalade 6 m\n\n\n                            FOR     DEX        CON          INT      SAG       CHA\n\n                        8 (−1)    16 (+3)   12 (+1)    12 (+1)    14 (+2)    11 (+0)\n\n\nCompétences Discrétion +7, Investigation +3, Perception +4, Survie +4\nSens Perception passive 14\nLangues commun, zomik\nFP 1/2 (100 PX)\nBonus de maîtrise +2\n\n\nPetit et introuvable. Le Zomik peut traverser l’espace d’une créature de taille M ou supérieure.\n\n\nActions\n\n\nAttaques multiples. Le Zomik effectue deux attaques de Dague ou de Fronde.\n\n\nDague. +5 pour toucher, 5 (1d4 + 3) dégâts perforants.\n\n\nFronde. +5 pour toucher, portée 9/36 m, 5 (1d4 + 3) dégâts contondants.\n\n\nActions bonus\n\n\nDécrochage. Le Zomik entreprend Se cacher ou Se désengager.\n\n\nRéactions\n\n\nPar ici ! (1/jour). Lorsqu’un allié situé à 6 m du Zomik est pris pour cible, cet allié peut immédiatement\nse déplacer de 3 m.\n\n\nRôle et mise en scène. Il fuit avant de gagner. Toujours.\n\n\nButin. Carte incomplète, morceau de craie, ficelle, trois biscuits rassis et quelque chose\nd’inexplicablement utile.\n\n\nAjustement. En allié, donne-lui 1 PV narratif si tu ne veux pas suivre ses PV. En ennemi ou rival, le profil\ncomplet fonctionne.\n\n\nRéférence officielle. L’Éclaireur officiel FP 1/2 est le repère direct pour un spécialiste mobile de\nPerception, Survie et attaques multiples ; le Zomik perd la portée de l’arc long en échange de mobilité.\n 22",
+    "id": "maharles-zomik-eclaireur",
+    "name": "Zomik éclaireur",
+    "type": "Humanoïde",
+    "size": "P",
+    "cr": "1/2",
+    "ac": 14,
+    "hp": 22,
+    "initiative": 3,
+    "speed": "9 m · escalade 6 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 16,
+      "CON": 12,
+      "INT": 12,
+      "SAG": 14,
+      "CHA": 11
+    },
+    "skills": {
+      "discretion": {
+        "mod": 7,
+        "status": "Expertise"
+      },
+      "investigation": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive14 · commun, zomik",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Toujours une solution",
+        "detail": "3/j : après test de caractéristique vu à6m, avant résultat, +1d4 si le Zomik explique l’objet absurde utilisé.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Clé de douze",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Pot éclatant",
+        "detail": "Recharge5-6 · point12m, rayon1,50m · JS DEX13 ; échec2d6 feu + aveuglé jusqu’au début prochain tour ; réussite moitié sans aveuglement.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 13,
+        "save": "DEX",
+        "damage": "2d6",
+        "damageType": "feu",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Piège minute",
+        "detail": "2/j · adjacent ; première non-Zomik : JS DEX13 ou1d10 dégâts + à terre ; Perception13 pour repérer.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 13,
+        "save": "DEX",
+        "damage": "1d10",
+        "damageType": "non précisé",
+        "target": "enemy"
+      },
+      {
+        "name": "Poudre aux yeux",
+        "detail": "Action bonus2/j · cible1,50m JS CON13 ou aveuglée jusqu’au début prochain tour.",
+        "kind": "save",
+        "economy": "bonus",
+        "dc": 13,
+        "save": "CON",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Toujours une solution",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Piège minute",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      },
+      {
+        "name": "Poudre aux yeux",
+        "max": 2,
+        "start": 2,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nZOMIK BRICOLEUR — FP 1\n\n\nHumanoïde de taille P, chaotique neutre\n\n\n\n\n                                                      21\nClasse d’armure 13\nPoints de vie 27 (6d6 + 6)\nVitesse 7,50 m\n\n\n                          FOR        DEX       CON          INT      SAG        CHA\n\n                        8 (−1)    14 (+2)    12 (+1)    16 (+3)   12 (+1)    10 (+0)\n\n\nCompétences Arcanes +5, Escamotage +4, Investigation +5, Discrétion +4\nSens Perception passive 11\nLangues commun, zomik\nFP 1 (200 PX)\nBonus de maîtrise +2\n\n\nToujours une solution (3/jour). Après qu’une créature que le Zomik voit dans un rayon de 6 m a\neffectué un test de caractéristique, mais avant d’en connaître le résultat, le Zomik peut ajouter 1d4 au\ntest s’il peut expliquer quel objet absurde de son sac est utilisé.\n\n\nActions\n\n\nClé de douze. Attaque d’arme au corps à corps : +4 pour toucher. Touché : 5 (1d6 + 2) dégâts contondants.\n\n\nPot éclatant (recharge 5–6). Le Zomik lance un pot sur un point situé à 12 m ou moins. Chaque\ncréature dans un rayon de 1,50 m effectue un JS de Dextérité DD 13. Échec : 7 (2d6) dégâts de feu et la\ncréature est aveuglée jusqu’au début de son prochain tour. Réussite : moitié des dégâts sans\naveuglement.\n\n\nPiège minute (2/jour). Le Zomik pose un mécanisme dans un espace adjacent. La première créature\nautre qu’un Zomik qui y entre effectue un JS de Dextérité DD 13, subissant 5 (1d10) dégâts et tombant à\nterre en cas d’échec. Un test de Perception DD 13 repère le piège.\n\n\nActions bonus\n\n\nPoudre aux yeux (2/jour). Une créature située à 1,50 m effectue un JS de Constitution DD 13 ou est\naveuglée jusqu’au début du prochain tour du Zomik.\n\n\nRôle et mise en scène. Il ne sait jamais si son invention fonctionnera, mais le joueur du MJ, lui, le sait.\nLa comédie vient de l’explication, pas d’un risque de faire perdre la rencontre aux PJ sur un jet arbitraire.\n\n\nButin. Sac de Solutions Zomik, outils, Pièce d’Écluse Volée, petit rat mécanique.\n\n\nAjustement. Pour un compagnon permanent, limite Pot éclatant à 1/jour. En défense du repère Zomik,\nlaisse-lui préparer deux Pièges minute avant l’initiative.\n\n\nRéférence officielle. Les valeurs de mobilité et de compétences sont inspirées des PNJ Éclaireur et\nEspion, mais toutes les mécaniques de gadgets sont originales. 11",
+    "id": "maharles-zomik-bricoleur",
+    "name": "Zomik bricoleur",
+    "type": "Humanoïde",
+    "size": "P",
+    "cr": "1",
+    "ac": 13,
+    "hp": 27,
+    "initiative": 2,
+    "speed": "7,50 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 12,
+      "INT": 16,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "skills": {
+      "arcanes": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "escamotage": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "investigation": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive11 · commun, zomik",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Ricochet",
+        "detail": "1/tour : fronde touchée peut infliger1d4 contondants à autre créature à1,50m de cible initiale.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Fronde",
+        "detail": "Portée9/36m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Dague",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "perforants",
+        "target": "enemy"
+      },
+      {
+        "name": "Décrochage",
+        "detail": "Action bonus : Se désengager.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nZOMIK FRONDEUR — FP 1/2\n\n\nHumanoïde de taille P, chaotique neutre\n\n\n\n                                                       22\nClasse d’armure 14\nPoints de vie 18 (4d6 + 4)\nVitesse 9 m\n\n\n                         FOR        DEX          CON          INT     SAG       CHA\n\n                        8 (−1)   16 (+3)       12 (+1)    11 (+0)   13 (+1)   11 (+0)\n\n\nCompétences Acrobaties +5, Discrétion +5, Perception +3\nSens Perception passive 13\nLangues commun, zomik\nFP 1/2 (100 PX)\nBonus de maîtrise +2\n\n\nRicochet (1/tour). Lorsque le Zomik touche avec sa fronde, il peut infliger 2 (1d4) dégâts contondants à\nune autre créature située à 1,50 m de la cible initiale.\n\n\nActions\n\n\nAttaques multiples. Le Zomik effectue deux attaques de Fronde.\n\n\nFronde. Attaque d’arme à distance : +5 pour toucher, portée 9/36 m. Touché : 5 (1d4 + 3) dégâts\ncontondants.\n\n\nDague. +5 pour toucher, 5 (1d4 + 3) dégâts perforants.\n\n\nActions bonus\n\n\nDécrochage. Le Zomik entreprend Se désengager.\n\n\nRôle et mise en scène. Il vise les lampes, cordes, serrures, boutons et casques avant les points de vie.\nTu peux très facilement convertir un coup réussi en interaction environnementale.\n\n\nButin. Sac de billes métalliques, fronde, munition peinte, morceau de carte.\n\n\nAjustement. Minion : 7 PV et une seule attaque. Tireur vétéran : 30 PV et portée 18/72 m.\n\n\nRéférence officielle. L’Éclaireur FP 1/2 est de nouveau le repère de dégâts et de maîtrise, mais le\nFrondeur concentre son budget sur la Dextérité et les tirs rapprochés. 22",
+    "id": "maharles-zomik-frondeur",
+    "name": "Zomik frondeur",
+    "type": "Humanoïde",
+    "size": "P",
+    "cr": "1/2",
+    "ac": 14,
+    "hp": 18,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 16,
+      "CON": 12,
+      "INT": 11,
+      "SAG": 13,
+      "CHA": 11
+    },
+    "skills": {
+      "acrobaties": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "senses": "Perception passive13 · commun, zomik",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Discipline carcérale",
+        "detail": "Avantage Athlétisme contre créature entravée ou agrippée.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Matraque runique",
+        "detail": "",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d6+3+1d4",
+        "damageType": "contondants / froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Manille runique",
+        "detail": "Recharge4-6 · cible G ou inférieure à6m JS DEX13 ou entravée ; action Athlétisme/Acrobaties13 ; manille CA15 PV10.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 13,
+        "save": "DEX",
+        "recharge": "4-6",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Pas si vite",
+        "detail": "Quand créature entravée/agrippée à portée tente de s’échapper : attaque Matraque runique.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nGEÔLIER IMPÉRIAL DÉTACHÉ — FP 2\n\n\nHumanoïde (humain) de taille M, loyal neutre\n\n\nClasse d’armure 17\nPoints de vie 52 (7d8 + 21)\nVitesse 9 m\n\n\n\n\n                                                         23\n                          FOR        DEX         CON             INT      SAG       CHA\n\n                       16 (+3)    11 (+0)      16 (+3)        11 (+0)   12 (+1)   14 (+2)\n\n\nJets de sauvegarde For +5, Con +5\nCompétences Athlétisme +5, Intimidation +4, Perception +3\nRésistances aux dégâts froid\nSens Perception passive 13\nLangues commun\nFP 2 (450 PX)\nBonus de maîtrise +2\n\n\nDiscipline carcérale. Le Geôlier est avantagé aux tests d’Athlétisme contre une créature entravée ou\nagrippée.\n\n\nActions\n\n\nAttaques multiples. Le Geôlier effectue deux attaques de Matraque runique.\n\n\nMatraque runique. Attaque d’arme au corps à corps : +5 pour toucher. Touché : 8 (1d6 + 3 contondants\nplus 1d4 froid).\n\n\nManille runique (recharge 4–6). Une créature de taille G ou inférieure située à 6 m ou moins effectue\nun JS de Dextérité DD 13. En cas d’échec, elle est entravée par une manille reliée à un câble magique.\nUne action et un test d’Athlétisme ou Acrobaties DD 13 mettent fin à l’effet. La manille a CA 15 et 10 PV.\n\n\nRéactions\n\n\nPas si vite. Lorsqu’une créature entravée ou agrippée située à portée tente de s’échapper, le Geôlier\npeut effectuer une attaque de Matraque runique contre elle.\n\n\nRôle et mise en scène. Contrairement à la Harde, il obéit à un protocole. Il annonce les infractions, les\nnuméros de cellule et les sanctions, même au milieu d’un carnage.\n\n\nButin. Anneau de clés, Manille runique récupérable, ordre de transfert signé. Cet ordre est parfait pour\nfaire apparaître discrètement le nom d’Othrion ou celui d’un officier de Vaylen.\n\n\nAjustement. En groupe de quatre, retire Pas si vite. Pour un chef de poste, 70 PV et DD 14.\n\n\nRéférence officielle. Le Vétéran FP 3 et le Chevalier FP 3 constituent les repères pour l’équipement\nlourd ; le Geôlier est diminué en dégâts directs parce qu’une part importante de sa puissance provient\nde ses entraves. 12",
+    "id": "maharles-geolier-imperial",
+    "name": "Geôlier impérial détaché",
+    "type": "Humanoïde (humain)",
+    "size": "M",
+    "cr": "2",
+    "ac": 17,
+    "hp": 52,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 16,
+      "DEX": 11,
+      "CON": 16,
+      "INT": 11,
+      "SAG": 12,
+      "CHA": 14
+    },
+    "saveMods": {
+      "FOR": 5,
+      "CON": 5
+    },
+    "saves": "FOR +5, CON +5",
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive13 · commun",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Formation de glace",
+        "detail": "À1,50m d’au moins un autre Soldat conscient : avantage tests/JS contre poussée ou mise à terre.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Hallebarde givrée",
+        "detail": "Allonge3m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 5,
+        "damage": "1d10+3+1d4",
+        "damageType": "tranchants / froid",
+        "target": "enemy"
+      },
+      {
+        "name": "Javelot de givre",
+        "detail": "Portée9/36m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 4,
+        "damage": "1d6+1+1d6",
+        "damageType": "perforants / froid",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Mur de hampes",
+        "detail": "Allié à1,50m ciblé par attaque mêlée : +2 CA contre cette attaque.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nSOLDAT DE LA BRIGADE DES GLACES — FP 3\n\n\nHumanoïde (humain) de taille M, loyal neutre\n\n\nClasse d’armure 18 (armure lourde, bouclier d’avant-bras)\nPoints de vie 65 (10d8 + 20)\nVitesse 9 m\n\n\n\n\n                                                         24\n                          FOR          DEX     CON             INT      SAG       CHA\n\n                        16 (+3)   12 (+1)    14 (+2)        11 (+0)   12 (+1)   10 (+0)\n\n\nJets de sauvegarde For +5, Con +4, Sag +3\nCompétences Athlétisme +5, Perception +3\nRésistances aux dégâts froid\nSens Perception passive 13\nLangues commun\nFP 3 (700 PX)\nBonus de maîtrise +2\n\n\nFormation de glace. Tant que le Soldat se trouve à 1,50 m d’au moins un autre Soldat de la Brigade\nconscient, il est avantagé aux tests et JS destinés à résister à une poussée ou une mise à terre.\n\n\nActions\n\n\nAttaques multiples. Le Soldat effectue deux attaques de Hallebarde givrée.\n\n\nHallebarde givrée. Attaque d’arme au corps à corps : +5 pour toucher, allonge 3 m. Touché : 10 (1d10 + 3\ntranchants plus 1d4 froid).\n\n\nJavelot de givre. Attaque d’arme à distance : +4 pour toucher, portée 9/36 m. Touché : 8 (1d6 + 1\nperforants plus 1d6 froid).\n\n\nRéactions\n\n\nMur de hampes. Lorsqu’un allié situé à 1,50 m est ciblé par une attaque de corps à corps, le Soldat lui\nconfère +2 CA contre cette attaque.\n\n\nRôle et mise en scène. Deux Soldats adjacents forment une ligne. Trois commencent à être réellement\npénibles. Ils ne pourchassent pas seuls : ils avancent ensemble, occupent un étranglement et protègent\nl’arcaniste derrière eux.\n\n\nButin. Hallebarde, plaque d’identité, insigne de Brigade, ration thermique, ordre impérial. Un ordre\npeut préciser que la Harde ne doit pas être engagée sans autorisation d’Othrion, signalant une\nalliance au moins temporaire.\n\n\nAjustement. Pour les utiliser comme soldats de masse, 36 PV et CA 17. Pour des vétérans, 80 PV et +6\npour toucher, ce qui les rapproche du FP 4.\n\n\nRéférence officielle. Le Vétéran officiel est FP 3, CA 17, possède 58 PV et plusieurs attaques ; c’est le\nrepère direct utilisé ici, réorienté vers la défense de formation et les dégâts de froid. 23",
+    "id": "maharles-soldat-brigade-glaces",
+    "name": "Soldat de la Brigade des Glaces",
+    "type": "Humanoïde (humain)",
+    "size": "M",
+    "cr": "3",
+    "ac": 18,
+    "hp": 65,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 16,
+      "DEX": 12,
+      "CON": 14,
+      "INT": 11,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": 5,
+      "CON": 4,
+      "SAG": 3
+    },
+    "saves": "FOR +5, CON +4, SAG +3",
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid"
+    ],
+    "senses": "Perception passive13 · commun",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": false,
+    "traits": [
+      {
+        "name": "Armure de braise",
+        "detail": "Première fois chaque tour qu’une créature à1,50m le touche mêlée : elle subit1d8 feu.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Maîtrise des flammes",
+        "detail": "Ne subit aucun dommage de ses propres capacités.",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Lance de braise",
+        "detail": "Portée24m.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 7,
+        "damage": "4d8",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Déferlement Drakhys",
+        "detail": "Recharge5-6 · ligne18m×1,50m · JS DEX15 · 8d6 feu, moitié réussite.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 15,
+        "save": "DEX",
+        "damage": "8d6",
+        "damageType": "feu",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Rideau de braises",
+        "detail": "1/j · mur9m×3m×30cm à18m : apparition JS DEX15 4d8 feu, moitié ; jusqu’à fin prochain tour, entrer/finir dedans =3d8 feu.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 15,
+        "save": "DEX",
+        "damage": "4d8",
+        "damageType": "feu",
+        "target": "enemy"
+      },
+      {
+        "name": "Pas dans la flamme",
+        "detail": "Action bonus3/j : téléporte9m ; créatures à1,50m du départ subissent1d6 feu.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Contre-flamme",
+        "detail": "3/j : réduit dégâts1d10+4 ; source à18m subit2d8 feu.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Retrait ordonné",
+        "detail": "1/j quand réduit à40 PV ou moins : téléporte18m, sauf neutralisé.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Rideau de braises",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Pas dans la flamme",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Contre-flamme",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Retrait ordonné",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "phases": [],
+    "notes": "Transcription du statblock Maharles :\nVAYLEN DRAKHYS — MENACE DE SESSION, FP 8\n\n\nHumanoïde de taille M, loyal mauvais\n\n\n       Ce profil représente ce que Vaylen est prêt à déployer pendant cette session, pas\n       nécessairement l’intégralité de son potentiel dans la campagne.\n\n\n\n\n                                                       25\nClasse d’armure 16 (défenses arcaniques)\nPoints de vie 120 (16d8 + 48)\nVitesse 9 m\n\n\n                         FOR         DEX     CON          INT      SAG       CHA\n\n                        9 (−1)   14 (+2)   16 (+3)    18 (+4)   14 (+2)    16 (+3)\n\n\nJets de sauvegarde Dex +5, Con +6, Int +7, Sag +5\nCompétences Arcanes +7, Intuition +5, Perception +5, Tromperie +6\nRésistances aux dégâts feu\nSens Perception passive 15\nLangues commun, draconique plus deux langues\nFP 8 (3 900 PX)\nBonus de maîtrise +3\n\n\nArmure de braise. La première fois à chaque tour qu’une créature située à 1,50 m touche Vaylen avec\nune attaque de corps à corps, cette créature subit 4 (1d8) dégâts de feu.\n\n\nMaîtrise des flammes. Vaylen ne subit aucun dommage de ses propres capacités.\n\n\nActions\n\n\nAttaques multiples. Vaylen effectue deux attaques de Lance de braise.\n\n\nLance de braise. Attaque de sort à distance : +7 pour toucher, portée 24 m. Touché : 18 (4d8) dégâts de\nfeu.\n\n\nDéferlement Drakhys (recharge 5–6). Vaylen projette une ligne de flammes longue de 18 m et large\nde 1,50 m. Chaque créature dans la ligne effectue un JS de Dextérité DD 15. Échec : 28 (8d6) dégâts de\nfeu. Réussite : moitié.\n\n\nRideau de braises (1/jour). Vaylen crée un mur de flammes long de 9 m, haut de 3 m et épais de 30 cm\nà un endroit qu’il voit dans un rayon de 18 m. Lorsqu’il apparaît, toute créature traversée par le mur\neffectue un JS de Dextérité DD 15 et subit 18 (4d8) dégâts de feu en cas d’échec, moitié en cas de\nréussite. Jusqu’à la fin du prochain tour de Vaylen, une créature qui entre dans le mur ou y termine son\ntour subit 13 (3d8) dégâts de feu.\n\n\nActions bonus\n\n\nPas dans la flamme (3/jour). Vaylen se téléporte jusqu’à 9 m vers un espace inoccupé qu’il voit. Toute\ncréature située à 1,50 m de son point de départ subit 3 (1d6) dégâts de feu.\n\n\nRéactions\n\n\nContre-flamme (3/jour). Lorsque Vaylen subit des dégâts infligés par une créature qu’il voit dans un\nrayon de 18 m, il réduit ces dégâts de 1d10 + 4. Si la créature responsable est dans un rayon de 18 m,\nelle subit également 9 (2d8) dégâts de feu.\n\n\n\n\n                                                     26\nRetrait ordonné (1/jour). Lorsque Vaylen est réduit à 40 PV ou moins, il peut, en réaction, se téléporter\njusqu’à 18 m vers un espace qu’il voit. Cette réaction ne se déclenche pas s’il est neutralisé.\n\n\nRôle et mise en scène. Vaylen doit donner l’impression qu’un vrai combat contre lui serait possible,\nmais que ce n’est pas son objectif. Il teste Samoth, ferme un passage avec Rideau de braises, blesse\nquelqu’un avec une précision inquiétante puis se repositionne. Retrait ordonné formalise le fait qu’il\nn’est pas censé mourir dans un échange tactiquement absurde.\n\n\nContrairement à Zanror, il n’a aucune action légendaire : s’il combat, il devrait avoir des Soldats de la\nBrigade autour de lui ou être une complication au milieu d’un autre conflit.\n\n\nÉquipement et butin. Focaliseur Drakhys, manteau ignifugé, éclat de verre bleu-dragon, sceau de\nmission. S’il est forcé de fuir brutalement, il peut laisser tomber la Braise Drakhys, indice plus\nimportant qu’une récompense monétaire.\n\n\nAjustement. Pour des PJ niveau 5, ne lui fais utiliser que Lances de braise, Pas dans la flamme et une\nseule Contre-flamme, avec 90 PV. Pour des PJ niveau 8, le profil complet est adapté, mais ajouter\nsimultanément Vaylen, plusieurs soldats et Zanror transforme le climax en affrontement extrêmement\ndangereux : fais-les poursuivre des objectifs différents plutôt que coordonner toutes leurs attaques.\n\n\nRéférence officielle. Le Mage 2014 officiel est FP 6 et concentre une très forte puissance de sort dans\nseulement 40 PV ; Vaylen est construit comme une variante beaucoup moins polyvalente, mais\nnettement plus résistante et spécialisée dans le feu. 19\n\n\nUtilisation pratique et références d’équilibrage\nLe point central de cette galerie est que les FP identiques ne remplissent pas la même fonction. Le\nsystème officiel définit le FP comme une mesure globale de menace et rappelle qu’un groupe de quatre\naventuriers reposés et convenablement équipés devrait normalement pouvoir affronter une créature\nd’un FP comparable à son niveau, mais la construction réelle d’une rencontre dépend énormément du\nnombre d’adversaires, du terrain et des circonstances. 24 C’est particulièrement important à\nMaharles : un Porte-Nuit FP 3 au milieu d’une citerne remplie de sel noir peut être plus problématique\nqu’un simple combattant FP 4 dans une salle vide.\n\n\nLes références officielles françaises utilisées comme points de comparaison sont volontairement\nconcentrées sur des profils du SRD 5.1, donc directement compatibles avec la 5e 2014. Le Vétéran\nofficiel est FP 3 et constitue le principal étalon pour soldats professionnels. 23 Le Gladiateur est FP 5 et\nfournit un excellent repère de combattant d’arène lourd à plusieurs attaques. 9 Le Chevalier est FP 3\net combine armure lourde, commandement et défense réactive. 21 L’Éclaireur est FP 1/2, l’Espion FP 1,\nce qui en fait de bons repères pour les Zomik et infiltrateurs. 11 Le Fanatique de secte FP 2 et le Mage\nFP 6 encadrent utilement la conception des Dépouillés occultes. 18 Enfin, la Goule FP 1 et la Blême FP\n2 donnent une base officielle française particulièrement pertinente pour la famille des Crevards. 17\n\n\nLa conception officielle recommande d’éviter de surcharger arbitrairement un monstre de résistances,\nsauvegardes et effets invalidants ; elle souligne aussi que les effets de contrôle importants doivent être\ncompensés par des dégâts ou une robustesse plus faibles. 4 C’est pourquoi les profils de Maharles\nsuivent une logique volontaire : les Mâchoires, Dresseurs et Porte-Nuit contrôlent davantage qu’ils\nne blessent, les Brise-Cornes et Zanror infligent les dégâts physiques, les Crieurs, Moissonneurs et\nVellane multiplient la puissance de leurs alliés, tandis que Roland et Nezhar réduisent surtout les\npertes du groupe.\n\n\n\n\n                                                     27\nPour les Crevards, j’ai aussi volontairement évité de copier la paralysie de la Goule officielle. Cette\ndernière peut paralyser pendant une minute après un jet de Constitution raté, avec de nouvelles\nsauvegardes à la fin des tours. 17 Dans une session contenant déjà sel noir, chaînes, filets et capture,\nmultiplier les paralysies aurait rendu les combats trop binaires. Les Crevards ordinaires retirent donc\nseulement les réactions ; leur version supérieure utilise lutte, vitesse et morsure pour produire\nl’impression d’une goule vampirique incontrôlable sans retirer brutalement plusieurs tours à un\njoueur.\n\n\nEnfin, Zanror est le seul profil doté d’actions légendaires. Ce n’est pas parce que Torgar, Vellane ou\nVaylen seraient insignifiants, mais parce que Zanror est le seul adversaire de cette liste conçu\nexplicitement pour pouvoir devenir un boss solo dans une arène gigantesque. Vellane dispose\nnaturellement de Crevards ; Vaylen fonctionne avec des soldats ; Torgar est un commandant. Leur\ndonner à tous des actions légendaires augmenterait inutilement la complexité et brouillerait la\nhiérarchie dramatique de la session. Cette approche suit la recommandation générale de conception\nofficielle : chaque capacité supplémentaire doit avoir une raison fonctionnelle et son impact sur la\npuissance globale doit être pris en compte. 4\n\n\n\n 1   SRD v5.2.1 - System Reference Document - D&D Beyond\nhttps://www.dndbeyond.com/srd?srsltid=AfmBOooFimyRCdbbtdTTGX8mIhNdueDncXJkoM-MKH9t8stPPatL40OF\n\n 2   8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   media.dndbeyond.com\nhttps://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_FR.pdf\n\n 3  https://www.dndbeyond.com/sources/dnd/basic-rules-2014/building-combat-encounters?\nsrsltid=AfmBOooU-g8d4uwGgQWcRgxkxxhgkLpqBY34TiZfbVgCrhOi_YgJ0p5i\nhttps://www.dndbeyond.com/sources/dnd/basic-rules-2014/building-combat-encounters?srsltid=AfmBOooU-\ng8d4uwGgQWcRgxkxxhgkLpqBY34TiZfbVgCrhOi_YgJ0p5i\n\n 4  https://www.dndbeyond.com/posts/181-design-workshop-monsters?\nsrsltid=AfmBOop4urb42FGjwLS3mSVRubCy8swubL-lWEoekpAZA8zLUcjP3Y9S\nhttps://www.dndbeyond.com/posts/181-design-workshop-monsters?srsltid=AfmBOop4urb42FGjwLS3mSVRubCy8swubL-\nlWEoekpAZA8zLUcjP3Y9S\n\n 5   24 https://www.dndbeyond.com/sources/dnd/basic-rules-2014/monsters?\nsrsltid=AfmBOor4OG5GJVDSEhY8UE0XbuKYVQtQEDMHi-pky6_Gqx1gtikmrN8M\nhttps://www.dndbeyond.com/sources/dnd/basic-rules-2014/monsters?\nsrsltid=AfmBOor4OG5GJVDSEhY8UE0XbuKYVQtQEDMHi-pky6_Gqx1gtikmrN8M\n\n 6   Chapter 12: Monsters – Basic Rules\nhttps://www.dndbeyond.com/sources/dnd/basic-rules-2014/monsters?\nsrsltid=AfmBOopiSV9IX_AhcvrApsGBA_kJNF1mrjPC67CSMfSFDHiFvpe9LkjU&utm_source=chatgpt.com\n\n 7  https://www.dndbeyond.com/species/22-goliath?\nsrsltid=AfmBOoqxXcU8Rvjoc_VboL3iyEezZOa8HklbmOZ5EOwf_YB8O14gj6w1\nhttps://www.dndbeyond.com/species/22-goliath?\nsrsltid=AfmBOoqxXcU8Rvjoc_VboL3iyEezZOa8HklbmOZ5EOwf_YB8O14gj6w1\n\n\n\n\n                                                                     28",
+    "id": "maharles-vaylen-drakhys",
+    "name": "Vaylen Drakhys",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "8",
+    "ac": 16,
+    "hp": 120,
+    "initiative": 2,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 9,
+      "DEX": 14,
+      "CON": 16,
+      "INT": 18,
+      "SAG": 14,
+      "CHA": 16
+    },
+    "saveMods": {
+      "DEX": 5,
+      "CON": 6,
+      "INT": 7,
+      "SAG": 5
+    },
+    "saves": "DEX +5, CON +6, INT +7, SAG +5",
+    "skills": {
+      "arcanes": {
+        "mod": 7,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 6,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "feu"
+    ],
+    "senses": "Perception passive15 · commun, draconique +2 langues",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  },
+  {
+    "favorite": false,
+    "isBoss": true,
+    "traits": [
+      {
+        "name": "Gants de Pierre du Titan — état exalté",
+        "detail": "FOR26 ; attaques des Gants magiques ; double dégâts objets/structures ; avantage tests FOR pour pousser/tirer/soulever/briser/maintenir/agripper ; compte comme taille supérieure pour charge.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Tenir la ligne",
+        "detail": "Avantage JS FOR/CON contre déplacement forcé, renversement ou entrave physique.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Présence du futur Seigneur-Tonnerre",
+        "detail": "Alliés à18m qui le voient/entendent : avantage JS effrayé. Allié Harde à0 PV au début du tour : peut faire immédiatement un JS mort avec avantage.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Capture rituelle",
+        "detail": "Quand réduction à0 PV avec mêlée : peut rendre inconsciente et stable ; marque poussière dorée/noire reconnue comme « prise de tonnerre ».",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Résistance légendaire",
+        "detail": "3/jour : transforme un JS raté en réussite.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Indomptable masse",
+        "detail": "1/7 jours : quand tombe à0 sans mort instantanée, peut tomber à1 ; jusqu’à fin prochain tour avantage attaques mêlée +1d10 contondants ; déclenche immédiatement phase3.",
+        "kind": "text",
+        "economy": "none"
+      },
+      {
+        "name": "Immunité conditionnelle à terre",
+        "detail": "Immunisé à l’état À terre contre les effets non magiques (condition conservée en trait car l’immunité est conditionnelle).",
+        "kind": "text",
+        "economy": "none"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Poing du Titan",
+        "detail": "Allonge3m. Une fois/tour après touche : JS FOR DD23 ou repoussée3m OU à terre au choix de Zanror.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 15,
+        "damage": "4d10+8+2d6",
+        "damageType": "contondants / tonnerre",
+        "target": "enemy"
+      },
+      {
+        "name": "Saisie de montagne",
+        "detail": "Allonge3m · créature TG ou inférieure · touche : agrippée, DD23 pour s’échapper ; tant qu’agrippée : entravée. Maximum2 créatures.",
+        "kind": "attack",
+        "economy": "action",
+        "bonus": 15,
+        "target": "enemy"
+      },
+      {
+        "name": "Briser contre terre",
+        "detail": "Cible agrippée · JS CON DD23 · échec6d10+12 contondants + à terre ; réussite moitié sans à terre. Dégâts peuvent être non létaux.",
+        "kind": "save",
+        "economy": "action",
+        "dc": 23,
+        "save": "CON",
+        "damage": "6d10+12",
+        "damageType": "contondants",
+        "target": "enemy"
+      },
+      {
+        "name": "Jet de prise",
+        "detail": "Projette cible agrippée vers point à9m : 4d8+10 contondants + à terre. Si collision : autre cible JS DEX21 ou mêmes dégâts + à terre.",
+        "kind": "text",
+        "economy": "action",
+        "target": "enemy"
+      },
+      {
+        "name": "Frappe de faille",
+        "detail": "Recharge5-6 · cône9m · JS FOR DD23 · échec10d8 contondants, à terre, repoussée3m ; réussite moitié, aucun renversement/poussée. Objets non magiques non portés/tenus : maximum des dégâts.",
+        "kind": "recharge",
+        "economy": "action",
+        "dc": 23,
+        "save": "FOR",
+        "damage": "10d8",
+        "damageType": "contondants",
+        "recharge": "5-6",
+        "target": "enemy"
+      },
+      {
+        "name": "Grandir sous la pierre",
+        "detail": "Action bonus 1/jour · 10 min · taille G→TG ; allonge +1,50m ; attaques mêlée +1d6 contondants ; avantage Athlétisme ; agrippe/bouscule jusqu’à2 tailles supérieures ; terrain difficile pour ennemis à3m.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Pas du colosse",
+        "detail": "Action bonus : déplacement moitié vitesse ; pas d’OA des créatures M ou inférieures.",
+        "kind": "text",
+        "economy": "bonus"
+      },
+      {
+        "name": "Ordre de capture",
+        "detail": "Action bonus : jusqu’à3 alliés Harde à18m se déplacent moitié vitesse vers ennemi visible sans OA.",
+        "kind": "text",
+        "economy": "bonus",
+        "target": "ally"
+      },
+      {
+        "name": "Poids du regard",
+        "detail": "Action bonus · cible18m · JS SAG DD19 ou effrayée jusqu’à fin prochain tour de Zanror ; réussite = immunité24h.",
+        "kind": "save",
+        "economy": "bonus",
+        "dc": 19,
+        "save": "SAG",
+        "target": "enemy"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Endurance de pierre",
+        "detail": "Réduit dégâts subis de1d12+8.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Main qui retient l’orage",
+        "detail": "Quand une créature visible tente de quitter son allonge : attaque de Saisie de montagne.",
+        "kind": "text",
+        "economy": "reaction"
+      },
+      {
+        "name": "Refus du sol",
+        "detail": "Quand devrait être à terre ou déplacé contre volonté : annule ; s’il annule, créatures choisies à3m JS FOR21 ou à terre.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [
+      {
+        "name": "Pas lourd",
+        "detail": "Déplacement moitié vitesse ; sol traversé devient terrain difficile jusqu’au début prochain tour.",
+        "kind": "text",
+        "economy": "none",
+        "cost": 1
+      },
+      {
+        "name": "Poing du Titan",
+        "detail": "Une attaque Poing du Titan.",
+        "kind": "attack",
+        "economy": "none",
+        "bonus": 15,
+        "damage": "4d10+8+2d6",
+        "damageType": "contondants / tonnerre",
+        "cost": 1,
+        "target": "enemy"
+      },
+      {
+        "name": "Saisie brutale",
+        "detail": "Une attaque Saisie de montagne.",
+        "kind": "attack",
+        "economy": "none",
+        "bonus": 15,
+        "cost": 1,
+        "target": "enemy"
+      },
+      {
+        "name": "Briser la ligne",
+        "detail": "Coûte2 : créatures choisies à3m JS FOR21 ou repoussées3m + à terre.",
+        "kind": "save",
+        "economy": "none",
+        "dc": 21,
+        "save": "FOR",
+        "cost": 2,
+        "target": "enemy"
+      },
+      {
+        "name": "Appel du Grand Tonnerre",
+        "detail": "Coûte3 : jusqu’au début prochain tour, alliés Harde à18m gagnent15 PV temp + avantage prochaine attaque mêlée.",
+        "kind": "text",
+        "economy": "none",
+        "cost": 3,
+        "target": "ally"
+      }
+    ],
+    "lairActions": [
+      {
+        "name": "Sol de jugement",
+        "detail": "Ennemis au sol à18m : JS DEX18 ou à terre.",
+        "kind": "save",
+        "economy": "none",
+        "dc": 18,
+        "save": "DEX",
+        "target": "enemy"
+      },
+      {
+        "name": "Tambours de la Harde",
+        "detail": "Jusqu’à initiative20 prochain round, alliés de Zanror ajoutent1d4 à leurs attaques mêlée.",
+        "kind": "text",
+        "economy": "none",
+        "target": "ally"
+      },
+      {
+        "name": "Anneau de poussière",
+        "detail": "Ennemis à12m : JS CON18 ou pas de réaction jusqu’au début prochain tour.",
+        "kind": "save",
+        "economy": "none",
+        "dc": 18,
+        "save": "CON",
+        "target": "enemy"
+      },
+      {
+        "name": "Murmure des Gants",
+        "detail": "Cible18m : JS SAG18 ou désavantage à sa prochaine attaque contre Zanror avant fin prochain tour.",
+        "kind": "save",
+        "economy": "none",
+        "dc": 18,
+        "save": "SAG",
+        "target": "enemy"
+      }
+    ],
+    "legendaryMax": 3,
+    "lairInitiative": 20,
+    "resources": [
+      {
+        "name": "Résistances légendaires",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Grandir sous la pierre",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Indomptable masse",
+        "max": 1,
+        "start": 1,
+        "reset": "7 jours"
+      }
+    ],
+    "phases": [
+      {
+        "name": "Phase 2 — Avatar du Titan",
+        "threshold": 280,
+        "ac": 20,
+        "speed": "13,5 m (allonge augmentée)",
+        "legendaryMax": 3,
+        "note": "Active Grandir sous la pierre ; +40 PV temporaires ; avantage Athlétisme ; attaques +1d6 contondants. Phrase : « Le sol vous a portés jusque-là. Maintenant, il me répond. »"
+      },
+      {
+        "name": "Phase 3 — La Masse indomptable",
+        "threshold": 120,
+        "ac": 20,
+        "speed": "13,5 m",
+        "legendaryMax": 4,
+        "note": "Si Indomptable masse s’est déclenché : récupère immédiatement60 PV. Avantage attaques mêlée et +1d10 contondants jusqu’à fin prochain tour. 4 actions légendaires jusqu’à fin combat. Ne peut plus utiliser Ordre de capture. Phrase : « Je ne tombe pas parce que je suis fort. Je tombe quand la Harde n’a plus besoin que je tienne. »"
+      }
+    ],
+    "notes": "ZANROR MAIN-DE-MONTAGNE — VERSION UTILISATEUR, REMPLACE ENTIÈREMENT LE PROFIL FP10 DU PDF MAHARLES.\nGoliath de taille G, chaotique neutre, champion de la Harde des Tempêtes et porteur exalté des Gants de Pierre du Titan.\nTactique : séparer les héros ; mettre à terre les combattants de mêlée ; agripper les plus dangereux ; protéger la légitimité de la Harde ; capturer plutôt que tuer si l’arène approche. Il respecte ceux qui protègent les autres et méprise ceux qui frappent des ennemis vaincus.\nPhrases de combat : « Un fort qui n’a rien à porter n’est qu’une pierre qui tombe. » · « Torgar veut des prisonniers. Moi, je veux savoir lesquels d’entre vous méritent une arène. » · « Ne t’inquiète pas, petit héros. Je ne vais pas te tuer. La Harde a payé trop cher pour te voir mourir sans public. » · « Les faibles servent aux jeux. Les forts servent aux légendes. » · « Si tu veux les Gants, frappe-moi comme quelqu’un qui comprend leur poids. » · « La force ne demande pas pardon. Elle demande ce qu’elle doit porter ensuite. »\nButin : Gants de Pierre du Titan (Vestige de Divergence, légendaire, harmonisation ; récupérables si vaincu/détrôné rituellement/rejeté par la relique), Corne du Grand Tonnerre (rare, harmonisation barbare/guerrier/rôdeur/paladin), Ceinture de prise (1 500 po pour collectionneur militaire), Éclats de faille dorée, Marques de succession.",
+    "id": "maharles-zanror-main-de-montagne",
+    "name": "Zanror Main-de-Montagne",
+    "type": "Humanoïde (goliath)",
+    "size": "G",
+    "cr": "22",
+    "ac": 20,
+    "hp": 405,
+    "initiative": 2,
+    "speed": "12 m",
+    "attacksPerAction": 3,
+    "abilities": {
+      "FOR": 26,
+      "DEX": 14,
+      "CON": 26,
+      "INT": 12,
+      "SAG": 16,
+      "CHA": 18
+    },
+    "saveMods": {
+      "FOR": 15,
+      "DEX": 9,
+      "CON": 15,
+      "SAG": 10,
+      "CHA": 11
+    },
+    "saves": "FOR +15, DEX +9, CON +15, SAG +10, CHA +11",
+    "skills": {
+      "athletisme": {
+        "mod": 22,
+        "status": "Maîtrise/Expertise selon texte"
+      },
+      "intimidation": {
+        "mod": 18,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 10,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 10,
+        "status": "« Perspicacité » dans le texte source"
+      },
+      "survie": {
+        "mod": 10,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [
+      "froid",
+      "foudre",
+      "tonnerre",
+      "contondants, perforants et tranchants des attaques non magiques"
+    ],
+    "conditionImmunities": [
+      "effrayé"
+    ],
+    "senses": "Perception passive 20 · commun, géant · FP22 (41 000 PX) · maîtrise +7",
+    "category": "enemy",
+    "source": "Statblocks Maharles · D&D 5e 2014",
+    "tags": [
+      "Maharles"
+    ]
+  }
+];
+window.ENCOUNTER_BUILTINS = [...(window.ENCOUNTER_BUILTINS || []), ...ENCOUNTER_CAMPAIGN_MAHARLES];

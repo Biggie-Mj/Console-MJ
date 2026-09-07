@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '4.0.0';
+const APP_VERSION = '4.1.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -349,9 +349,21 @@ function openConditionDialog(){if(!currentTargetIds().length)return toast('Séle
 
 function rollCharacter(pid,ability,isSave){const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p);if(!p||m?.abilities?.[ability]==null)return;const dc=Math.max(1,Number($('#checkDc')?.value)||ui.checkDc);ui.checkDc=dc;const mod=isSave?(m.saveMods?.[ability]??abilityMod(m.abilities[ability])):abilityMod(m.abilities[ability]),r=rollD20(),total=r.roll+mod,ok=total>=dc,msg=`${p.name} — ${isSave?'JS':'test'} ${ability} DD ${dc} : ${r.roll} ${signed(mod)} = ${total} → ${ok?'RÉUSSITE':'ÉCHEC'}.`;actionLog(msg,isSave?'Jet de sauvegarde':'Test de caractéristique');saveState();renderLog();}
 
-function openAddMonster(id){if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;$('#addMonsterName').textContent=m.name;const f=$('#addMonsterForm');f.reset();f.elements.monsterId.value=id;f.elements.initiative.value=m.initiative||10;f.elements.count.value=1;const single=m.category!=='enemy';f.elements.count.max=single?1:50;f.elements.count.disabled=single;f.elements.sharedInitiative.checked=true;f.elements.sharedInitiative.closest('label').classList.toggle('hidden',single);const comp=$('#companionOption');if(comp){const show=id==='pj-silas-veyr';comp.classList.toggle('hidden',!show);f.elements.includeCompanion.checked=show;}const lair=$('#lairOption');if(lair){const show=!!m.lairActions.length;lair.classList.toggle('hidden',!show);f.elements.includeLair.checked=show;}$('#addMonsterDialog').showModal();}
+function openAddMonster(id){
+  if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;$('#addMonsterName').textContent=m.name;const f=$('#addMonsterForm');f.reset();f.elements.monsterId.value=id;f.elements.initiative.value=m.initiative||10;f.elements.count.value=1;const single=m.category!=='enemy';f.elements.count.max=single?1:50;f.elements.count.disabled=single;f.elements.sharedInitiative.checked=true;f.elements.sharedInitiative.closest('label').classList.toggle('hidden',single);
+  const comp=$('#companionOption');if(comp){let show=false,label='Ajouter automatiquement le compagnon lié au profil';if(id==='pj-silas-veyr'){show=true;label='Ajouter aussi C.R.A.S.S.E.U.S.E. au même rang d’initiative, juste après Silas';}else if(id==='npc-felipe-dofil'){show=true;label='Ajouter aussi 4 Golems-Bonbons au même rang d’initiative, juste après Felipe';}comp.classList.toggle('hidden',!show);const txt=comp.childNodes[comp.childNodes.length-1];if(txt&&txt.nodeType===3)txt.textContent=' '+label;f.elements.includeCompanion.checked=show;}
+  const lair=$('#lairOption');if(lair){const show=!!m.lairActions.length;lair.classList.toggle('hidden',!show);f.elements.includeLair.checked=show;}$('#addMonsterDialog').showModal();
+}
 function addMonsterToCombat(id,count,initiative,shared,includeCompanion=false,includeLair=false){
-  if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;count=m.category==='enemy'?Math.max(1,Math.min(50,Number(count)||1)):1;const groupId=count>1?uid('group'):null,wantsCompanion=id==='pj-silas-veyr'&&includeCompanion&&state.monsters.some(x=>x.id==='comp-crasseuse');mutate(()=>{let main=null;for(let i=1;i<=count;i++){const ini=shared?Number(initiative)||0:(Number(initiative)||0)+rollDie(6)-3,p=makeParticipant(m,count>1?i:1,ini,groupId);state.encounter.participants.push(p);if(i===1)main=p;}if(wantsCompanion&&main){const cm=state.monsters.find(x=>x.id==='comp-crasseuse');state.encounter.participants.push(makeParticipant(cm,1,main.initiative,null,main.id));}if(includeLair&&m.lairActions.length&&main)state.encounter.participants.push(makeLairParticipant(main,m));state.encounter.currentTurn=0;state.encounter.selectedId=sortedParticipants()[0]?.id||null;},`${count} × ${m.name} ajouté${count>1?'s':''}${wantsCompanion?' avec C.R.A.S.S.E.U.S.E.':''}${includeLair&&m.lairActions.length?' + repaire':''}.`);closeDrawers();}
+  if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;count=m.category==='enemy'?Math.max(1,Math.min(50,Number(count)||1)):1;const groupId=count>1?uid('group'):null;
+  const wantsCrasseuse=id==='pj-silas-veyr'&&includeCompanion&&state.monsters.some(x=>x.id==='comp-crasseuse');
+  const wantsGolems=id==='npc-felipe-dofil'&&includeCompanion&&state.monsters.some(x=>x.id==='comp-golem-bonbon');
+  mutate(()=>{let main=null;for(let i=1;i<=count;i++){const ini=shared?Number(initiative)||0:(Number(initiative)||0)+rollDie(6)-3,p=makeParticipant(m,count>1?i:1,ini,groupId);state.encounter.participants.push(p);if(i===1)main=p;}
+    if(wantsCrasseuse&&main){const cm=state.monsters.find(x=>x.id==='comp-crasseuse');state.encounter.participants.push(makeParticipant(cm,1,main.initiative,null,main.id));}
+    if(wantsGolems&&main){const gm=state.monsters.find(x=>x.id==='comp-golem-bonbon'),gid=uid('group');for(let i=1;i<=4;i++){const gp=makeParticipant(gm,i,main.initiative,gid,main.id);gp.name=`Golem-Bonbon ${i}`;gp.baseName='Golem-Bonbon';state.encounter.participants.push(gp);}}
+    if(includeLair&&m.lairActions.length&&main)state.encounter.participants.push(makeLairParticipant(main,m));state.encounter.currentTurn=0;state.encounter.selectedId=sortedParticipants()[0]?.id||null;
+  },`${count} × ${m.name} ajouté${count>1?'s':''}${wantsCrasseuse?' avec C.R.A.S.S.E.U.S.E.':''}${wantsGolems?' avec 4 Golems-Bonbons':''}${includeLair&&m.lairActions.length?' + repaire':''}.`);
+}
 function addPlayer(data){if(structuralGuard())return;const p={id:uid('p'),modelId:null,groupId:null,name:data.name,baseName:data.name,kind:data.role==='pj'?'player':'ally',ac:Number(data.ac)||10,maxHp:Math.max(1,Number(data.hp)||1),hp:Math.max(1,Number(data.hp)||1),tempHp:0,initiative:Number(data.initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:0,currentPhaseId:null,abilityState:{},resourceState:{},companionOf:null,lairOwnerId:null,bossOverride:false,attackProgress:0};mutate(()=>{state.encounter.participants.push(p);state.encounter.selectedId=p.id;},`${p.name} rejoint le combat.`);}
 
 function addDynamicRow(type,data={}){const map={traits:'#traitsRows',actions:'#actionsRows',reactions:'#reactionsRows',legendaryActions:'#legendaryRows',lairActions:'#lairRows',phases:'#phasesRows',resources:'#resourcesRows'},container=$(map[type]);if(!container)return;const tpl=$(type==='phases'?'#phaseRowTemplate':type==='resources'?'#resourceRowTemplate':'#abilityRowTemplate'),node=tpl.content.firstElementChild.cloneNode(true);node.dataset.rowType=type;node.dataset.rowId=data.id||uid(type==='phases'?'phase':type==='resources'?'res':'ab');node.querySelectorAll('[data-field]').forEach(el=>{const k=el.dataset.field;if(data[k]!=null)el.value=Array.isArray(data[k])?formatList(data[k]):data[k];});container.appendChild(node);}
@@ -601,7 +613,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[]};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-1-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
@@ -811,7 +823,7 @@ render();
    ========================================================= */
 
 // Migration douce : les données historiques restent compatibles.
-state.version='4.0.0';
+state.version='4.1.0';
 state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
 state.encounter.lastTargets=state.encounter.lastTargets||{};
 state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
@@ -826,9 +838,9 @@ const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
 function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
 async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
-function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.0.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.1.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
 const saveStateV361=saveState;
-saveState=function(){state.version='4.0.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+saveState=function(){state.version='4.1.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
 const writeBackupStoreV361=writeBackupStore;
 writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
 async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
@@ -890,7 +902,7 @@ renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)retur
 
 // Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
 const blankStateV4Base=blankState;
-blankState=function(){const s=blankStateV4Base();s.version='4.0.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+blankState=function(){const s=blankStateV4Base();s.version='4.1.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
 restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
 
 // -------- Render V4 global --------

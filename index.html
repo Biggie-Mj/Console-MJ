@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ENCOUNTER V4 — Console MJ D&D 5e</title>
+  <title>ENCOUNTER V4.1 — Console MJ D&D 5e</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -20,7 +20,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">⚔</div>
-      <div><h1>ENCOUNTER</h1><p>Console MJ · V4</p></div>
+      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.1</p></div>
     </div>
     <div class="mode-switch" aria-label="Mode d'utilisation">
       <button id="btnModeHome" class="mode-btn">⌂ Accueil</button>
@@ -64,7 +64,7 @@
   <main id="homeView" class="home-view hidden">
     <section class="home-hero panel-soft">
       <div class="home-brand-block">
-        <span class="eyebrow">ENCOUNTER V4</span>
+        <span class="eyebrow">ENCOUNTER V4.1</span>
         <h2>Que veux-tu faire ?</h2>
         <p>Accès direct à la partie en cours, aux rencontres préparées et à une nouvelle préparation.</p>
       </div>
@@ -239,7 +239,7 @@
   <dialog id="addMonsterDialog" class="modal">
     <form method="dialog" id="addMonsterForm">
       <div class="modal-head"><div><span class="eyebrow">AJOUTER AU COMBAT</span><h2 id="addMonsterName">Adversaire</h2></div><button value="cancel" class="icon-btn">×</button></div>
-      <div class="editor-grid"><label>Nombre<input name="count" type="number" min="1" max="50" value="1"></label><label>Initiative<input name="initiative" type="number" value="10"></label><label class="span2 check-label"><input name="sharedInitiative" type="checkbox" checked> Initiative commune pour le groupe</label><label id="companionOption" class="span2 check-label hidden"><input name="includeCompanion" type="checkbox" checked> Ajouter aussi C.R.A.S.S.E.U.S.E. au même rang d’initiative, juste après Silas</label><label id="lairOption" class="span2 check-label hidden"><input name="includeLair" type="checkbox" checked> Ajouter automatiquement le repaire à l’initiative indiquée</label></div>
+      <div class="editor-grid"><label>Nombre<input name="count" type="number" min="1" max="50" value="1"></label><label>Initiative<input name="initiative" type="number" value="10"></label><label class="span2 check-label"><input name="sharedInitiative" type="checkbox" checked> Initiative commune pour le groupe</label><label id="companionOption" class="span2 check-label hidden"><input name="includeCompanion" type="checkbox" checked> Ajouter automatiquement le compagnon lié au profil</label><label id="lairOption" class="span2 check-label hidden"><input name="includeLair" type="checkbox" checked> Ajouter automatiquement le repaire à l’initiative indiquée</label></div>
       <input type="hidden" name="monsterId"><div class="modal-actions"><button value="cancel" class="ghost">Annuler</button><button type="submit" class="primary">Ajouter</button></div>
     </form>
   </dialog>
@@ -318,6 +318,7 @@
   <template id="phaseRowTemplate"><div class="dynamic-row phase-row"><input data-field="name" placeholder="Phase II"><input data-field="threshold" type="number" min="0" placeholder="Seuil PV"><input data-field="ac" type="number" min="0" placeholder="CA"><input data-field="legendaryMax" type="number" min="0" placeholder="Légendaires"><input data-field="speed" placeholder="Vitesse"><input data-field="addResistances" placeholder="Résistances ajoutées"><input data-field="addImmunities" placeholder="Immunités ajoutées"><input data-field="note" placeholder="Effet / rappel de phase"><button type="button" class="danger ghost small remove-row">Suppr.</button></div></template>
 
   <script src="builtins.js"></script>
+  <script src="campaign-maharles.js"></script>
   <script src="app.js"></script>
   <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}</script>
 </body>
