@@ -1,7 +1,7 @@
 {
   "name": "ENCOUNTER — Console MJ D&D 5e",
   "short_name": "ENCOUNTER",
-  "description": "Console MJ D&D 5e V3.5 : préparation, automatisations, PWA et édition par instance.",
+  "description": "Console MJ D&D 5e V3.6 : préparation, automatisations, PWA et ergonomie combat renforcée.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = 3.5;
+const APP_VERSION = 3.6;
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -601,7 +601,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.5-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.5 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.6-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.6 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
@@ -701,6 +701,106 @@ renderPrep=function(){renderPrepV3BeforeBoost();$$('#prepParticipants .prep-row'
 // Le détail permet aussi d'éditer immédiatement l'instance sélectionnée.
 const renderDetailV3BeforeBoost=renderDetail;
 renderDetail=function(){renderDetailV3BeforeBoost();const p=selectedParticipant();if(!p||isLair(p))return;const host=$('#activeDetail .header-resources');if(host&&!host.querySelector('[data-edit-participant]'))host.insertAdjacentHTML('beforeend',`<button type="button" class="ghost small" data-edit-participant="${p.id}">✎ Instance</button>`);};
+
+
+/* =========================================================
+   ENCOUNTER V3.6 — Correctifs ergonomiques
+   ========================================================= */
+
+// Pop-up : 6 secondes, centré en haut, fermeture immédiate au toucher.
+showActionPopup=function(msg,title='Résolution'){
+  const box=$('#actionPopup');if(!box)return;
+  $('#actionPopupTitle').textContent=title;$('#actionPopupText').textContent=msg;
+  box.classList.add('show');clearTimeout(showActionPopup.t);
+  showActionPopup.t=setTimeout(()=>box.classList.remove('show'),6000);
+};
+
+// Surbrillance cible : 2,5 secondes.
+setTargetFlash=function(id,type){ui.flashEffects[id]={type,until:Date.now()+2500};};
+
+// L'action est dépensée dès la première attaque. Les attaques supplémentaires de la même
+// action restent néanmoins utilisables jusqu'à la limite attaques/action.
+consumeEconomyAfterResolution=function(p,a,section,{forceAction=false}={}){
+  if(section==='legendary'){p.legendaryRemaining=Math.max(0,p.legendaryRemaining-(a.cost||1));return;}
+  if(section==='lair'){p.actionUsed=true;return;}
+  if(section==='reaction'){p.reactionUsed=true;return;}
+  const eco=abilityEconomy(a,section);
+  if(eco==='bonus'){p.bonusActionUsed=true;return;}
+  if(eco==='reaction'){p.reactionUsed=true;return;}
+  if(eco!=='action')return;
+  p.actionUsed=true;
+  if(a.kind==='attack'){
+    p.attackProgress=Math.min(attacksPerAction(p),(p.attackProgress||0)+1);
+    return;
+  }
+  p.attackProgress=attacksPerAction(p);
+};
+
+// Une attaque reste cliquable après consommation de l'Action uniquement si elle constitue
+// une attaque supplémentaire encore permise par cette même action.
+abilityCard=function(p,a,section){
+  const st=p.abilityState?.[a.id]||{ready:true},eco=abilityEconomy(a,section);
+  const max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0);
+  const continuation=eco==='action'&&a.kind==='attack'&&p.actionUsed&&progress<max;
+  const economySpent=eco==='action'?p.actionUsed:eco==='bonus'?p.bonusActionUsed:eco==='reaction'?p.reactionUsed:false;
+  const unavailable=(a.kind==='recharge'&&!st.ready)||(section==='legendary'&&p.legendaryRemaining<(a.cost||1))||(section==='lair'&&p.actionUsed)||(section!=='legendary'&&section!=='lair'&&economySpent&&!continuation),tags=[];
+  if(a.bonus!=null)tags.push(`${signed(a.bonus)}`);if(a.dc!=null)tags.push(`${a.save||'JS'} DD ${a.dc}`);if(a.damage)tags.push(`${a.kind==='heal'?'Soins ':''}${a.damage}${a.damageType?` ${a.damageType}`:''}`);if(a.kind==='recharge')tags.push(`Recharge ${a.recharge||'5–6'}`);if(a.kind==='multiattack'&&a.sequence)tags.push(a.sequence);if(section==='legendary')tags.push(`${a.cost||1} ★`);if(eco!=='none'&&section!=='legendary'&&section!=='lair')tags.push(eco==='bonus'?'Action bonus':eco==='reaction'?'Réaction':'Action');
+  if(a.kind==='attack'&&eco==='action'&&max>1)tags.push(`Attaque ${Math.min(max,progress+1)}/${max}`);
+  const label=a.kind==='attack'?'Cibler':a.kind==='heal'?'Cibler & soigner':a.kind==='multiattack'?'Lancer la multiattaque':'Utiliser';
+  return `<article class="ability-card ${unavailable?'unavailable':''}"><div class="ability-head"><div><b>${esc(a.name)}</b><small>${esc(tags.join(' · '))}</small></div>${a.kind==='recharge'&&!st.ready?'<span class="status-badge">Recharge en attente</span>':''}</div>${a.detail?`<p>${esc(a.detail)}</p>`:''}<div class="ability-buttons">${a.kind==='recharge'&&!st.ready?`<button class="primary" data-recharge="${p.id}|${a.id}">🎲 Tester maintenant</button>`:`<button class="primary" ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|normal">${label}</button>`}${a.kind==='attack'?`<button ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|adv">Avantage</button><button ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|dis">Désav.</button>`:''}</div></article>`;
+};
+
+miniEconomyButtons=function(p){
+  const max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0),aText=max>1?`A ${progress}/${max}`:'A';
+  return `<span class="economy-mini-inline"><button type="button" class="mini-eco-btn eco-action ${p.actionUsed?'spent':''} ${p.actionUsed&&progress<max?'partial':''}" data-economy="${p.id}|action" title="Action">${aText}</button><button type="button" class="mini-eco-btn eco-bonus ${p.bonusActionUsed?'spent':''}" data-economy="${p.id}|bonus" title="Action bonus">B</button><button type="button" class="mini-eco-btn eco-reaction ${p.reactionUsed?'spent':''}" data-economy="${p.id}|reaction" title="Réaction">R</button></span>`;
+};
+
+economyStrip=function(p){
+  const max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0);
+  const actionLabel=p.actionUsed?(max>1&&progress<max?`utilisée · ${progress}/${max} attaques`:'utilisée'):'disponible';
+  return `<div class="economy-strip"><button class="economy-marker action ${p.actionUsed?'spent':''} ${p.actionUsed&&progress<max?'partial':''}" data-economy="${p.id}|action"><span>●</span><b>Action</b><small>${actionLabel}</small></button><button class="economy-marker bonus ${p.bonusActionUsed?'spent':''}" data-economy="${p.id}|bonus"><span>◆</span><b>Action bonus</b><small>${p.bonusActionUsed?'utilisée':'disponible'}</small></button><button class="economy-marker reaction ${p.reactionUsed?'spent':''}" data-economy="${p.id}|reaction"><span>↯</span><b>Réaction</b><small>${p.reactionUsed?'utilisée':'disponible'}</small></button></div>`;
+};
+
+// Conserve le tiroir Bibliothèque ouvert après ajout. Le scrim extérieur reste son moyen
+// normal de fermeture.
+const addMonsterToCombatV35=addMonsterToCombat;
+addMonsterToCombat=function(...args){
+  const keepLibrary=ui.drawer==='library';
+  addMonsterToCombatV35(...args);
+  if(keepLibrary){ui.drawer='library';renderDrawers();}
+};
+
+// Backups : suppression individuelle.
+function deleteBackup(id){
+  const items=backupStore(),found=items.find(x=>x.id===id);if(!found)return;
+  writeBackupStore(items.filter(x=>x.id!==id));renderBackupDialog();toast('Backup supprimé.');
+}
+renderBackupDialog=function(){
+  const el=$('#backupList');if(!el)return;const items=backupStore();
+  el.innerHTML=items.length?items.map(b=>`<article class="backup-card"><div><strong>${esc(b.name)}</strong><small>${esc(b.reason)} · ${new Date(b.createdAt).toLocaleString('fr-FR')}</small></div><div class="backup-card-actions"><button data-restore-backup="${b.id}" class="primary small">Restaurer</button><button data-delete-backup="${b.id}" class="danger ghost small">Supprimer</button></div></article>`).join(''):'<p class="muted">Aucun backup disponible.</p>';
+};
+addEventListener('click',e=>{const b=e.target.closest('[data-delete-backup]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(confirm('Supprimer définitivement ce backup ?'))deleteBackup(b.dataset.deleteBackup);},true);
+
+// Lisibilité combat : PV prioritaires, CA secondaire.
+renderSingleCard=function(p,active){
+  if(isLair(p))return `<article class="combat-card lair-card ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''}"><button class="select-hit" data-select="${p.id}"></button><div class="combat-card-main"><span class="turn-dot">🏰</span><div class="combat-ident"><strong>${esc(p.name)}</strong><small>Action de repaire · ${modelFor(p)?.lairActions.length||0} option(s)</small></div><span class="ini-badge">${p.initiative}</span></div><div class="lair-card-foot">Initiative spéciale de repaire</div></article>`;
+  const selected=p.id===state.encounter.selectedId,multiSelected=ui.multiSelection.has(p.id),phase=currentPhase(p),pct=hpPct(p);
+  return `<article class="combat-card ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${selected?'selected':''} ${p.hp<=0?'dead':''}"><button class="select-hit" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`} aria-label="Sélectionner ${esc(p.name)}"></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier cette instance">✎</button><div class="combat-card-main">${ui.multiMode?`<span class="multi-check ${multiSelected?'on':''}">${multiSelected?'✓':''}</span>`:'<span class="turn-dot"></span>'}<div class="combat-ident"><div class="combat-name-line"><strong>${esc(p.name)}</strong><span class="role-name-badge">${roleLabel(p)}</span>${miniEconomyButtons(p)}</div><small>${modelFor(p)?.category==='character'?esc(modelFor(p)?.subtitle||'Personnage'):modelFor(p)?.category==='companion'?esc(modelFor(p)?.subtitle||'Compagnon'):modelFor(p)?.category==='npc'?esc(modelFor(p)?.subtitle||'PNJ allié'):p.kind==='enemy'?esc(modelFor(p)?.type||'Adversaire'):'PJ / PNJ'} · <span class="ca-secondary">CA ${effectiveAc(p)}</span></small></div><span class="ini-badge">${p.initiative}</span></div><div class="hp-line"><div class="hpbar"><div class="hpfill ${hpClass(p)}" style="width:${pct}%"></div></div><div class="hptext"><span>PV</span> ${p.hp}${p.tempHp?` +${p.tempHp}`:''}<small>/${p.maxHp}</small></div></div><div class="condition-pills">${p.hp<=0?'<span class="pill dead-pill">0 PV</span>':''}${phase?`<span class="pill phase-pill">${esc(phase.name)}</span>`:''}${p.conditions.slice(0,3).map(c=>`<span class="pill">${esc(c.name)}${conditionShort(c)}</span>`).join('')}${p.conditions.length>3?`<span class="pill">+${p.conditions.length-3}</span>`:''}</div></article>`;
+};
+
+renderGroupCard=function(members,active){
+  const first=members[0],activeInside=members.some(p=>p.id===active?.id),alive=members.filter(p=>p.hp>0).length,ini=first.initiative,allSelected=members.every(p=>ui.multiSelection.has(p.id)),sharedInitiative=new Set(members.map(p=>p.initiative)).size===1,worst=members.reduce((a,b)=>hpPct(a)<hpPct(b)?a:b,members[0]);
+  return `<article class="group-card ${roleClass(first)} ${hpBandClass(worst)} ${activeInside?'active':''}"><div class="group-head"><button class="group-title" ${ui.multiMode?`data-multi-group="${first.groupId}"`:`data-select="${activeInside?active.id:first.id}"`}><span class="group-icon">${ui.multiMode?(allSelected?'☑':'☐'):'▾'}</span><span><strong>${esc(first.baseName)}</strong><small>${alive}/${members.length} actifs · ${sharedInitiative?'initiative commune':'initiatives individuelles'}</small></span></button><span class="role-name-badge">${roleLabel(first)}</span><span class="ini-badge">${sharedInitiative?ini:'×'}</span></div><div class="group-members">${members.map((p,i)=>`<div class="member-wrap"><button class="member-chip ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''} ${ui.multiSelection.has(p.id)?'multi-selected':''}" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`}><span class="member-index">${i+1}</span><div class="member-vitals"><b>${p.hp>0?p.hp:'☠'}<small>/${p.maxHp}</small></b><em>PV</em></div><div class="member-ca">CA ${effectiveAc(p)}</div><span class="member-mini-economy"><em class="${p.actionUsed?'spent':''}">A${attacksPerAction(p)>1?` ${Math.min(attacksPerAction(p),p.attackProgress||0)}/${attacksPerAction(p)}`:''}</em><em class="${p.bonusActionUsed?'spent':''}">B</em><em class="${p.reactionUsed?'spent':''}">R</em></span></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier ${esc(p.name)}">✎</button></div>`).join('')}</div></article>`;
+};
+
+// Dans le panneau détaillé en combat, PV passent avant CA et deviennent la valeur dominante.
+const renderV35Final=render;
+render=function(){
+  renderV35Final();
+  if(state.ui.mode==='combat'){
+    const grid=$('#activeDetail .stat-grid');if(grid&&grid.children.length>=2){const ac=grid.children[0],hp=grid.children[1];hp.classList.add('v36-pv-primary');ac.classList.add('v36-ca-secondary');if(grid.firstElementChild!==hp)grid.insertBefore(hp,ac);}
+  }
+};
 
 
 render();
