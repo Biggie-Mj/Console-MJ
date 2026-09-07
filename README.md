@@ -1,4 +1,14 @@
-# ENCOUNTER — Console MJ D&D 5e V4.3
+# ENCOUNTER — Console MJ D&D 5e V4.4
+
+## Correctifs V4.4
+
+- **Jets de sauvegarde contre la mort** pour les PJ et Felipe Dofil uniquement : à 0 PV, leur carte de combat est assombrie et un encadré dédié apparaît au-dessus de la fiche sélectionnée. Trois crânes de réussite et trois crânes d’échec sont suivis visuellement. Un clic ouvre un choix Réussi / Raté / Réussite critique / Raté critique. Les critiques ajoutent deux marqueurs comme demandé.
+- **Retour à la vie immédiat** : dès que la créature repasse au-dessus de 0 PV, l’encadré disparaît et son suivi de sauvegardes contre la mort est réinitialisé. Les soins peuvent toujours cibler un PJ/Felipe à 0 PV.
+- **Liste COMBAT scrollable sur iPad** : la colonne des participants devient une vraie zone tactile à défilement indépendant, même avec de grands groupes.
+- **Undo unifié** : le bouton supérieur et celui du Journal utilisent désormais exactement la même routine et le même historique persistant.
+- **Bouton crayon remonté** : l’édition d’instance se place dans la zone haute de la carte afin de ne plus recouvrir les PV.
+- Cache PWA mis à jour en V4.4 pour forcer le rafraîchissement sur GitHub Pages/iPad.
+
 
 ## V4.3 — Bestiaire civil générique de village
 
@@ -89,13 +99,13 @@ Tous ces profils sont placés dans la catégorie Adversaires par défaut. Les pr
 ## Mise à jour depuis la V4
 
 1. Dans ENCOUNTER, faire **Exporter JSON** par sécurité.
-2. Décompresser le ZIP V4.3.
+2. Décompresser le ZIP V4.4.
 3. Remplacer le contenu du dépôt GitHub Pages par celui de ce dossier, à la racine.
 4. Vérifier notamment `index.html`, `styles.css`, `app.js`, `builtins.js`, `service-worker.js`, `manifest.webmanifest` et le dossier `data`.
 5. Faire **Commit changes**.
 6. Ouvrir le site une première fois avec Internet, puis fermer et relancer l’application installée sur l’iPad.
 
-Le cache PWA V4.3 a changé de nom afin de forcer le chargement du bestiaire civil et de la bibliothèque mise à jour.
+Le cache PWA V4.4 a changé de nom afin de forcer le chargement des correctifs de combat et de la bibliothèque mise à jour.
 
 ## Compatibilité des sauvegardes
 

@@ -1,4 +1,4 @@
-const CACHE='encounter-v4-3-pv-undo-1';
+const CACHE='encounter-v4-4-death-saves-scroll-1';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./builtins.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./icon-1024.png','./data/bibliotheque-integree.json','./data/monsters.json','./data/campagne-maharles-v4.1.json','./data/bestiaire-civil-v4.2.json'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

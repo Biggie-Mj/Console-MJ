@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '4.3.0';
+const APP_VERSION = '4.4.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -613,7 +613,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[]};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-3-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4.3 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-4-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4.4 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
@@ -823,7 +823,7 @@ render();
    ========================================================= */
 
 // Migration douce : les données historiques restent compatibles.
-state.version='4.3.0';
+state.version='4.4.0';
 state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
 state.encounter.lastTargets=state.encounter.lastTargets||{};
 state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
@@ -838,9 +838,9 @@ const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
 function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
 async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
-function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.3.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.4.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
 const saveStateV361=saveState;
-saveState=function(){state.version='4.3.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+saveState=function(){state.version='4.4.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
 const writeBackupStoreV361=writeBackupStore;
 writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
 async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
@@ -902,7 +902,7 @@ renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)retur
 
 // Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
 const blankStateV4Base=blankState;
-blankState=function(){const s=blankStateV4Base();s.version='4.3.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+blankState=function(){const s=blankStateV4Base();s.version='4.4.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
 restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
 
 // -------- Render V4 global --------
@@ -954,7 +954,7 @@ undo=function(){
   try{
     const parsed=JSON.parse(snap);
     state=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
-    state.version='4.3.0';
+    state.version='4.4.0';
     ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:Date.now(),state:clone(state)});
@@ -1059,6 +1059,198 @@ const v43InitMigration=()=>{
     if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V4.3 — Undo, pavé PV et PV temporaires');
     localStorage.setItem('encounter-v43-migrated','1');
   }
-  state.version='4.3.0';v43SetQuickValue('');render();
+  state.version='4.4.0';v43SetQuickValue('');render();
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v43InitMigration,{once:true});else v43InitMigration();
+
+/* =========================================================
+   ENCOUNTER V4.4 — Sauvegardes contre la mort, scroll iPad,
+   Undo unifié et lisibilité des cartes de combat
+   ========================================================= */
+
+// ----- Données de sauvegardes contre la mort -----
+const normalizeParticipantV43=normalizeParticipant;
+normalizeParticipant=function(p={}){
+  const base=normalizeParticipantV43(p);
+  base.deathSuccesses=Math.max(0,Math.min(3,Number(p.deathSuccesses)||0));
+  base.deathFailures=Math.max(0,Math.min(3,Number(p.deathFailures)||0));
+  return base;
+};
+state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+
+function v44DeathSaveEligible(p){
+  if(!p||isLair(p))return false;
+  const m=modelFor(p);
+  return m?.category==='character'||p.kind==='player'||p.modelId==='npc-felipe-dofil';
+}
+function v44DeathSaveActive(p){return v44DeathSaveEligible(p)&&p.hp<=0;}
+function v44ResetDeathTracker(p){
+  if(!p)return false;
+  const changed=!!(p.deathSuccesses||p.deathFailures);
+  p.deathSuccesses=0;p.deathFailures=0;
+  return changed;
+}
+function v44PersistQuiet(){
+  state.version='4.4.0';state.savedAt=Date.now();
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){console.warn(err);}
+  if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});
+}
+function v44ResetLivingDeathTrackers(){
+  let changed=false;
+  (state.encounter.participants||[]).forEach(p=>{
+    if(v44DeathSaveEligible(p)&&p.hp>0&&(p.deathSuccesses||p.deathFailures))changed=v44ResetDeathTracker(p)||changed;
+  });
+  if(changed)v44PersistQuiet();
+}
+
+function v44DeathSkulls(count,type,pid){
+  return Array.from({length:3},(_,i)=>`<button type="button" class="death-skull ${type} ${i<count?'lit':''}" data-death-save-open="${pid}" aria-label="Enregistrer un jet de sauvegarde contre la mort">☠</button>`).join('');
+}
+function v44DeathSavePanel(p){
+  const s=Math.max(0,Math.min(3,Number(p.deathSuccesses)||0)),f=Math.max(0,Math.min(3,Number(p.deathFailures)||0));
+  const status=s>=3?'STABILISÉ':f>=3?'3 ÉCHECS':'JET À RÉSOUDRE';
+  const statusClass=s>=3?'stable':f>=3?'failed':'pending';
+  return `<section class="death-save-panel ${statusClass}">
+    <div class="death-save-heading"><div><span class="eyebrow">0 POINT DE VIE</span><h3>Jets de sauvegarde contre la mort</h3></div><span class="death-save-status ${statusClass}">${status}</span></div>
+    <div class="death-save-trackers">
+      <div class="death-track success"><span>RÉUSSITES</span><div>${v44DeathSkulls(s,'success',p.id)}</div><b>${s}/3</b></div>
+      <div class="death-track failure"><span>ÉCHECS</span><div>${v44DeathSkulls(f,'failure',p.id)}</div><b>${f}/3</b></div>
+    </div>
+    <p>Touche une tête de mort pour enregistrer le résultat. Une réussite/échec critique remplit deux marqueurs.</p>
+  </section>`;
+}
+function v44OpenDeathSaveDialog(pid){
+  const p=state.encounter.participants.find(x=>x.id===pid);
+  if(!p||!v44DeathSaveActive(p))return;
+  const d=$('#deathSaveDialog');if(!d)return;
+  d.dataset.participantId=p.id;
+  const target=$('#deathSaveDialogTarget');if(target)target.textContent=`${p.name} · Réussites ${p.deathSuccesses||0}/3 · Échecs ${p.deathFailures||0}/3`;
+  if(!d.open)d.showModal();
+}
+function v44ApplyDeathResult(kind){
+  const d=$('#deathSaveDialog'),p=state.encounter.participants.find(x=>x.id===d?.dataset.participantId);
+  if(!p||!v44DeathSaveActive(p))return d?.close();
+  const map={success:{s:1,f:0,label:'Réussi'},failure:{s:0,f:1,label:'Raté'},critSuccess:{s:2,f:0,label:'Réussite critique'},critFailure:{s:0,f:2,label:'Raté critique'}},r=map[kind];
+  if(!r)return;
+  checkpoint();
+  p.deathSuccesses=Math.min(3,(p.deathSuccesses||0)+r.s);
+  p.deathFailures=Math.min(3,(p.deathFailures||0)+r.f);
+  const msg=`${p.name} — sauvegarde contre la mort : ${r.label} · réussites ${p.deathSuccesses}/3 · échecs ${p.deathFailures}/3`;
+  log(msg);saveState();d.close();render();
+  if(typeof showActionPopup==='function')showActionPopup(msg,'Sauvegarde contre la mort');else toast(msg);
+}
+addEventListener('click',e=>{
+  const open=e.target.closest('[data-death-save-open]');if(open){e.preventDefault();e.stopImmediatePropagation();v44OpenDeathSaveDialog(open.dataset.deathSaveOpen);return;}
+  const result=e.target.closest('[data-death-result]');if(result){e.preventDefault();e.stopImmediatePropagation();v44ApplyDeathResult(result.dataset.deathResult);}
+},true);
+
+// Insère le suivi au-dessus de toute la fiche active.
+const renderDetailV43Final=renderDetail;
+renderDetail=function(){
+  renderDetailV43Final();
+  const p=selectedParticipant(),root=$('#activeDetail');
+  if(p&&root&&v44DeathSaveActive(p))root.insertAdjacentHTML('afterbegin',v44DeathSavePanel(p));
+};
+
+// Assombrit uniquement les PJ/Felipe à 0 PV tout en conservant les autres profils tels quels.
+const renderSingleCardV43Final=renderSingleCard;
+renderSingleCard=function(p,active){
+  let html=renderSingleCardV43Final(p,active);
+  if(v44DeathSaveActive(p))html=html.replace('combat-card ','combat-card death-save-active ');
+  return html;
+};
+
+// Tout soin ramenant un héros/Felipe au-dessus de 0 remet immédiatement le suivi à zéro.
+const applyHealDirectV43Final=applyHealDirect;
+applyHealDirect=function(target,amount){
+  const given=applyHealDirectV43Final(target,amount);
+  if(target?.hp>0&&v44DeathSaveEligible(target))v44ResetDeathTracker(target);
+  return given;
+};
+const applyHealManyV43Final=applyHealMany;
+applyHealMany=function(ids,amount){
+  applyHealManyV43Final(ids,amount);
+  let changed=false;
+  ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(p?.hp>0&&v44DeathSaveEligible(p))changed=v44ResetDeathTracker(p)||changed;});
+  if(changed){v44PersistQuiet();render();}
+};
+
+// Intercepte "Fixer les PV" pour garantir la remise à zéro dès le retour au-dessus de 0.
+addEventListener('click',e=>{
+  const b=e.target.closest('[data-sethp]');if(!b)return;
+  const p=state.encounter.participants.find(x=>x.id===b.dataset.sethp);if(!p)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  const raw=prompt('Fixer les PV actuels :',p.hp);if(raw===null)return;const n=Number(raw);if(Number.isNaN(n))return;
+  const next=Math.max(0,Math.min(p.maxHp,n));
+  mutate(()=>{p.hp=next;if(p.hp>0&&v44DeathSaveEligible(p))v44ResetDeathTracker(p);checkPhaseTransition(p);},`${p.name} est fixé à ${next} PV.`);
+},true);
+
+// L'éditeur d'instance bénéficie de la même règle de réinitialisation.
+const saveParticipantInstanceV43Final=saveParticipantInstance;
+saveParticipantInstance=function(){
+  const f=$('#participantEditorForm'),pid=f?.elements?.participantId?.value;
+  saveParticipantInstanceV43Final();
+  const p=state.encounter.participants.find(x=>x.id===pid);
+  if(p?.hp>0&&v44DeathSaveEligible(p)&&v44ResetDeathTracker(p)){v44PersistQuiet();render();}
+};
+
+// ----- Undo V4.4 : une seule implémentation pour le haut ET le Journal -----
+const V44_UNDO_KEY='encounter-console-undo-v44';
+function v44ReadUndo(){
+  try{
+    let raw=JSON.parse(localStorage.getItem(V44_UNDO_KEY)||'[]');
+    if(!Array.isArray(raw)||!raw.length)raw=JSON.parse(localStorage.getItem(V43_UNDO_KEY)||'[]');
+    return Array.isArray(raw)?raw.filter(x=>typeof x==='string').slice(-60):[];
+  }catch(_){return[];}
+}
+function v44WriteUndo(){
+  try{localStorage.setItem(V44_UNDO_KEY,JSON.stringify(undoStack.slice(-60)));}catch(_){/* l'historique mémoire reste disponible */}
+}
+{
+  const persisted=v44ReadUndo();if(persisted.length)undoStack=persisted;
+}
+checkpoint=function(){
+  const snap=JSON.stringify(state);
+  if(undoStack[undoStack.length-1]!==snap)undoStack.push(snap);
+  if(undoStack.length>60)undoStack.shift();
+  v44WriteUndo();
+};
+function v44Undo(){
+  if(!undoStack.length)undoStack=v44ReadUndo();
+  if(!undoStack.length){toast('Rien à annuler.');return false;}
+  const snap=undoStack.pop();v44WriteUndo();
+  try{
+    const parsed=JSON.parse(snap),restored=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
+    state=restored;state.version='4.4.0';state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+    ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
+    v44PersistQuiet();render();toast('Dernière action annulée.');return true;
+  }catch(err){console.error(err);toast('Impossible de restaurer la dernière action.');return false;}
+}
+undo=v44Undo;
+window.ENCOUNTER_UNDO=v44Undo;
+
+// Recrée les deux boutons pour retirer les anciens listeners locaux ; le handler global historique
+// appelle désormais lui aussi v44Undo via la variable `undo` ci-dessus.
+function v44RewireUndoButtons(){
+  ['btnUndo','btnUndoDrawer'].forEach(id=>{
+    const old=document.getElementById(id);if(!old)return;
+    const fresh=old.cloneNode(true);old.replaceWith(fresh);
+    fresh.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();v44Undo();});
+  });
+}
+
+// Le render final nettoie les anciens marqueurs dès qu'un personnage est de nouveau vivant.
+const renderV44Base=render;
+render=function(){v44ResetLivingDeathTrackers();renderV44Base();};
+
+function v44Init(){
+  state.version='4.4.0';
+  state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+  v44RewireUndoButtons();
+  if(!localStorage.getItem('encounter-v44-migrated')){
+    if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V4.4 — sauvegardes contre la mort et scroll combat');
+    localStorage.setItem('encounter-v44-migrated','1');
+  }
+  v44PersistQuiet();render();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v44Init,{once:true});else v44Init();

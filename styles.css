@@ -212,3 +212,49 @@
 .flash-temp{animation:flashTemp 2.5s ease-out!important}@keyframes flashTemp{0%,18%{box-shadow:0 0 0 4px #a66ce7,0 0 32px rgba(166,108,231,.85)!important}100%{box-shadow:var(--card-shadow,0 0 0 transparent)}}
 @media(max-width:1180px){.quickbar-v43{grid-template-columns:minmax(130px,.65fr) minmax(210px,.75fr) minmax(480px,2.3fr) minmax(190px,.8fr)}.quick-keypad-wrap{grid-template-columns:74px 1fr}.quick-keypad button{min-height:46px;font-size:15px}}
 @media(max-width:900px){.quickbar-v43{grid-template-columns:1fr 1fr;max-height:none}.quick-keypad-wrap{grid-column:1/-1}.quick-actions-v43{grid-column:1/-1;grid-template-columns:1fr 1fr 1fr!important}.quick-actions-v43 select{grid-column:auto}.quick-keypad{grid-template-columns:repeat(6,1fr)}}
+
+/* =========================================================
+   ENCOUNTER V4.4 — Sauvegardes contre la mort & scroll iPad
+   ========================================================= */
+/* Liste COMBAT réellement scrollable au toucher, indépendamment de la fiche. */
+.combat-mode .participant-panel{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.combat-mode .participant-panel>.panel-head{flex:0 0 auto}
+.combat-mode .combat-list{flex:1 1 auto!important;height:auto!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;scrollbar-gutter:stable}
+
+/* Le crayon reste dans l'en-tête, jamais sur la valeur des PV. */
+.combat-card>.instance-edit-btn{top:7px!important;right:7px!important}
+.combat-card .ini-badge{margin-right:31px}
+.member-wrap>.instance-edit-btn{top:-7px!important;right:-3px!important;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.group-members{overflow:visible}
+
+/* Le bouton Annuler du bandeau supérieur reste au-dessus de toute zone de combat. */
+#btnUndo{position:relative;z-index:12;pointer-events:auto!important}
+
+/* PJ/Felipe à 0 PV : carte assombrie mais toujours sélectionnable/ciblable. */
+.combat-card.death-save-active{opacity:.72!important;filter:brightness(.58) saturate(.62);border-color:#62596b!important;box-shadow:inset 0 0 0 1px rgba(129,112,149,.28),0 0 18px rgba(0,0,0,.32)}
+.combat-card.death-save-active.active,.combat-card.death-save-active.selected{filter:brightness(.68) saturate(.7)}
+.combat-card.death-save-active .select-hit{pointer-events:auto}
+
+/* Encadré de sauvegardes contre la mort, toujours au-dessus de la fiche active. */
+.death-save-panel{margin:12px 14px 10px;padding:12px 13px;border:1px solid #65556f;border-radius:14px;background:linear-gradient(180deg,#19151d,#100d12);box-shadow:0 9px 24px rgba(0,0,0,.3)}
+.death-save-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.death-save-heading h3{margin:2px 0 0;font-size:16px}
+.death-save-status{padding:5px 8px;border:1px solid #66566f;border-radius:999px;font:900 9px ui-sans-serif,system-ui;letter-spacing:.08em;color:#d8c8e1;background:#17121a;white-space:nowrap}
+.death-save-status.stable{border-color:#406a82;background:#13212b;color:#b9e1ff}.death-save-status.failed{border-color:#804344;background:#2b1516;color:#ffc2c2}
+.death-save-trackers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.death-track{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:9px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.018)}
+.death-track>span{font:900 8px ui-sans-serif,system-ui;letter-spacing:.1em;color:#a89dab}.death-track>b{font:900 11px ui-monospace,SFMono-Regular,Menlo,monospace;color:#ccc}
+.death-track>div{display:flex;justify-content:center;gap:5px}
+.death-skull{min-height:38px!important;width:40px;padding:0!important;border-radius:10px;background:#0c0a0e;border:1px solid #403947;color:#5c5561;font-size:18px;line-height:1;transition:.16s}
+.death-skull.success.lit{color:#b9e6ff;border-color:#4e91b9;background:#123044;box-shadow:0 0 13px rgba(72,158,211,.42)}
+.death-skull.failure.lit{color:#ffc0c0;border-color:#b64d51;background:#3a1618;box-shadow:0 0 13px rgba(213,66,73,.42)}
+.death-save-panel>p{margin:9px 0 0;color:#9e929f;font:10px/1.4 ui-sans-serif,system-ui}
+
+/* Pop-up de choix du résultat. */
+.death-save-modal{width:min(620px,calc(100vw - 24px))}.death-save-modal .modal-shell{padding:16px}.death-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.death-result{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;text-align:left;gap:1px 10px;align-items:center;min-height:72px;padding:11px 13px}.death-result>span{grid-row:1/3;font-size:24px}.death-result strong{font-size:13px}.death-result small{color:var(--muted);font-size:9px}.death-result.success{border-color:#376b8b;background:#10222e}.death-result.success>span,.death-result.success strong{color:#bde6ff}.death-result.failure{border-color:#793c3f;background:#281112}.death-result.failure>span,.death-result.failure strong{color:#ffc0c0}.death-result.critical{box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+
+@media (min-width:768px) and (orientation:landscape){
+  .combat-mode .participant-panel,.combat-mode .detail-panel{height:100%;min-height:0}
+  .combat-mode .combat-list{height:auto!important}
+}
+@media(max-width:760px){.death-save-trackers,.death-result-grid{grid-template-columns:1fr}.death-save-heading{align-items:flex-start;flex-direction:column}.member-wrap>.instance-edit-btn{top:-5px!important;right:-2px!important}}

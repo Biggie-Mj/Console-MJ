@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ENCOUNTER V4.3 — Console MJ D&D 5e</title>
+  <title>ENCOUNTER V4.4 — Console MJ D&D 5e</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -20,7 +20,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">⚔</div>
-      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.3</p></div>
+      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.4</p></div>
     </div>
     <div class="mode-switch" aria-label="Mode d'utilisation">
       <button id="btnModeHome" class="mode-btn">⌂ Accueil</button>
@@ -64,7 +64,7 @@
   <main id="homeView" class="home-view hidden">
     <section class="home-hero panel-soft">
       <div class="home-brand-block">
-        <span class="eyebrow">ENCOUNTER V4.3</span>
+        <span class="eyebrow">ENCOUNTER V4.4</span>
         <h2>Que veux-tu faire ?</h2>
         <p>Accès direct à la partie en cours, aux rencontres préparées et à une nouvelle préparation.</p>
       </div>
@@ -312,6 +312,20 @@
       <p id="participantEditorHint" class="muted tiny"></p>
       <div class="modal-actions"><button type="button" class="ghost" data-dialog-close="participantEditorDialog">Annuler</button><button type="submit" class="primary">Appliquer à cette instance</button></div>
     </form>
+  </dialog>
+
+  <dialog id="deathSaveDialog" class="modal death-save-modal">
+    <div class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">0 POINT DE VIE</span><h2>Jet de sauvegarde contre la mort</h2></div><button type="button" class="icon-btn" data-dialog-close="deathSaveDialog">×</button></div>
+      <p id="deathSaveDialogTarget" class="muted">Choisis le résultat du jet.</p>
+      <div class="death-result-grid">
+        <button type="button" class="death-result success" data-death-result="success"><span>☠</span><strong>Réussi</strong><small>+1 réussite</small></button>
+        <button type="button" class="death-result failure" data-death-result="failure"><span>☠</span><strong>Raté</strong><small>+1 échec</small></button>
+        <button type="button" class="death-result success critical" data-death-result="critSuccess"><span>☠☠</span><strong>Réussite critique</strong><small>+2 réussites</small></button>
+        <button type="button" class="death-result failure critical" data-death-result="critFailure"><span>☠☠</span><strong>Raté critique</strong><small>+2 échecs</small></button>
+      </div>
+      <div class="modal-actions"><button type="button" class="ghost" data-dialog-close="deathSaveDialog">Annuler</button></div>
+    </div>
   </dialog>
 
   <div id="actionPopup" class="action-popup" aria-live="assertive"><span class="eyebrow">ACTION</span><strong id="actionPopupTitle">Résolution</strong><p id="actionPopupText"></p></div>

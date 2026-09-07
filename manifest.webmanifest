@@ -1,7 +1,7 @@
 {
   "name": "ENCOUNTER — Console MJ D&D 5e",
   "short_name": "ENCOUNTER",
-  "description": "Console MJ D&D 5e V4.3 : Compagnie Créole, Maharles et bestiaire civil, Undo global, pavé tactile et PV temporaires intégrés.",
+  "description": "Console MJ D&D 5e V4.4 : sauvegardes contre la mort, combat scrollable, Undo unifié, pavé tactile et PV temporaires.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
