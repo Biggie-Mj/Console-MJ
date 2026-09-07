@@ -1,0 +1,1559 @@
+[
+  {
+    "id": "npc-villageois-generique",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Population",
+      "Ouvrier"
+    ],
+    "name": "Villageois",
+    "subtitle": "Civil générique · foule, témoin, ouvrier",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "0",
+    "ac": 10,
+    "hp": 5,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 10,
+      "CON": 9,
+      "INT": 10,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {},
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 10 · commun · éventuellement un dialecte local",
+    "traits": [
+      {
+        "name": "Métier",
+        "detail": "Maîtrise un ensemble d’outils approprié à son métier : outils de fermier, de charpentier, de potier, de cordonnier, etc. Une compétence professionnelle au choix est à +2.",
+        "kind": "text"
+      },
+      {
+        "name": "Solidarité villageoise",
+        "detail": "Lorsqu’un villageois effectue l’action Aider pour assister un autre villageois dans une tâche professionnelle, la créature aidée ajoute également 1d4 à son test.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Outil improvisé",
+        "detail": "Attaque d’arme au corps à corps : +2 au toucher, allonge 1,50 m, une cible.",
+        "kind": "attack",
+        "bonus": 2,
+        "damage": "1d4",
+        "damageType": "contondants",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 5 (2d8 − 4). ND 0 (10 PX). Bonus de maîtrise +2. Comportement : fuit presque toujours un véritable monstre ; en groupe, peut défendre enfants, maison ou récoltes. Butin : 1d6 pa, effets personnels, outils de travail et nourriture pour une journée."
+  },
+  {
+    "id": "npc-aubergiste-robuste",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Auberge",
+      "Rumeurs",
+      "Social"
+    ],
+    "name": "Aubergiste robuste",
+    "subtitle": "Civil générique · rumeurs, accueil, bagarre",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/8",
+    "ac": 11,
+    "hp": 13,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 13,
+      "DEX": 11,
+      "CON": 12,
+      "INT": 11,
+      "SAG": 13,
+      "CHA": 14
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "intuition": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 13 · commun plus une langue",
+    "traits": [
+      {
+        "name": "Oreille du comptoir",
+        "detail": "Avantage aux tests de Sagesse (Intuition) concernant les habitants réguliers du village.",
+        "kind": "text"
+      },
+      {
+        "name": "J’en ai vu d’autres",
+        "detail": "Avantage aux jets de sauvegarde contre l’état effrayé provoqué par un humanoïde.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Gourdin lourd",
+        "detail": "Attaque au corps à corps, allonge 1,50 m.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d6+1",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Chope, bouteille ou tabouret",
+        "detail": "Attaque à distance, portée 6/18 m.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d4+1",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Calmez-vous !",
+        "detail": "Action bonus : une créature vue à 9 m qui peut l’entendre reçoit 1d4 à son prochain test de Charisme effectué avant la fin de son prochain tour.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 13 (3d8). ND 1/8 (25 PX). Bonus de maîtrise +2. Comportement : tente d’abord de désamorcer une bagarre ; si le personnel ou les clients sont menacés, il sort le gourdin. Butin : 1d10 po, trousseau de clés, carnet de comptes et accès à une caisse contenant généralement 5d10 po."
+  },
+  {
+    "id": "npc-artisan-forgeron",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Artisanat",
+      "Forge",
+      "Réparation"
+    ],
+    "name": "Artisan / Forgeron",
+    "subtitle": "Civil générique · réparations, fabrication",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 13,
+    "hp": 22,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 15,
+      "DEX": 11,
+      "CON": 13,
+      "INT": 12,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "athletisme": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "investigation": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 11 · commun",
+    "traits": [
+      {
+        "name": "Expertise artisanale",
+        "detail": "Double son bonus de maîtrise lorsqu’il utilise son principal ensemble d’outils. Maîtrise deux ensembles d’outils d’artisan.",
+        "kind": "text"
+      },
+      {
+        "name": "Connaissance des matériaux",
+        "detail": "Avantage aux tests visant à évaluer la qualité, l’état ou la valeur d’un objet manufacturé.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Marteau",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Grand marteau de forge",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d10+2",
+        "damageType": "contondants",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 22 (4d8 + 4). ND 1/4 (50 PX). Comportement : défend volontiers son atelier, mais n’est pas un combattant professionnel. Butin : 2d6 po, outils d’artisan, matières premières et éventuellement une arme ou armure en cours de fabrication."
+  },
+  {
+    "id": "npc-marchand",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Commerce",
+      "Estimation",
+      "Social"
+    ],
+    "name": "Marchand",
+    "subtitle": "Civil générique · commerce, estimation",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/8",
+    "ac": 12,
+    "hp": 11,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 9,
+      "DEX": 12,
+      "CON": 12,
+      "INT": 14,
+      "SAG": 13,
+      "CHA": 15
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "intuition": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "investigation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 11 · commun plus deux langues",
+    "traits": [
+      {
+        "name": "Œil du négociant",
+        "detail": "Connaît approximativement la valeur normale d’un objet non magique après 1 minute d’examen.",
+        "kind": "text"
+      },
+      {
+        "name": "Marchandage",
+        "detail": "Une fois par conversation, peut relancer un test de Persuasion ou de Tromperie raté concernant une transaction commerciale.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d4+1",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Arbalète légère",
+        "detail": "Portée 24/96 m.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d8+1",
+        "damageType": "perforants",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 11 (2d8 + 2). ND 1/8 (25 PX). Comportement : préfère payer, négocier ou fuir plutôt que se battre. Butin : 2d10 po, 4d10 pa, registre de comptes et marchandises adaptées à son activité."
+  },
+  {
+    "id": "npc-guerisseur-herboriste",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Soins",
+      "Herboristerie",
+      "Médecine"
+    ],
+    "name": "Guérisseur / Herboriste",
+    "subtitle": "Civil générique · soins, maladies, poisons",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 11,
+    "hp": 16,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 12,
+      "CON": 12,
+      "INT": 14,
+      "SAG": 16,
+      "CHA": 11
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "medecine": {
+        "mod": 7,
+        "status": "Expertise"
+      },
+      "nature": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 5,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 13 · commun plus une langue",
+    "traits": [
+      {
+        "name": "Médecin expérimenté",
+        "detail": "Stabiliser une créature inconsciente ne nécessite aucun test.",
+        "kind": "text"
+      },
+      {
+        "name": "Diagnostic",
+        "detail": "Après avoir examiné une créature pendant 1 minute, peut déterminer si elle souffre d’une maladie, d’un poison ou d’une blessure ordinaire visible.",
+        "kind": "text"
+      },
+      {
+        "name": "Matériel d’herboriste",
+        "detail": "Maîtrise le matériel d’herboriste.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d4+1",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Baume médicinal",
+        "detail": "3/jour. Une créature située à 1,50 m récupère 1d6 + 3 PV. Une même créature ne peut en bénéficier qu’une fois entre deux repos courts ou longs.",
+        "kind": "heal",
+        "damage": "1d6+3",
+        "damageType": "PV",
+        "economy": "action"
+      },
+      {
+        "name": "Antidote improvisé",
+        "detail": "1/jour. Une créature bénéficie d’un avantage à son prochain jet de sauvegarde contre un poison ou une maladie effectué dans l’heure.",
+        "kind": "text",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [
+      {
+        "name": "Baume médicinal",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Antidote improvisé",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "notes": "PV 16 (3d8 + 3). ND 1/4 (50 PX). Comportement : ne combat que pour défendre un patient ou lui-même. Butin : matériel d’herboriste, 1d4 doses d’antitoxine ou remèdes locaux, 2d6 po."
+  },
+  {
+    "id": "npc-pretre-rural",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Religion",
+      "Soins",
+      "Magie divine"
+    ],
+    "name": "Prêtre rural",
+    "subtitle": "Civil générique · religion, soins magiques",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1",
+    "ac": 13,
+    "hp": 27,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 10,
+      "CON": 12,
+      "INT": 12,
+      "SAG": 16,
+      "CHA": 14
+    },
+    "saves": "SAG +5, CHA +4",
+    "saveMods": {
+      "SAG": 5,
+      "CHA": 4
+    },
+    "skills": {
+      "medecine": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 13 · commun plus deux langues",
+    "traits": [
+      {
+        "name": "Incantation",
+        "detail": "Lanceur de sorts utilisant la Sagesse. DD des sorts 13, +5 aux attaques de sort. À volonté : assistance, flamme sacrée, thaumaturgie. 3/jour chacun : bénédiction, soins, sanctuaire. 1/jour chacun : restauration partielle, arme spirituelle.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Masse",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 2,
+        "damage": "1d6",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Flamme sacrée",
+        "detail": "Une créature à 18 m effectue un JS de Dextérité DD 13.",
+        "kind": "save",
+        "dc": 13,
+        "save": "DEX",
+        "damage": "2d8",
+        "damageType": "radiants",
+        "economy": "action"
+      },
+      {
+        "name": "Assistance",
+        "detail": "À volonté.",
+        "kind": "text"
+      },
+      {
+        "name": "Thaumaturgie",
+        "detail": "À volonté.",
+        "kind": "text"
+      },
+      {
+        "name": "Bénédiction",
+        "detail": "3/jour.",
+        "kind": "text"
+      },
+      {
+        "name": "Soins",
+        "detail": "3/jour. Les paramètres de soin ne sont pas détaillés dans le statblock fourni.",
+        "kind": "text"
+      },
+      {
+        "name": "Sanctuaire",
+        "detail": "3/jour.",
+        "kind": "text"
+      },
+      {
+        "name": "Restauration partielle",
+        "detail": "1/jour.",
+        "kind": "text"
+      },
+      {
+        "name": "Arme spirituelle",
+        "detail": "1/jour.",
+        "kind": "text"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [
+      {
+        "name": "Bénédiction",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Soins",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Sanctuaire",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Restauration partielle",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Arme spirituelle",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "notes": "PV 27 (5d8 + 5). ND 1 (200 PX). Comportement : protège prioritairement les innocents et les blessés, puis soutient les gardes. Butin : symbole sacré, vêtements cérémoniels, 2d10 po appartenant souvent au temple plutôt qu’au prêtre."
+  },
+  {
+    "id": "npc-garde-villageois",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Garde",
+      "Milice",
+      "Combat"
+    ],
+    "name": "Garde villageois",
+    "subtitle": "Civil générique · maintien de l’ordre",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 16,
+    "hp": 24,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 14,
+      "DEX": 12,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "athletisme": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 13 · commun",
+    "traits": [
+      {
+        "name": "Tenir la ligne",
+        "detail": "Tant qu’un garde se trouve à 1,50 m d’un autre allié équipé d’un bouclier, il bénéficie d’un bonus de +1 à la CA.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Lance",
+        "detail": "Attaque de mêlée : 1d6+2 perforants, ou 1d8+2 à deux mains.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Arbalète légère",
+        "detail": "Attaque à distance.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d8+1",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Coup de bouclier",
+        "detail": "Sur une touche, JS FOR DD 12 ou repoussée de 1,50 m.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d4+2",
+        "damageType": "contondants",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 24 (4d8 + 6). ND 1/2 (100 PX). Comportement : combat en formation, protège les civils et essaie de capturer les criminels plutôt que de les tuer. Butin : équipement militaire, sifflet, 1d6 pa et insigne de la milice."
+  },
+  {
+    "id": "npc-prevot-chef-milice",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Garde",
+      "Commandement",
+      "Milice"
+    ],
+    "name": "Prévôt / Chef de milice",
+    "subtitle": "Civil générique · défense du village",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "2",
+    "ac": 17,
+    "hp": 52,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 2,
+    "abilities": {
+      "FOR": 16,
+      "DEX": 13,
+      "CON": 15,
+      "INT": 12,
+      "SAG": 14,
+      "CHA": 14
+    },
+    "saves": "FOR +5, CON +4",
+    "saveMods": {
+      "FOR": 5,
+      "CON": 4
+    },
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "intimidation": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 14 · commun plus une langue",
+    "traits": [
+      {
+        "name": "Commandement tactique",
+        "detail": "Les gardes alliés situés à 3 m du prévôt ont l’avantage contre l’état effrayé.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Attaques multiples",
+        "detail": "Le prévôt effectue deux attaques.",
+        "kind": "multiattack",
+        "sequence": "Épée longue*2",
+        "economy": "action"
+      },
+      {
+        "name": "Épée longue",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "tranchants",
+        "economy": "action"
+      },
+      {
+        "name": "Arbalète lourde",
+        "detail": "Attaque à distance.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d10+1",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Ordre !",
+        "detail": "Action bonus : un allié à 9 m qui peut l’entendre peut se déplacer de la moitié de sa vitesse sans provoquer d’attaque d’opportunité.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Parade",
+        "detail": "Ajoute +2 à sa CA contre une attaque de corps à corps qui devrait le toucher.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 52 (8d8 + 16). ND 2 (450 PX). Comportement : identifie rapidement l’ennemi le plus dangereux et organise les autres villageois autour de lui. Butin : armes, armure, insigne d’autorité, clés des geôles et 2d10 po."
+  },
+  {
+    "id": "npc-chasseur-trappeur",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Chasse",
+      "Pistage",
+      "Exploration"
+    ],
+    "name": "Chasseur / Trappeur",
+    "subtitle": "Civil générique · nature, pistage",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1",
+    "ac": 14,
+    "hp": 30,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 12,
+      "DEX": 16,
+      "CON": 14,
+      "INT": 11,
+      "SAG": 15,
+      "CHA": 9
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "discretion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "nature": {
+        "mod": 2,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 6,
+        "status": "Expertise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 14 · commun",
+    "traits": [
+      {
+        "name": "Pisteur",
+        "detail": "Avantage aux tests de Survie pour suivre des traces.",
+        "kind": "text"
+      },
+      {
+        "name": "Tireur embusqué",
+        "detail": "Une fois par tour, s’il attaque depuis une position où sa cible ne l’a pas détecté, son attaque inflige 1d6 dégâts supplémentaires.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Arc long",
+        "detail": "Attaque à distance.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Épée courte",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d6+3",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Piège de chasse",
+        "detail": "Peut poser un piège adapté à une créature de taille M ou inférieure en 1 minute.",
+        "kind": "text",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 30 (5d8 + 8). ND 1 (200 PX). Comportement : préfère engager à distance puis changer constamment de position. Butin : arc, 20 flèches, 1d4 pièges, couteau, corde, rations et 1d6 po."
+  },
+  {
+    "id": "npc-eclaireur-messager",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Éclaireur",
+      "Messager",
+      "Voyage"
+    ],
+    "name": "Éclaireur / Messager",
+    "subtitle": "Civil générique · voyage, reconnaissance",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 14,
+    "hp": 19,
+    "initiative": 2,
+    "speed": "10,50 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 11,
+      "DEX": 15,
+      "CON": 14,
+      "INT": 11,
+      "SAG": 14,
+      "CHA": 12
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "acrobaties": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 14",
+    "traits": [
+      {
+        "name": "Courseur",
+        "detail": "Les terrains difficiles naturels ne lui coûtent pas de déplacement supplémentaire lorsqu’il effectue l’action Foncer.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Arc court",
+        "detail": "Attaque à distance.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Épée courte",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d6+2",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Déplacement rapide",
+        "detail": "Action bonus : effectue l’action Foncer ou Se désengager.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 19 (3d8 + 6). ND 1/2 (100 PX). Langues non précisées dans le statblock fourni. Comportement : son premier instinct est de transmettre l’information, pas de remporter le combat. Butin : carte locale, matériel de voyage, messages éventuels, 2d6 pa."
+  },
+  {
+    "id": "npc-berger-dresseur",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Animaux",
+      "Élevage",
+      "Dressage"
+    ],
+    "name": "Berger / Dresseur",
+    "subtitle": "Civil générique · animaux, élevage",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 12,
+    "hp": 17,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 12,
+      "DEX": 12,
+      "CON": 13,
+      "INT": 10,
+      "SAG": 15,
+      "CHA": 13
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "dressage": {
+        "mod": 6,
+        "status": "Expertise"
+      },
+      "perception": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "survie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 14",
+    "traits": [
+      {
+        "name": "Maître des bêtes",
+        "detail": "Les animaux domestiqués commencent généralement avec une attitude amicale envers le berger.",
+        "kind": "text"
+      },
+      {
+        "name": "Connaissance du troupeau",
+        "detail": "Peut déterminer après un examen rapide si un animal est blessé, malade ou particulièrement agité.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bâton",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d6+1",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Fronde",
+        "detail": "Attaque à distance.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d4+1",
+        "damageType": "contondants",
+        "economy": "action"
+      },
+      {
+        "name": "Commande animale",
+        "detail": "Action bonus : un animal domestiqué allié à 18 m peut immédiatement se déplacer de la moitié de sa vitesse.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 17 (3d8 + 3). ND 1/4 (50 PX). Langues non précisées dans le statblock fourni. Comportement : utilise ses animaux pour alerter, encercler ou distraire, mais évite de les sacrifier inutilement. Butin : bâton, sifflet, corde, nourriture animale et 1d6 pa."
+  },
+  {
+    "id": "npc-sage-erudit",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Savoir",
+      "Archives",
+      "Érudit"
+    ],
+    "name": "Sage / Érudit",
+    "subtitle": "Civil générique · informations, archives",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/4",
+    "ac": 10,
+    "hp": 11,
+    "initiative": 0,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 10,
+      "CON": 12,
+      "INT": 17,
+      "SAG": 14,
+      "CHA": 11
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "arcanes": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "histoire": {
+        "mod": 7,
+        "status": "Expertise"
+      },
+      "investigation": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 12 · commun plus trois langues",
+    "traits": [
+      {
+        "name": "Mémoire savante",
+        "detail": "Quand le sage effectue un test d’Intelligence concernant l’histoire, la religion, la magie ou la région, il peut ajouter 1d4 au résultat.",
+        "kind": "text"
+      },
+      {
+        "name": "Recherche documentaire",
+        "detail": "Avec au moins une heure et l’accès à des archives appropriées, il obtient l’avantage à son prochain test d’Intelligence concernant le sujet étudié.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 2,
+        "damage": "1d4",
+        "damageType": "perforants",
+        "economy": "action"
+      }
+    ],
+    "reactions": [],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 11 (2d8 + 2). ND 1/4 (50 PX). Comportement : considère généralement le combat comme une catastrophe logistique et cherche immédiatement une sortie. Butin : livres, notes, cartes, matériel d’écriture, 1d10 po ; ses ouvrages peuvent valoir beaucoup plus."
+  },
+  {
+    "id": "npc-arcaniste-local",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Magie",
+      "Arcanes",
+      "Services"
+    ],
+    "name": "Arcaniste local",
+    "subtitle": "Civil générique · magie, identification",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1",
+    "ac": 12,
+    "hp": 24,
+    "initiative": 2,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 11,
+      "INT": 16,
+      "SAG": 12,
+      "CHA": 11
+    },
+    "saves": "INT +5, SAG +3",
+    "saveMods": {
+      "INT": 5,
+      "SAG": 3
+    },
+    "skills": {
+      "arcanes": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "investigation": {
+        "mod": 5,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 11 · commun plus deux langues",
+    "traits": [
+      {
+        "name": "Incantation",
+        "detail": "Intelligence comme caractéristique d’incantation. DD 13, +5 aux attaques de sort. À volonté : main du mage, prestidigitation, trait de feu. 3/jour : projectile magique, détection de la magie. 1/jour : bouclier, sommeil, pas brumeux.",
+        "kind": "text"
+      },
+      {
+        "name": "Armure du mage",
+        "detail": "CA 15 avec armure du mage ; CA 12 sinon.",
+        "kind": "text"
+      },
+      {
+        "name": "Services typiques",
+        "detail": "Peut reconnaître un phénomène magique, copier ou traduire des inscriptions arcaniques, lancer détection de la magie et produire de petits effets magiques utilitaires.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Trait de feu",
+        "detail": "Attaque de sort à distance, portée 36 m.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d10",
+        "damageType": "feu",
+        "economy": "action"
+      },
+      {
+        "name": "Dague",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 4,
+        "damage": "1d4+2",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Projectile magique",
+        "detail": "3/jour. Les dégâts ne sont pas détaillés dans le statblock fourni.",
+        "kind": "text"
+      },
+      {
+        "name": "Détection de la magie",
+        "detail": "3/jour.",
+        "kind": "text"
+      },
+      {
+        "name": "Sommeil",
+        "detail": "1/jour.",
+        "kind": "text"
+      },
+      {
+        "name": "Pas brumeux",
+        "detail": "1/jour.",
+        "kind": "text"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Bouclier magique",
+        "detail": "1/jour. Obtient +5 à la CA jusqu’au début de son prochain tour.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [
+      {
+        "name": "Projectile magique",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Détection de la magie",
+        "max": 3,
+        "start": 3,
+        "reset": "jour"
+      },
+      {
+        "name": "Bouclier magique",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Sommeil",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      },
+      {
+        "name": "Pas brumeux",
+        "max": 1,
+        "start": 1,
+        "reset": "jour"
+      }
+    ],
+    "notes": "PV 24 (5d8 + 2). ND 1 (200 PX). Butin : focaliseur arcanique, composants mineurs, carnet de sorts et 2d10 po."
+  },
+  {
+    "id": "npc-larron-contrebandier",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Crime",
+      "Infiltration",
+      "Contrebande"
+    ],
+    "name": "Larron / Contrebandier",
+    "subtitle": "Civil générique · crime, infiltration",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1",
+    "ac": 14,
+    "hp": 30,
+    "initiative": 3,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 16,
+      "CON": 14,
+      "INT": 13,
+      "SAG": 12,
+      "CHA": 14
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "discretion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "escamotage": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 13 · commun plus argot local",
+    "traits": [
+      {
+        "name": "Outils de voleur",
+        "detail": "Outils de voleur +5.",
+        "kind": "text"
+      },
+      {
+        "name": "Attaque sournoise",
+        "detail": "1/tour. Une attaque avec une arme de finesse ou à distance inflige 1d6 dégâts supplémentaires lorsqu’il bénéficie de l’avantage ou qu’un allié menace la cible.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Dague",
+        "detail": "Attaque au corps à corps. Attaque sournoise possible si les conditions sont remplies.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d4+3",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Arbalète légère",
+        "detail": "Attaque à distance. Attaque sournoise possible si les conditions sont remplies.",
+        "kind": "attack",
+        "bonus": 5,
+        "damage": "1d8+3",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Fourberie",
+        "detail": "Action bonus : effectue l’action Se cacher, Foncer ou Se désengager.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Esquive instinctive",
+        "detail": "Lorsqu’il est touché par une attaque qu’il voit, réduit les dégâts de 1d6.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 30 (5d8 + 8). ND 1 (200 PX). Comportement : ne se bat jamais loyalement ; utilise couvertures, portes, foule et obscurité. Butin : outils de voleur, 2d10 po, objets volés valant 1d20 po, éventuellement une clé ou un message compromettant."
+  },
+  {
+    "id": "npc-bourgmestre-notable",
+    "category": "npc",
+    "source": "Bestiaire civil générique · utilisateur",
+    "tags": [
+      "Village",
+      "Civil générique",
+      "Politique",
+      "Autorité",
+      "Social"
+    ],
+    "name": "Bourgmestre / Notable",
+    "subtitle": "Civil générique · politique, négociation",
+    "type": "Humanoïde",
+    "size": "M",
+    "cr": "1/2",
+    "ac": 12,
+    "hp": 22,
+    "initiative": 1,
+    "speed": "9 m",
+    "attacksPerAction": 1,
+    "abilities": {
+      "FOR": 10,
+      "DEX": 12,
+      "CON": 12,
+      "INT": 14,
+      "SAG": 14,
+      "CHA": 16
+    },
+    "saves": "",
+    "saveMods": {},
+    "skills": {
+      "histoire": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "intuition": {
+        "mod": 4,
+        "status": "Maîtrise"
+      },
+      "persuasion": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "tromperie": {
+        "mod": 5,
+        "status": "Maîtrise"
+      }
+    },
+    "damageResistances": [],
+    "damageVulnerabilities": [],
+    "damageImmunities": [],
+    "conditionImmunities": [],
+    "senses": "Perception passive 12 · commun plus deux langues",
+    "traits": [
+      {
+        "name": "Autorité locale",
+        "detail": "Avantage aux tests de Charisme effectués auprès d’habitants qui reconnaissent officiellement son autorité.",
+        "kind": "text"
+      },
+      {
+        "name": "Réseau de connaissances",
+        "detail": "Après 1 heure passée à interroger les habitants, peut généralement identifier une personne capable de fournir un service légal courant disponible dans le village.",
+        "kind": "text"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Rapière",
+        "detail": "Attaque au corps à corps.",
+        "kind": "attack",
+        "bonus": 3,
+        "damage": "1d8+1",
+        "damageType": "perforants",
+        "economy": "action"
+      },
+      {
+        "name": "Directive",
+        "detail": "Action bonus : un allié situé à 9 m qui peut l’entendre ajoute 1d4 à son prochain jet d’attaque ou test de caractéristique effectué avant la fin de son prochain tour.",
+        "kind": "text",
+        "economy": "bonus"
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Interposition sociale",
+        "detail": "Lorsqu’un allié à 9 m effectue un test de Persuasion ou d’Intimidation, le notable peut lui accorder l’avantage s’il peut participer à la conversation.",
+        "kind": "text",
+        "economy": "reaction"
+      }
+    ],
+    "legendaryActions": [],
+    "lairActions": [],
+    "legendaryMax": 0,
+    "isBoss": false,
+    "phases": [],
+    "resources": [],
+    "notes": "PV 22 (4d8 + 4). ND 1/2 (100 PX). Comportement : cherche à contrôler la situation plutôt qu’à combattre ; en cas d’attaque, appelle la milice et se met à couvert. Butin : 3d10 po, sceau officiel, clés de bâtiments administratifs, correspondance et documents locaux."
+  }
+]

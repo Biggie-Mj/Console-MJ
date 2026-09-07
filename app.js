@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '4.1.0';
+const APP_VERSION = '4.3.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -86,7 +86,7 @@ function normalizeMonster(m={}){
   return {
     id:m.id||uid('monster'),category:['character','companion','npc','enemy'].includes(m.category)?m.category:'enemy',source:m.source||'',subtitle:m.subtitle||'',name:m.name||'Adversaire',type:m.type||'',size:m.size||'',cr:String(m.cr??''),
     favorite:!!m.favorite,tags:splitList(m.tags),isBoss:!!m.isBoss,
-    ac:Number(m.ac)||10,hp:Math.max(1,Number(m.hp)||1),initiative:Number(m.initiative)||0,speed:m.speed||'',saves:m.saves||'',abilities,saveMods,
+    ac:Number(m.ac)||10,hp:Math.max(1,Number(m.hp)||1),startHp:m.startHp==null?null:Math.max(0,Math.min(Math.max(1,Number(m.hp)||1),Number(m.startHp)||0)),initiative:Number(m.initiative)||0,speed:m.speed||'',saves:m.saves||'',abilities,saveMods,
     skills:Object.assign({},PROFILE_SKILLS[m.id]||{},m.skills||{}),attacksPerAction:Math.max(1,Number(m.attacksPerAction)||0),
     damageResistances:splitList(m.damageResistances?.length?m.damageResistances:m.resistances),
     damageVulnerabilities:splitList(m.damageVulnerabilities?.length?m.damageVulnerabilities:m.vulnerabilities),
@@ -154,7 +154,7 @@ function modelFor(p){return p?.modelId?state.monsters.find(m=>m.id===p.modelId):
 function isLair(p){return p?.kind==='lair';}
 function makeParticipant(monster,n=1,initiative=10,groupId=null,companionOf=null){
   const m=normalizeMonster(monster),abilityState={},resourceState={};[...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions].forEach(a=>abilityState[a.id]={ready:true});m.resources.forEach(r=>resourceState[r.id]=r.start);
-  return {id:uid('p'),modelId:m.id,groupId,name:groupId?`${m.name} ${n}`:m.name,baseName:m.name,kind:m.category==='enemy'?'enemy':m.category==='character'?'player':'ally',ac:m.ac,maxHp:m.hp,hp:m.hp,tempHp:0,initiative:Number(initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:m.legendaryMax,currentPhaseId:null,abilityState,resourceState,companionOf,lairOwnerId:null,bossOverride:false,attackProgress:0};
+  return {id:uid('p'),modelId:m.id,groupId,name:groupId?`${m.name} ${n}`:m.name,baseName:m.name,kind:m.category==='enemy'?'enemy':m.category==='character'?'player':'ally',ac:m.ac,maxHp:m.hp,hp:m.startHp==null?m.hp:m.startHp,tempHp:0,initiative:Number(initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:m.legendaryMax,currentPhaseId:null,abilityState,resourceState,companionOf,lairOwnerId:null,bossOverride:false,attackProgress:0};
 }
 function makeLairParticipant(owner,m){return {id:uid('lair'),modelId:m.id,groupId:null,name:`Repaire — ${owner.baseName}`,baseName:`Repaire — ${owner.baseName}`,kind:'lair',ac:0,maxHp:1,hp:1,tempHp:0,initiative:m.lairInitiative??20,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:0,currentPhaseId:null,abilityState:{},resourceState:{},companionOf:null,lairOwnerId:owner.id};}
 function sortedParticipants(){
@@ -613,7 +613,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[]};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-1-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-3-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4.3 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
@@ -823,7 +823,7 @@ render();
    ========================================================= */
 
 // Migration douce : les données historiques restent compatibles.
-state.version='4.1.0';
+state.version='4.3.0';
 state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
 state.encounter.lastTargets=state.encounter.lastTargets||{};
 state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
@@ -838,9 +838,9 @@ const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
 function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
 async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
-function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.1.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.3.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
 const saveStateV361=saveState;
-saveState=function(){state.version='4.1.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+saveState=function(){state.version='4.3.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
 const writeBackupStoreV361=writeBackupStore;
 writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
 async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
@@ -902,7 +902,7 @@ renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)retur
 
 // Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
 const blankStateV4Base=blankState;
-blankState=function(){const s=blankStateV4Base();s.version='4.1.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+blankState=function(){const s=blankStateV4Base();s.version='4.3.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
 restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
 
 // -------- Render V4 global --------
@@ -917,7 +917,148 @@ addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(
 async function v4Init(){
   await v4HydrateStorage();
   if(!localStorage.getItem('encounter-v4-migrated')){forceBackup('Migration vers ENCOUNTER V4');localStorage.setItem('encounter-v4-migrated','1');}
+  if(!localStorage.getItem('encounter-v41-migrated')){forceBackup('Migration vers ENCOUNTER V4.1 — nouveaux profils');localStorage.setItem('encounter-v41-migrated','1');}
+  if(!localStorage.getItem('encounter-v42-migrated')){forceBackup('Migration vers ENCOUNTER V4.2 — bestiaire civil générique');localStorage.setItem('encounter-v42-migrated','1');}
   saveState();
   render();
 }
 v4Init();
+
+
+/* =========================================================
+   ENCOUNTER V4.3 — Correctifs PV, Undo et ciblage libre
+   ========================================================= */
+
+// ----- Undo global robuste et persistant -----
+const V43_UNDO_KEY='encounter-console-undo-v43';
+function v43ReadUndo(){
+  try{const raw=JSON.parse(localStorage.getItem(V43_UNDO_KEY)||'[]');return Array.isArray(raw)?raw.filter(x=>typeof x==='string').slice(-50):[];}catch(_){return[];}
+}
+function v43WriteUndo(){
+  try{localStorage.setItem(V43_UNDO_KEY,JSON.stringify(undoStack.slice(-50)));}catch(_){/* stockage saturé : l'undo mémoire reste disponible */}
+}
+{
+  const persisted=v43ReadUndo();
+  if(persisted.length)undoStack=persisted;
+}
+checkpoint=function(){
+  const snap=JSON.stringify(state);
+  if(undoStack[undoStack.length-1]!==snap)undoStack.push(snap);
+  if(undoStack.length>50)undoStack.shift();
+  v43WriteUndo();
+};
+undo=function(){
+  if(!undoStack.length){undoStack=v43ReadUndo();}
+  if(!undoStack.length)return toast('Rien à annuler.');
+  const snap=undoStack.pop();v43WriteUndo();
+  try{
+    const parsed=JSON.parse(snap);
+    state=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
+    state.version='4.3.0';
+    ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:Date.now(),state:clone(state)});
+    render();toast('Dernière action annulée.');
+  }catch(err){console.error(err);toast('Impossible de restaurer la dernière action.');}
+};
+// Capture pour garantir que le bouton supérieur et celui du journal utilisent
+// exactement le même Undo, même si des écouteurs historiques sont encore présents.
+addEventListener('click',e=>{
+  const b=e.target.closest('#btnUndo,#btnUndoDrawer');if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();undo();
+},true);
+
+// ----- Pavé numérique tactile : aucun clavier iPad -----
+ui.quickValue=String(ui.quickValue||'');
+function v43SetQuickValue(value){
+  let v=String(value??'').replace(/\D/g,'').slice(0,5);
+  v=v.replace(/^0+(?=\d)/,'');ui.quickValue=v;
+  const hidden=$('#quickAmount'),display=$('#quickAmountDisplay');
+  if(hidden)hidden.value=v;if(display)display.textContent=v||'0';
+}
+addEventListener('click',e=>{
+  const b=e.target.closest('[data-keypad-digit],[data-keypad-backspace],[data-keypad-clear]');if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  if(b.dataset.keypadDigit!=null)v43SetQuickValue((ui.quickValue||'')+b.dataset.keypadDigit);
+  else if(b.dataset.keypadBackspace!=null)v43SetQuickValue((ui.quickValue||'').slice(0,-1));
+  else v43SetQuickValue('');
+},true);
+
+// ----- PV temporaires -----
+function applyTempHpMany(ids,amount){
+  amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;
+  const details=[];checkpoint();
+  ids.forEach(id=>{
+    const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;
+    const before=p.tempHp||0;
+    // Règle 5e : les PV temporaires ne s'additionnent pas. On conserve la valeur la plus élevée.
+    p.tempHp=Math.max(before,amount);
+    setTargetFlash(p.id,'temp');
+    details.push(`${p.name}: PV temp. ${before} → ${p.tempHp}${amount<=before?' (valeur existante conservée)':''}`);
+  });
+  if(ids.length===1)state.encounter.selectedId=ids[0];
+  const msg=details.join('\n');log(msg);saveState();render();showActionPopup(msg,'PV temporaires');
+}
+applyQuickAmount=function(amount){
+  const ids=currentTargetIds();if(!ids.length)return toast('Sélectionne une cible.');
+  amount=Math.max(0,Number(amount)||0);if(!amount)return toast('Saisis une valeur avec le pavé numérique.');
+  if(ui.quickMode==='heal')applyHealMany(ids,amount);
+  else if(ui.quickMode==='temp')applyTempHpMany(ids,amount);
+  else applyDamageMany(ids,amount,$('#quickDamageType')?.value||'');
+  v43SetQuickValue('');
+};
+const renderQuickbarV43Base=renderQuickbar;
+renderQuickbar=function(){
+  const ids=currentTargetIds(),targets=ids.map(id=>state.encounter.participants.find(p=>p.id===id)).filter(Boolean);
+  $('#btnQuickDamage')?.classList.toggle('active',ui.quickMode==='damage');
+  $('#btnQuickHeal')?.classList.toggle('active',ui.quickMode==='heal');
+  $('#btnQuickTemp')?.classList.toggle('active',ui.quickMode==='temp');
+  $('#quickDamageType')?.classList.toggle('hidden',ui.quickMode!=='damage');
+  v43SetQuickValue(ui.quickValue);
+  if(!targets.length){$('#quickTargetName').textContent='—';$('#quickTargetMeta').textContent='Aucune cible';return;}
+  $('#quickTargetName').textContent=targets.length===1?targets[0].name:`${targets.length} cibles`;
+  if(targets.length===1){const p=targets[0];$('#quickTargetMeta').innerHTML=`${p.hp}/${p.maxHp} PV${p.tempHp?` · <span class="temp-hp-inline">+${p.tempHp} temp.</span>`:''} · CA ${effectiveAc(p)}`;}
+  else $('#quickTargetMeta').textContent=targets.map(p=>p.name).slice(0,3).join(', ')+(targets.length>3?'…':'');
+};
+
+// ----- Une attaque peut volontairement viser un allié -----
+const eligibleTargetV42=eligibleTarget;
+eligibleTarget=function(actor,target,a){
+  if(!actor||!target||isLair(target))return false;
+  const attackLike=a&&(a.kind==='attack'||(a.kind==='recharge'&&a.bonus!=null));
+  if(attackLike){return target.hp>0&&target.id!==actor.id;}
+  return eligibleTargetV42(actor,target,a);
+};
+
+// ----- Affichage violet clair des PV temporaires -----
+renderSingleCard=function(p,active){
+  if(isLair(p))return `<article class="combat-card lair-card ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''}"><button class="select-hit" data-select="${p.id}"></button><div class="combat-card-main"><span class="turn-dot">🏰</span><div class="combat-ident"><strong>${esc(p.name)}</strong><small>Action de repaire · ${modelFor(p)?.lairActions.length||0} option(s)</small></div><span class="ini-badge">${p.initiative}</span></div><div class="lair-card-foot">Initiative spéciale de repaire</div></article>`;
+  const selected=p.id===state.encounter.selectedId,multiSelected=ui.multiSelection.has(p.id),phase=currentPhase(p),pct=hpPct(p);
+  return `<article class="combat-card ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${selected?'selected':''} ${p.hp<=0?'dead':''}"><button class="select-hit" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`} aria-label="Sélectionner ${esc(p.name)}"></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier cette instance">✎</button><div class="combat-card-main">${ui.multiMode?`<span class="multi-check ${multiSelected?'on':''}">${multiSelected?'✓':''}</span>`:'<span class="turn-dot"></span>'}<div class="combat-ident"><div class="combat-name-line"><strong>${esc(p.name)}</strong><span class="role-name-badge">${roleLabel(p)}</span>${miniEconomyButtons(p)}</div><small>${modelFor(p)?.category==='character'?esc(modelFor(p)?.subtitle||'Personnage'):modelFor(p)?.category==='companion'?esc(modelFor(p)?.subtitle||'Compagnon'):modelFor(p)?.category==='npc'?esc(modelFor(p)?.subtitle||'PNJ allié'):p.kind==='enemy'?esc(modelFor(p)?.type||'Adversaire'):'PJ / PNJ'} · <span class="ca-secondary">CA ${effectiveAc(p)}</span></small></div><span class="ini-badge">${p.initiative}</span></div><div class="hp-line"><div class="hpbar"><div class="hpfill ${hpClass(p)}" style="width:${pct}%"></div></div><div class="hptext"><span>PV</span> ${p.hp}<small>/${p.maxHp}</small>${p.tempHp?`<b class="temp-hp-inline">+${p.tempHp} temp.</b>`:''}</div></div><div class="condition-pills">${p.hp<=0?'<span class="pill dead-pill">0 PV</span>':''}${phase?`<span class="pill phase-pill">${esc(phase.name)}</span>`:''}${p.conditions.slice(0,3).map(c=>`<span class="pill">${esc(c.name)}${conditionShort(c)}</span>`).join('')}${p.conditions.length>3?`<span class="pill">+${p.conditions.length-3}</span>`:''}</div></article>`;
+};
+renderGroupCard=function(members,active){
+  const first=members[0],activeInside=members.some(p=>p.id===active?.id),alive=members.filter(p=>p.hp>0).length,ini=first.initiative,allSelected=members.every(p=>ui.multiSelection.has(p.id)),sharedInitiative=new Set(members.map(p=>p.initiative)).size===1,worst=members.reduce((a,b)=>hpPct(a)<hpPct(b)?a:b,members[0]);
+  return `<article class="group-card ${roleClass(first)} ${hpBandClass(worst)} ${activeInside?'active':''}"><div class="group-head"><button class="group-title" ${ui.multiMode?`data-multi-group="${first.groupId}"`:`data-select="${activeInside?active.id:first.id}"`}><span class="group-icon">${ui.multiMode?(allSelected?'☑':'☐'):'▾'}</span><span><strong>${esc(first.baseName)}</strong><small>${alive}/${members.length} actifs · ${sharedInitiative?'initiative commune':'initiatives individuelles'}</small></span></button><span class="role-name-badge">${roleLabel(first)}</span><span class="ini-badge">${sharedInitiative?ini:'×'}</span></div><div class="group-members">${members.map((p,i)=>`<div class="member-wrap"><button class="member-chip ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''} ${ui.multiSelection.has(p.id)?'multi-selected':''}" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`}><span class="member-index">${i+1}</span><div class="member-vitals"><b>${p.hp>0?p.hp:'☠'}<small>/${p.maxHp}</small></b>${p.tempHp?`<strong class="temp-hp-inline">+${p.tempHp}</strong>`:''}<em>PV</em></div><div class="member-ca">CA ${effectiveAc(p)}</div><span class="member-mini-economy"><em class="${p.actionUsed?'spent':''}">A${attacksPerAction(p)>1?` ${Math.min(attacksPerAction(p),p.attackProgress||0)}/${attacksPerAction(p)}`:''}</em><em class="${p.bonusActionUsed?'spent':''}">B</em><em class="${p.reactionUsed?'spent':''}">R</em></span></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier ${esc(p.name)}">✎</button></div>`).join('')}</div></article>`;
+};
+
+function v43DecorateDetailTempHp(){
+  const p=selectedParticipant();if(!p||isLair(p))return;
+  const hpBox=$('#activeDetail .hp-stat b');
+  if(hpBox)hpBox.innerHTML=`${p.hp}/${p.maxHp}${p.tempHp?` <span class="temp-hp-badge">+${p.tempHp} temp.</span>`:''}`;
+  const stateHp=$('#activeDetail .state-hp strong');
+  if(stateHp)stateHp.innerHTML=`${p.hp} / ${p.maxHp}${p.tempHp?` <span class="temp-hp-badge">+${p.tempHp} temporaires</span>`:''}`;
+  const commandHp=$('#activeDetail .turn-command-vitals .hp');
+  if(commandHp)commandHp.innerHTML=`PV ${p.hp}/${p.maxHp}${p.tempHp?` <span class="temp-hp-inline">+${p.tempHp}</span>`:''}`;
+}
+const renderV43Base=render;
+render=function(){renderV43Base();v43DecorateDetailTempHp();};
+
+// Migration V4.3 : aucun reset de données, uniquement sauvegarde de sécurité.
+const v43InitMigration=()=>{
+  if(!localStorage.getItem('encounter-v43-migrated')){
+    if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V4.3 — Undo, pavé PV et PV temporaires');
+    localStorage.setItem('encounter-v43-migrated','1');
+  }
+  state.version='4.3.0';v43SetQuickValue('');render();
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v43InitMigration,{once:true});else v43InitMigration();

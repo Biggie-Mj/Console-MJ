@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ENCOUNTER V4.1 — Console MJ D&D 5e</title>
+  <title>ENCOUNTER V4.3 — Console MJ D&D 5e</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -20,7 +20,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">⚔</div>
-      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.1</p></div>
+      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.3</p></div>
     </div>
     <div class="mode-switch" aria-label="Mode d'utilisation">
       <button id="btnModeHome" class="mode-btn">⌂ Accueil</button>
@@ -64,7 +64,7 @@
   <main id="homeView" class="home-view hidden">
     <section class="home-hero panel-soft">
       <div class="home-brand-block">
-        <span class="eyebrow">ENCOUNTER V4.1</span>
+        <span class="eyebrow">ENCOUNTER V4.3</span>
         <h2>Que veux-tu faire ?</h2>
         <p>Accès direct à la partie en cours, aux rencontres préparées et à une nouvelle préparation.</p>
       </div>
@@ -143,17 +143,20 @@
     </section>
   </main>
 
-  <section id="quickBar" class="quickbar hidden">
+  <section id="quickBar" class="quickbar quickbar-v43 hidden">
     <div class="quick-target"><span class="eyebrow">CIBLE</span><strong id="quickTargetName">—</strong><small id="quickTargetMeta"></small></div>
-    <div class="quick-mode" role="group" aria-label="Type de modification des PV">
+    <div class="quick-mode" role="group" aria-label="Type de modification des points de vie">
       <button id="btnQuickDamage" class="danger active" data-quick-mode="damage">DÉGÂTS</button>
       <button id="btnQuickHeal" class="heal" data-quick-mode="heal">SOINS</button>
+      <button id="btnQuickTemp" class="temp-hp-mode" data-quick-mode="temp">PV TEMP.</button>
     </div>
-    <div class="quick-presets">
-      <button data-quick-amount="1">1</button><button data-quick-amount="5">5</button><button data-quick-amount="10">10</button>
+    <div class="quick-keypad-wrap" aria-label="Pavé numérique des points de vie">
+      <div class="quick-value-display"><span>VALEUR</span><strong id="quickAmountDisplay">0</strong><input id="quickAmount" type="hidden" value=""></div>
+      <div class="quick-keypad">
+        <button type="button" data-keypad-digit="1">1</button><button type="button" data-keypad-digit="2">2</button><button type="button" data-keypad-digit="3">3</button><button type="button" data-keypad-digit="4">4</button><button type="button" data-keypad-digit="5">5</button><button type="button" data-keypad-digit="6">6</button><button type="button" data-keypad-digit="7">7</button><button type="button" data-keypad-digit="8">8</button><button type="button" data-keypad-digit="9">9</button><button type="button" data-keypad-digit="0">0</button><button type="button" class="ghost keypad-back" data-keypad-backspace="1" aria-label="Effacer le dernier chiffre">⌫</button><button type="button" class="ghost keypad-clear" data-keypad-clear="1">C</button>
+      </div>
     </div>
-    <div class="quick-amount">
-      <input id="quickAmount" type="number" min="0" inputmode="numeric" placeholder="Valeur">
+    <div class="quick-amount quick-actions-v43">
       <select id="quickDamageType" aria-label="Type de dégâts">
         <option value="">Type de dégâts…</option><option>acide</option><option>contondants</option><option>feu</option><option>force</option><option>foudre</option><option>froid</option><option>nécrotiques</option><option>perforants</option><option>poison</option><option>psychiques</option><option>radiants</option><option>tonnerre</option><option>tranchants</option>
       </select>
@@ -318,7 +321,6 @@
   <template id="phaseRowTemplate"><div class="dynamic-row phase-row"><input data-field="name" placeholder="Phase II"><input data-field="threshold" type="number" min="0" placeholder="Seuil PV"><input data-field="ac" type="number" min="0" placeholder="CA"><input data-field="legendaryMax" type="number" min="0" placeholder="Légendaires"><input data-field="speed" placeholder="Vitesse"><input data-field="addResistances" placeholder="Résistances ajoutées"><input data-field="addImmunities" placeholder="Immunités ajoutées"><input data-field="note" placeholder="Effet / rappel de phase"><button type="button" class="danger ghost small remove-row">Suppr.</button></div></template>
 
   <script src="builtins.js"></script>
-  <script src="campaign-maharles.js"></script>
   <script src="app.js"></script>
   <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}</script>
 </body>
