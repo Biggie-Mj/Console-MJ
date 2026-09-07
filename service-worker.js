@@ -1,4 +1,4 @@
-const CACHE='encounter-v3-premium-1';
+const CACHE='encounter-v35-premium-boost-1';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./builtins.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./data/bibliotheque-integree.json','./data/monsters.json'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

@@ -45,7 +45,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 10,
+      "INT": 10,
+      "SAG": 8,
+      "CHA": 8
+    },
+    "skills": {
+      "discretion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-kobold",
@@ -98,7 +113,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 7,
+      "DEX": 15,
+      "CON": 9,
+      "INT": 8,
+      "SAG": 7,
+      "CHA": 8
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-orc",
@@ -146,7 +171,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 16,
+      "DEX": 12,
+      "CON": 16,
+      "INT": 7,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "intimidation": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-ogre",
@@ -188,7 +228,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 19,
+      "DEX": 8,
+      "CON": 16,
+      "INT": 5,
+      "SAG": 7,
+      "CHA": 7
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-squelette",
@@ -241,7 +291,17 @@
     "conditionImmunities": [
       "Empoisonné",
       "Épuisement"
-    ]
+    ],
+    "abilities": {
+      "FOR": 10,
+      "DEX": 14,
+      "CON": 15,
+      "INT": 6,
+      "SAG": 8,
+      "CHA": 5
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-zombi",
@@ -287,7 +347,19 @@
     ],
     "conditionImmunities": [
       "Empoisonné"
-    ]
+    ],
+    "abilities": {
+      "FOR": 13,
+      "DEX": 6,
+      "CON": 16,
+      "INT": 3,
+      "SAG": 6,
+      "CHA": 5
+    },
+    "skills": {},
+    "saveMods": {
+      "SAG": 0
+    }
   },
   {
     "id": "srd-goule",
@@ -337,7 +409,17 @@
       "Charmé",
       "Empoisonné",
       "Épuisement"
-    ]
+    ],
+    "abilities": {
+      "FOR": 13,
+      "DEX": 15,
+      "CON": 10,
+      "INT": 7,
+      "SAG": 10,
+      "CHA": 6
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-araignee-geante",
@@ -403,7 +485,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 14,
+      "DEX": 16,
+      "CON": 12,
+      "INT": 2,
+      "SAG": 11,
+      "CHA": 4
+    },
+    "skills": {
+      "discretion": {
+        "mod": 7,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-loup-sanguinaire",
@@ -448,7 +545,27 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 17,
+      "DEX": 15,
+      "CON": 15,
+      "INT": 3,
+      "SAG": 12,
+      "CHA": 7
+    },
+    "skills": {
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise",
+        "note": "Avantage si fondé sur l’ouïe ou l’odorat"
+      },
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-ombre",
@@ -523,7 +640,23 @@
       "Épuisement",
       "Paralysé",
       "Pétrifié"
-    ]
+    ],
+    "abilities": {
+      "FOR": 6,
+      "DEX": 14,
+      "CON": 13,
+      "INT": 6,
+      "SAG": 10,
+      "CHA": 8
+    },
+    "skills": {
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise",
+        "note": "+6 en lumière faible ou dans les ténèbres"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-bandit",
@@ -565,7 +698,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1. Humanoïde polyvalent pour brigands, pirates et hommes de main."
+    "notes": "Profil SRD 5.1. Humanoïde polyvalent pour brigands, pirates et hommes de main.",
+    "abilities": {
+      "FOR": 11,
+      "DEX": 12,
+      "CON": 12,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 10
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-cultiste",
@@ -605,7 +748,26 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1."
+    "notes": "Profil SRD 5.1.",
+    "abilities": {
+      "FOR": 11,
+      "DEX": 12,
+      "CON": 10,
+      "INT": 10,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "tromperie": {
+        "mod": 2,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-malfrat",
@@ -660,7 +822,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 15,
+      "DEX": 11,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 11
+    },
+    "skills": {
+      "intimidation": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-veteran",
@@ -717,7 +894,26 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1. Excellent soldat professionnel ou mercenaire."
+    "notes": "Profil SRD 5.1. Excellent soldat professionnel ou mercenaire.",
+    "abilities": {
+      "FOR": 16,
+      "DEX": 13,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-loup",
@@ -762,279 +958,26 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1."
-  },
-  {
-    "id": "gobelin-veteran",
-    "category": "enemy",
-    "source": "Démo maison",
-    "name": "Gobelin vétéran",
-    "type": "Humanoïde (gobelinoïde)",
-    "size": "P",
-    "cr": "2",
-    "ac": 17,
-    "hp": 36,
-    "initiative": 3,
-    "speed": "9 m",
-    "saves": "DEX +5",
-    "resistances": "",
-    "immunities": "",
-    "senses": "Vision dans le noir 18 m · commun, gobelin",
-    "traits": [
-      {
-        "name": "Évasion agile",
-        "detail": "Peut Se désengager ou Se cacher par une action bonus.",
-        "kind": "text"
-      }
-    ],
-    "actions": [
-      {
-        "name": "Cimeterre",
-        "detail": "Attaque de corps à corps.",
-        "kind": "attack",
-        "bonus": 5,
-        "damage": "1d6+3",
-        "damageType": "tranchants"
+    "notes": "Profil SRD 5.1.",
+    "abilities": {
+      "FOR": 12,
+      "DEX": 15,
+      "CON": 12,
+      "INT": 3,
+      "SAG": 12,
+      "CHA": 6
+    },
+    "skills": {
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise",
+        "note": "Avantage si fondé sur l’ouïe ou l’odorat"
       },
-      {
-        "name": "Arc court",
-        "detail": "Portée 24/96 m.",
-        "kind": "attack",
-        "bonus": 5,
-        "damage": "1d6+3",
-        "damageType": "perforants"
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
       }
-    ],
-    "reactions": [],
-    "legendaryActions": [],
-    "legendaryMax": 0,
-    "phases": [],
-    "resources": [],
-    "notes": "Adversaire maison de démonstration."
-  },
-  {
-    "id": "ogre-des-ruines",
-    "category": "enemy",
-    "source": "Démo maison",
-    "name": "Ogre des ruines",
-    "type": "Géant",
-    "size": "G",
-    "cr": "5",
-    "ac": 15,
-    "hp": 105,
-    "initiative": 0,
-    "speed": "12 m",
-    "saves": "FOR +7, CON +6",
-    "resistances": "",
-    "immunities": "",
-    "senses": "Vision dans le noir 18 m · géant, commun",
-    "traits": [
-      {
-        "name": "Brute",
-        "detail": "Ses attaques de mêlée sont particulièrement lourdes.",
-        "kind": "text"
-      }
-    ],
-    "actions": [
-      {
-        "name": "Massue de siège",
-        "detail": "Attaque de corps à corps.",
-        "kind": "attack",
-        "bonus": 7,
-        "damage": "2d8+5",
-        "damageType": "contondants"
-      },
-      {
-        "name": "Rocher",
-        "detail": "Attaque à distance, portée 18/72 m.",
-        "kind": "attack",
-        "bonus": 7,
-        "damage": "2d10+5",
-        "damageType": "contondants"
-      }
-    ],
-    "reactions": [
-      {
-        "name": "Balayage brutal",
-        "detail": "Lorsqu’une créature quitte sa portée, l’ogre effectue une attaque.",
-        "kind": "attack",
-        "bonus": 7,
-        "damage": "2d8+5",
-        "damageType": "contondants"
-      }
-    ],
-    "legendaryActions": [],
-    "legendaryMax": 0,
-    "phases": [],
-    "resources": [],
-    "notes": "Exemple maison de brute intermédiaire."
-  },
-  {
-    "id": "fausse-hydre-demo",
-    "category": "enemy",
-    "source": "Démo maison",
-    "name": "Fausse hydre — Démo",
-    "type": "Aberration",
-    "size": "TG",
-    "cr": "12",
-    "ac": 17,
-    "hp": 220,
-    "initiative": 4,
-    "speed": "9 m",
-    "saves": "FOR +9, CON +9, SAG +7",
-    "resistances": "psychiques",
-    "immunities": "charmé, effrayé",
-    "senses": "Perception aveugle 18 m · télépathie 36 m",
-    "traits": [
-      {
-        "name": "Chant d’oubli",
-        "detail": "Les créatures qui perçoivent son chant peinent à conserver les souvenirs liés à ses victimes.",
-        "kind": "text"
-      },
-      {
-        "name": "Têtes multiples",
-        "detail": "La créature peut exercer une pression sur plusieurs zones du champ de bataille.",
-        "kind": "text"
-      }
-    ],
-    "actions": [
-      {
-        "name": "Multiattaque",
-        "detail": "Effectue deux attaques de Morsure.",
-        "kind": "multiattack",
-        "sequence": "Morsure*2",
-        "economy": "action"
-      },
-      {
-        "name": "Morsure",
-        "detail": "Une tête mord une cible à portée.",
-        "kind": "attack",
-        "bonus": 9,
-        "damage": "2d10+5",
-        "damageType": "perforants"
-      },
-      {
-        "name": "Cri de dissonance",
-        "detail": "Toutes les créatures choisies dans la zone effectuent un JS de Sagesse.",
-        "kind": "save",
-        "dc": 17,
-        "save": "SAG",
-        "damage": "4d8",
-        "damageType": "psychiques"
-      },
-      {
-        "name": "Hurlement mnésique",
-        "detail": "Recharge 5–6.",
-        "kind": "recharge",
-        "recharge": "5-6",
-        "dc": 17,
-        "save": "SAG",
-        "damage": "6d8",
-        "damageType": "psychiques"
-      }
-    ],
-    "reactions": [
-      {
-        "name": "Cou réflexe",
-        "detail": "Lorsqu’elle est attaquée au corps à corps, une tête libre peut riposter.",
-        "kind": "attack",
-        "bonus": 9,
-        "damage": "1d10+5",
-        "damageType": "contondants"
-      }
-    ],
-    "legendaryActions": [
-      {
-        "name": "Déplacement",
-        "detail": "Se déplace sans provoquer d’attaque d’opportunité.",
-        "kind": "text",
-        "cost": 1
-      },
-      {
-        "name": "Morsure",
-        "detail": "Effectue une Morsure.",
-        "kind": "attack",
-        "bonus": 9,
-        "damage": "2d10+5",
-        "damageType": "perforants",
-        "cost": 1
-      },
-      {
-        "name": "Chant discordant",
-        "detail": "Une cible effectue un JS de SAG.",
-        "kind": "save",
-        "dc": 17,
-        "save": "SAG",
-        "damage": "3d8",
-        "damageType": "psychiques",
-        "cost": 2
-      }
-    ],
-    "legendaryMax": 3,
-    "phases": [
-      {
-        "name": "Phase II — Le chant se brise",
-        "threshold": 150,
-        "ac": 18,
-        "legendaryMax": 3,
-        "speed": "12 m",
-        "addResistances": [
-          "contondants"
-        ],
-        "note": "La Fausse Hydre se cabre, accélère et durcit sa masse."
-      },
-      {
-        "name": "Phase III — Faim absolue",
-        "threshold": 70,
-        "ac": 19,
-        "legendaryMax": 4,
-        "speed": "15 m",
-        "addResistances": [
-          "contondants",
-          "perforants",
-          "tranchants"
-        ],
-        "note": "Les cous s’entrelacent et la créature abandonne toute prudence. Elle récupère 4 actions légendaires au début de son tour."
-      }
-    ],
-    "resources": [],
-    "notes": "Boss maison de démonstration en trois phases.",
-    "damageResistances": [
-      "psychiques"
-    ],
-    "conditionImmunities": [
-      "Charmé",
-      "Effrayé"
-    ],
-    "lairInitiative": 20,
-    "lairActions": [
-      {
-        "name": "Clameur souterraine",
-        "detail": "Le chant rebondit dans les galeries. Une créature choisie fait un JS SAG DD 17 ; en cas d’échec, elle est Effrayée jusqu’à la fin de son prochain tour.",
-        "kind": "save",
-        "dc": 17,
-        "save": "SAG",
-        "economy": "lair"
-      },
-      {
-        "name": "Éboulement organique",
-        "detail": "Une zone de 3 m devient terrain difficile. Les créatures dans la zone font un JS DEX DD 17 ou subissent 3d6 contondants et tombent À terre.",
-        "kind": "save",
-        "dc": 17,
-        "save": "DEX",
-        "damage": "3d6",
-        "damageType": "contondants",
-        "economy": "lair"
-      },
-      {
-        "name": "Cou surgissant",
-        "detail": "Une tête jaillit d’une galerie et effectue une attaque de Morsure contre une cible à portée.",
-        "kind": "attack",
-        "bonus": 9,
-        "damage": "2d10+5",
-        "damageType": "perforants",
-        "economy": "lair"
-      }
-    ]
+    },
+    "saveMods": {}
   }
 ]

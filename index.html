@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ENCOUNTER V3 — Console MJ D&D 5e</title>
+  <title>ENCOUNTER V3.5 — Console MJ D&D 5e</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
@@ -18,7 +18,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">⚔</div>
-      <div><h1>ENCOUNTER</h1><p>Console MJ · V3</p></div>
+      <div><h1>ENCOUNTER</h1><p>Console MJ · V3.5</p></div>
     </div>
     <div class="mode-switch" aria-label="Mode d'utilisation">
       <button id="btnModePrep" class="mode-btn active">⚙ Préparation</button>
@@ -253,6 +253,26 @@
       <div id="trashList" class="trash-list"></div>
       <div class="modal-actions"><button id="btnEmptyTrash" class="danger ghost">Vider la corbeille</button><button type="button" class="primary" data-dialog-close="trashDialog">Fermer</button></div>
     </div>
+  </dialog>
+
+  <dialog id="participantEditorDialog" class="modal participant-editor-modal">
+    <form method="dialog" id="participantEditorForm">
+      <div class="modal-head"><div><span class="eyebrow">INSTANCE DE COMBAT</span><h2>Modifier le participant</h2></div><button type="button" class="icon-btn" data-dialog-close="participantEditorDialog">×</button></div>
+      <input type="hidden" name="participantId">
+      <div class="participant-edit-grid">
+        <label>Nom<input name="name" required></label>
+        <label>Rôle<select name="kind"><option value="enemy">Adversaire</option><option value="player">PJ</option><option value="ally">PNJ allié</option></select></label>
+        <label>CA<input name="ac" type="number" min="0" required inputmode="numeric"></label>
+        <label>PV actuels<input name="hp" type="number" min="0" required inputmode="numeric"></label>
+        <label>PV maximum<input name="maxHp" type="number" min="1" required inputmode="numeric"></label>
+        <label>PV temporaires<input name="tempHp" type="number" min="0" inputmode="numeric"></label>
+        <label>Initiative<input name="initiative" type="number" inputmode="numeric"></label>
+        <label>Vitesse personnalisée<input name="speedOverride" placeholder="ex. 12 m"></label>
+      </div>
+      <label class="boss-instance-check"><input type="checkbox" name="bossOverride"> Considérer cette instance comme BOSS</label>
+      <p id="participantEditorHint" class="muted tiny"></p>
+      <div class="modal-actions"><button type="button" class="ghost" data-dialog-close="participantEditorDialog">Annuler</button><button type="submit" class="primary">Appliquer à cette instance</button></div>
+    </form>
   </dialog>
 
   <div id="actionPopup" class="action-popup" aria-live="assertive"><span class="eyebrow">ACTION</span><strong id="actionPopupTitle">Résolution</strong><p id="actionPopupText"></p></div>

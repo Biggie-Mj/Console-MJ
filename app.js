@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = 3;
+const APP_VERSION = 3.5;
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -101,16 +101,17 @@ function normalizeMonster(m={}){
 function normalizeParticipant(p={}){
   return {
     id:p.id||uid('p'),modelId:p.modelId||null,groupId:p.groupId||null,name:p.name||'Participant',baseName:p.baseName||p.name||'Participant',kind:p.kind||'enemy',
-    ac:Number(p.ac)||10,maxHp:Math.max(1,Number(p.maxHp)||1),hp:Math.max(0,Number.isFinite(Number(p.hp))?Number(p.hp):1),tempHp:Math.max(0,Number(p.tempHp)||0),initiative:Number(p.initiative)||0,
+    ac:Number(p.ac)||10,acOverride:p.acOverride==null?null:Number(p.acOverride),maxHp:Math.max(1,Number(p.maxHp)||1),hp:Math.max(0,Number.isFinite(Number(p.hp))?Number(p.hp):1),tempHp:Math.max(0,Number(p.tempHp)||0),initiative:Number(p.initiative)||0,
     conditions:(p.conditions||[]).map(normalizeCondition),actionUsed:!!p.actionUsed,bonusActionUsed:!!p.bonusActionUsed,reactionUsed:!!p.reactionUsed,
-    legendaryRemaining:Number(p.legendaryRemaining)||0,currentPhaseId:p.currentPhaseId||null,abilityState:p.abilityState||{},resourceState:p.resourceState||{},companionOf:p.companionOf||null,lairOwnerId:p.lairOwnerId||null,bossOverride:!!p.bossOverride,attackProgress:Math.max(0,Number(p.attackProgress)||0)
+    legendaryRemaining:Number(p.legendaryRemaining)||0,currentPhaseId:p.currentPhaseId||null,abilityState:p.abilityState||{},resourceState:p.resourceState||{},companionOf:p.companionOf||null,lairOwnerId:p.lairOwnerId||null,bossOverride:!!p.bossOverride,attackProgress:Math.max(0,Number(p.attackProgress)||0),speedOverride:p.speedOverride||''
   };
 }
 function mergeBuiltinEnhancements(stored,builtin){
   if(!builtin)return stored;
   const b=normalizeMonster(builtin),s=normalizeMonster(stored);
-  if(!Object.keys(s.abilities).length&&Object.keys(b.abilities).length)s.abilities=b.abilities;
-  if(!Object.keys(s.saveMods).length&&Object.keys(b.saveMods).length)s.saveMods=b.saveMods;
+  s.abilities=Object.assign({},b.abilities||{},s.abilities||{});
+  s.saveMods=Object.assign({},b.saveMods||{},s.saveMods||{});
+  s.skills=Object.assign({},b.skills||{},s.skills||{});
   ['damageResistances','damageVulnerabilities','damageImmunities','conditionImmunities'].forEach(k=>{if(!s[k]?.length&&b[k]?.length)s[k]=b[k];});
   if(!s.lairActions.length&&b.lairActions.length)s.lairActions=b.lairActions;
   if(b.lairActions.length&&(!Number.isFinite(Number(s.lairInitiative))))s.lairInitiative=b.lairInitiative;
@@ -173,8 +174,8 @@ function checkPhaseTransition(p){
   const m=modelFor(p);if(!m?.phases?.length||isLair(p))return;const candidate=phaseForHp(p,m);if(!candidate)return;const cur=currentPhase(p,m);if(cur&&phaseDepth(candidate,m)<=phaseDepth(cur,m))return;
   p.currentPhaseId=candidate.id;const cap=effectiveLegendaryMax(p,m);if(cap)p.legendaryRemaining=Math.min(p.legendaryRemaining,cap);state.encounter.pendingPhase={participantId:p.id,phaseId:candidate.id};log(`⚠ ${p.name} entre dans « ${candidate.name} » — ${candidate.note||'changement de phase.'}`);
 }
-function effectiveAc(p){const ph=currentPhase(p);return ph?.ac??p.ac;}
-function effectiveSpeed(p,m=modelFor(p)){return currentPhase(p,m)?.speed||m?.speed||'—';}
+function effectiveAc(p){const ph=currentPhase(p);return p?.acOverride!=null?p.acOverride:(ph?.ac??p.ac);}
+function effectiveSpeed(p,m=modelFor(p)){return p?.speedOverride||currentPhase(p,m)?.speed||m?.speed||'—';}
 function effectiveLegendaryMax(p,m=modelFor(p)){const ph=currentPhase(p,m);return ph?.legendaryMax??m?.legendaryMax??0;}
 function effectiveDamageResistances(p,m=modelFor(p)){return [...new Set([...(m?.damageResistances||[]),...(currentPhase(p,m)?.addResistances||[])])];}
 function effectiveDamageImmunities(p,m=modelFor(p)){return [...new Set([...(m?.damageImmunities||[]),...(currentPhase(p,m)?.addImmunities||[])])];}
@@ -600,7 +601,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.5-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.5 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
@@ -638,5 +639,68 @@ $('#btnFavoriteFilter')?.addEventListener('click',()=>{ui.favoritesOnly=!ui.favo
 if(!backupStore().length)forceBackup('Migration vers V3');
 setInterval(maybeAutoBackup,BACKUP_INTERVAL);
 // Les opérations sensibles créent leur propre backup dans newEncounter(), resetAll() et importData().
+
+
+/* =========================================================
+   ENCOUNTER V3.5 — Confort Premium Boost
+   ========================================================= */
+ui.flashEffects=ui.flashEffects||{};
+function setTargetFlash(id,type){ui.flashEffects[id]={type,until:Date.now()+1500};}
+function flashClassFor(p){const f=ui.flashEffects?.[p.id];return f&&f.until>Date.now()?`flash-${f.type}`:'';}
+function miniEconomyButtons(p){const max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0),aText=max>1&&!p.actionUsed?`A ${progress}/${max}`:'A';return `<span class="economy-mini-inline"><button type="button" class="mini-eco-btn eco-action ${p.actionUsed?'spent':''}" data-economy="${p.id}|action" title="Action">${aText}</button><button type="button" class="mini-eco-btn eco-bonus ${p.bonusActionUsed?'spent':''}" data-economy="${p.id}|bonus" title="Action bonus">B</button><button type="button" class="mini-eco-btn eco-reaction ${p.reactionUsed?'spent':''}" data-economy="${p.id}|reaction" title="Réaction">R</button></span>`;}
+
+showActionPopup=function(msg,title='Résolution'){
+  const box=$('#actionPopup');if(!box)return;$('#actionPopupTitle').textContent=title;$('#actionPopupText').textContent=msg;box.classList.add('show');clearTimeout(showActionPopup.t);showActionPopup.t=setTimeout(()=>box.classList.remove('show'),3000);
+};
+$('#actionPopup')?.addEventListener('click',()=>{clearTimeout(showActionPopup.t);$('#actionPopup').classList.remove('show');});
+
+function openParticipantEditor(id){
+  const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const f=$('#participantEditorForm');f.elements.participantId.value=p.id;f.elements.name.value=p.name;f.elements.kind.value=p.kind==='player'?'player':p.kind==='ally'?'ally':'enemy';f.elements.ac.value=effectiveAc(p);f.dataset.originalAc=String(effectiveAc(p));f.elements.hp.value=p.hp;f.elements.maxHp.value=p.maxHp;f.elements.tempHp.value=p.tempHp||0;f.elements.initiative.value=p.initiative;f.elements.speedOverride.value=p.speedOverride||'';f.elements.bossOverride.checked=!!p.bossOverride;const m=modelFor(p),hint=$('#participantEditorHint');hint.textContent=`${m?`Modèle : ${m.name}. `:''}Les changements ci-dessus ne modifient que cette instance${p.groupId?' du groupe':''}.`;$('#participantEditorDialog').showModal();
+}
+function saveParticipantInstance(){
+  const f=$('#participantEditorForm'),p=state.encounter.participants.find(x=>x.id===f.elements.participantId.value);if(!p)return;const maxHp=Math.max(1,Number(f.elements.maxHp.value)||1),hp=Math.max(0,Math.min(maxHp,Number(f.elements.hp.value)||0));mutate(()=>{p.name=f.elements.name.value.trim()||p.name;p.kind=f.elements.kind.value;const newAc=Math.max(0,Number(f.elements.ac.value)||0),originalAc=Number(f.dataset.originalAc);if(p.acOverride!=null||newAc!==originalAc)p.acOverride=newAc;else p.ac=newAc;p.maxHp=maxHp;p.hp=hp;p.tempHp=Math.max(0,Number(f.elements.tempHp.value)||0);p.initiative=Number(f.elements.initiative.value)||0;p.speedOverride=f.elements.speedOverride.value.trim();p.bossOverride=!!f.elements.bossOverride.checked;checkPhaseTransition(p);},`${p.name} — instance de combat modifiée.`);$('#participantEditorDialog').close();
+}
+$('#participantEditorForm')?.addEventListener('submit',e=>{e.preventDefault();saveParticipantInstance();});
+addEventListener('click',e=>{const b=e.target.closest('[data-edit-participant]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();openParticipantEditor(b.dataset.editParticipant);},true);
+
+// Surbrillance aussi pour les ajustements rapides de la barre inférieure.
+applyDamageMany=function(ids,amount,type=''){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const r=resolveDamageAmount(p,amount,type);let left=r.amount;if(p.tempHp>0){const used=Math.min(p.tempHp,left);p.tempHp-=used;left-=used;}p.hp=Math.max(0,p.hp-left);checkPhaseTransition(p);setTargetFlash(p.id,r.amount>0?'damage':'miss');details.push(`${p.name}: ${r.amount}${r.reason?` (${r.reason})`:''}`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=`${amount} dégâts${type?` ${type}`:''} → ${details.join(' · ')}`;log(msg);saveState();render();showActionPopup(msg,'Dégâts');};
+applyHealMany=function(ids,amount){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const before=p.hp;p.hp=Math.min(p.maxHp,p.hp+amount);const given=p.hp-before;setTargetFlash(p.id,given>0?'heal':'miss');details.push(`${p.name}: +${given} PV`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=details.join(' · ');log(msg);saveState();render();showActionPopup(msg,'Soins');};
+
+// Ciblage V3.5 : flash rouge/vert/blanc selon le résultat.
+resolveTargetSelection=function(targetId){
+  if(!ui.targeting)return false;const t=ui.targeting,actor=state.encounter.participants.find(x=>x.id===t.actorId),target=state.encounter.participants.find(x=>x.id===targetId),m=modelFor(actor),a=currentTargetingAbility();if(!actor||!target||!m||!a)return false;if(!eligibleTarget(actor,target,a)){toast('Cette cible n’est pas valide pour cette action.');return true;}
+  checkpoint();let msg=`${actor.name} — ${a.name} → ${target.name}`;let flash='miss';
+  if(a.kind==='attack'||(a.kind==='recharge'&&a.bonus!=null)){
+    const r=rollD20(t.mode),bonus=Number(a.bonus)||0,total=r.roll+bonus,crit=r.roll===20,hit=crit||total>=effectiveAc(target);msg+=` : d20 ${r.detail} ${signed(bonus)} = ${total} vs CA ${effectiveAc(target)} → ${hit?'TOUCHÉ':'RATÉ'}`;
+    if(hit&&a.damage){const dmg=rollDamageCrit(a.damage,crit),ap=applyDamageDirect(target,dmg.total,a.damageType);msg+=` · ${crit?'CRITIQUE · ':''}${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''} [${dmg.detail}]`;flash=ap.amount>0?'damage':'miss';} else flash=hit?'miss':'miss';
+  }else if(a.kind==='save'||(a.kind==='recharge'&&a.dc!=null)){
+    const mod=getTargetSaveMod(target,a);if(mod==null){msg+=` : JS ${a.save||'?'} DD ${a.dc||'?'} à résoudre manuellement`;flash='miss';}else{const r=rollD20(),total=r.roll+mod,ok=total>=(a.dc||10);msg+=` : JS ${a.save||'?'} ${r.roll} ${signed(mod)} = ${total} vs DD ${a.dc} → ${ok?'RÉUSSITE':'ÉCHEC'}`;if(a.damage){const dmg=rollExpression(a.damage),half=/moiti[ée]/i.test(a.detail||''),raw=ok?(half?Math.floor(dmg.total/2):0):dmg.total,ap=applyDamageDirect(target,raw,a.damageType);msg+=` · ${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''}`;flash=ap.amount>0?'damage':'miss';}}
+  }else if(a.kind==='heal'){const heal=rollExpression(a.damage),given=applyHealDirect(target,heal.total);msg+=` : +${given} PV [${heal.detail}]`;flash=given>0?'heal':'miss';}
+  setTargetFlash(target.id,flash);
+  if(a.kind==='recharge'){actor.abilityState[a.id]=actor.abilityState[a.id]||{};actor.abilityState[a.id].ready=false;}
+  const isMulti=!!t.steps?.length,finalMulti=isMulti&&t.step>=t.steps.length-1;consumeEconomyAfterResolution(actor,a,t.section,{forceAction:finalMulti});actionLog(msg,a.name);
+  if(isMulti&&!finalMulti){t.step++;state.encounter.selectedId=actor.id;saveState();render();return true;}ui.targeting=null;state.encounter.selectedId=actor.id;saveState();render();if($('#legendaryDialog').open){const ending=activeParticipant(),bosses=eligibleLegendaryBosses(ending);if(bosses.length)renderLegendaryDialog(ending,bosses);else{$('#legendaryDialog').close();actualAdvanceTurn();}}return true;
+};
+
+// Une seule pastille BOSS : role-name-badge fait foi sur la ligne de combat.
+renderSingleCard=function(p,active){
+  if(isLair(p))return `<article class="combat-card lair-card ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''}"><button class="select-hit" data-select="${p.id}"></button><div class="combat-card-main"><span class="turn-dot">🏰</span><div class="combat-ident"><strong>${esc(p.name)}</strong><small>Action de repaire · ${modelFor(p)?.lairActions.length||0} option(s)</small></div><span class="ini-badge">${p.initiative}</span></div><div class="lair-card-foot">Initiative spéciale de repaire</div></article>`;
+  const selected=p.id===state.encounter.selectedId,multiSelected=ui.multiSelection.has(p.id),phase=currentPhase(p),pct=hpPct(p);
+  return `<article class="combat-card ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${selected?'selected':''} ${p.hp<=0?'dead':''}"><button class="select-hit" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`} aria-label="Sélectionner ${esc(p.name)}"></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier cette instance">✎</button><div class="combat-card-main">${ui.multiMode?`<span class="multi-check ${multiSelected?'on':''}">${multiSelected?'✓':''}</span>`:'<span class="turn-dot"></span>'}<div class="combat-ident"><div class="combat-name-line"><strong>${esc(p.name)}</strong><span class="role-name-badge">${roleLabel(p)}</span>${miniEconomyButtons(p)}</div><small>${modelFor(p)?.category==='character'?esc(modelFor(p)?.subtitle||'Personnage'):modelFor(p)?.category==='companion'?esc(modelFor(p)?.subtitle||'Compagnon'):modelFor(p)?.category==='npc'?esc(modelFor(p)?.subtitle||'PNJ allié'):p.kind==='enemy'?esc(modelFor(p)?.type||'Adversaire'):'PJ / PNJ'} · CA ${effectiveAc(p)}</small></div><span class="ini-badge">${p.initiative}</span></div><div class="hp-line"><div class="hpbar"><div class="hpfill ${hpClass(p)}" style="width:${pct}%"></div></div><div class="hptext">${p.hp}${p.tempHp?` +${p.tempHp}`:''}/${p.maxHp}</div></div><div class="condition-pills">${p.hp<=0?'<span class="pill dead-pill">0 PV</span>':''}${phase?`<span class="pill phase-pill">${esc(phase.name)}</span>`:''}${p.conditions.slice(0,3).map(c=>`<span class="pill">${esc(c.name)}${conditionShort(c)}</span>`).join('')}${p.conditions.length>3?`<span class="pill">+${p.conditions.length-3}</span>`:''}</div></article>`;
+};
+renderGroupCard=function(members,active){
+  const first=members[0],activeInside=members.some(p=>p.id===active?.id),alive=members.filter(p=>p.hp>0).length,ini=first.initiative,allSelected=members.every(p=>ui.multiSelection.has(p.id)),sharedInitiative=new Set(members.map(p=>p.initiative)).size===1,worst=members.reduce((a,b)=>hpPct(a)<hpPct(b)?a:b,members[0]);
+  return `<article class="group-card ${roleClass(first)} ${hpBandClass(worst)} ${activeInside?'active':''}"><div class="group-head"><button class="group-title" ${ui.multiMode?`data-multi-group="${first.groupId}"`:`data-select="${activeInside?active.id:first.id}"`}><span class="group-icon">${ui.multiMode?(allSelected?'☑':'☐'):'▾'}</span><span><strong>${esc(first.baseName)}</strong><small>${alive}/${members.length} actifs · ${sharedInitiative?'initiative commune':'initiatives individuelles'}</small></span></button><span class="role-name-badge">${roleLabel(first)}</span><span class="ini-badge">${sharedInitiative?ini:'×'}</span></div><div class="group-members">${members.map((p,i)=>`<div class="member-wrap"><button class="member-chip ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''} ${ui.multiSelection.has(p.id)?'multi-selected':''}" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`}><span>${i+1}</span><b>${p.hp>0?p.hp:'☠'}</b><small>/${p.maxHp} · CA ${effectiveAc(p)}</small><span class="member-mini-economy"><em class="${p.actionUsed?'spent':''}">A</em><em class="${p.bonusActionUsed?'spent':''}">B</em><em class="${p.reactionUsed?'spent':''}">R</em></span></button><button type="button" class="instance-edit-btn" data-edit-participant="${p.id}" title="Modifier ${esc(p.name)}">✎</button></div>`).join('')}</div></article>`;
+};
+
+// Ajoute un crayon d'instance sur chaque ligne de préparation sans modifier le modèle de bibliothèque.
+const renderPrepV3BeforeBoost=renderPrep;
+renderPrep=function(){renderPrepV3BeforeBoost();$$('#prepParticipants .prep-row').forEach(row=>{const id=row.dataset.select||row.querySelector('[data-select]')?.dataset.select;if(!id||state.encounter.participants.find(x=>x.id===id&&isLair(x)))return;if(row.querySelector('[data-edit-participant]'))return;const remove=row.querySelector('[data-remove]');if(!remove)return;const b=document.createElement('button');b.type='button';b.className='ghost small instance-edit-prep';b.dataset.editParticipant=id;b.textContent='✎';b.title='Modifier cette instance';remove.before(b);});};
+
+// Le détail permet aussi d'éditer immédiatement l'instance sélectionnée.
+const renderDetailV3BeforeBoost=renderDetail;
+renderDetail=function(){renderDetailV3BeforeBoost();const p=selectedParticipant();if(!p||isLair(p))return;const host=$('#activeDetail .header-resources');if(host&&!host.querySelector('[data-edit-participant]'))host.insertAdjacentHTML('beforeend',`<button type="button" class="ghost small" data-edit-participant="${p.id}">✎ Instance</button>`);};
+
 
 render();

@@ -402,3 +402,25 @@ window.ENCOUNTER_BUILTINS = [
     ];
   }
 })();
+
+
+// ——— ENCOUNTER V3.5 : caractéristiques, sauvegardes et compétences complètes des profils SRD intégrés ———
+(() => {
+  const byId=id=>window.ENCOUNTER_BUILTINS.find(m=>m.id===id);
+  const set=(id,abilities,skills={},saveMods={})=>{const m=byId(id);if(!m)return;m.abilities=abilities;m.skills=skills;m.saveMods=Object.assign({},saveMods);};
+  set('srd-gobelin',{FOR:8,DEX:14,CON:10,INT:10,SAG:8,CHA:8},{discretion:{mod:6,status:'Maîtrise'}});
+  set('srd-kobold',{FOR:7,DEX:15,CON:9,INT:8,SAG:7,CHA:8});
+  set('srd-orc',{FOR:16,DEX:12,CON:16,INT:7,SAG:11,CHA:10},{intimidation:{mod:2,status:'Maîtrise'}});
+  set('srd-ogre',{FOR:19,DEX:8,CON:16,INT:5,SAG:7,CHA:7});
+  set('srd-squelette',{FOR:10,DEX:14,CON:15,INT:6,SAG:8,CHA:5});
+  set('srd-zombi',{FOR:13,DEX:6,CON:16,INT:3,SAG:6,CHA:5},{},{SAG:0});
+  set('srd-goule',{FOR:13,DEX:15,CON:10,INT:7,SAG:10,CHA:6});
+  set('srd-araignee-geante',{FOR:14,DEX:16,CON:12,INT:2,SAG:11,CHA:4},{discretion:{mod:7,status:'Maîtrise'}});
+  set('srd-loup-sanguinaire',{FOR:17,DEX:15,CON:15,INT:3,SAG:12,CHA:7},{perception:{mod:3,status:'Maîtrise',note:'Avantage si fondé sur l’ouïe ou l’odorat'},discretion:{mod:4,status:'Maîtrise'}});
+  set('srd-ombre',{FOR:6,DEX:14,CON:13,INT:6,SAG:10,CHA:8},{discretion:{mod:4,status:'Maîtrise',note:'+6 en lumière faible ou dans les ténèbres'}});
+  set('srd-bandit',{FOR:11,DEX:12,CON:12,INT:10,SAG:10,CHA:10});
+  set('srd-cultiste',{FOR:11,DEX:12,CON:10,INT:10,SAG:11,CHA:10},{tromperie:{mod:2,status:'Maîtrise'},religion:{mod:2,status:'Maîtrise'}});
+  set('srd-malfrat',{FOR:15,DEX:11,CON:14,INT:10,SAG:10,CHA:11},{intimidation:{mod:2,status:'Maîtrise'}});
+  set('srd-veteran',{FOR:16,DEX:13,CON:14,INT:10,SAG:11,CHA:10},{athletisme:{mod:5,status:'Maîtrise'},perception:{mod:2,status:'Maîtrise'}});
+  set('srd-loup',{FOR:12,DEX:15,CON:12,INT:3,SAG:12,CHA:6},{perception:{mod:3,status:'Maîtrise',note:'Avantage si fondé sur l’ouïe ou l’odorat'},discretion:{mod:4,status:'Maîtrise'}});
+})();

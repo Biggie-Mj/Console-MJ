@@ -297,27 +297,32 @@
       {
         "name": "Sursaut d’activité",
         "detail": "1/repos court ou long : gagne une action supplémentaire à son tour. Avec Attaque supplémentaire, peut permettre jusqu’à quatre attaques.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "none"
       },
       {
         "name": "Attaque provocante",
         "detail": "Sur une touche, dépense 1d8 de supériorité, ajoute le dé aux dégâts ; JS SAG DD 15 ou désavantage contre les créatures autres que Tuskhan jusqu’à la fin du prochain tour de Tuskhan.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "none"
       },
       {
         "name": "Attaque précise",
         "detail": "Dépense 1d8 de supériorité et ajoute le résultat au jet d’attaque après avoir vu le d20, avant résolution.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "none"
       },
       {
         "name": "Attaque renversante",
         "detail": "Sur une touche, dépense 1d8, ajoute le dé aux dégâts ; cible G ou plus petite : JS FOR DD 15 ou À terre.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "none"
       },
       {
         "name": "Festin de la Dette",
         "detail": "Quand La Dette Rouge met à 0 PV une créature hostile avec du sang : Faim → 0 et Tuskhan gagne 5 × l’ancien niveau de Faim en PV temporaires.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "none"
       }
     ],
     "reactions": [],
@@ -999,7 +1004,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 10,
+      "INT": 10,
+      "SAG": 8,
+      "CHA": 8
+    },
+    "skills": {
+      "discretion": {
+        "mod": 6,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-kobold",
@@ -1052,7 +1072,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 7,
+      "DEX": 15,
+      "CON": 9,
+      "INT": 8,
+      "SAG": 7,
+      "CHA": 8
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-orc",
@@ -1100,7 +1130,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 16,
+      "DEX": 12,
+      "CON": 16,
+      "INT": 7,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "intimidation": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-ogre",
@@ -1142,7 +1187,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 19,
+      "DEX": 8,
+      "CON": 16,
+      "INT": 5,
+      "SAG": 7,
+      "CHA": 7
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-squelette",
@@ -1195,7 +1250,17 @@
     "conditionImmunities": [
       "Empoisonné",
       "Épuisement"
-    ]
+    ],
+    "abilities": {
+      "FOR": 10,
+      "DEX": 14,
+      "CON": 15,
+      "INT": 6,
+      "SAG": 8,
+      "CHA": 5
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-zombi",
@@ -1241,7 +1306,19 @@
     ],
     "conditionImmunities": [
       "Empoisonné"
-    ]
+    ],
+    "abilities": {
+      "FOR": 13,
+      "DEX": 6,
+      "CON": 16,
+      "INT": 3,
+      "SAG": 6,
+      "CHA": 5
+    },
+    "skills": {},
+    "saveMods": {
+      "SAG": 0
+    }
   },
   {
     "id": "srd-goule",
@@ -1291,7 +1368,17 @@
       "Charmé",
       "Empoisonné",
       "Épuisement"
-    ]
+    ],
+    "abilities": {
+      "FOR": 13,
+      "DEX": 15,
+      "CON": 10,
+      "INT": 7,
+      "SAG": 10,
+      "CHA": 6
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-araignee-geante",
@@ -1357,7 +1444,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 14,
+      "DEX": 16,
+      "CON": 12,
+      "INT": 2,
+      "SAG": 11,
+      "CHA": 4
+    },
+    "skills": {
+      "discretion": {
+        "mod": 7,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-loup-sanguinaire",
@@ -1402,7 +1504,27 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 17,
+      "DEX": 15,
+      "CON": 15,
+      "INT": 3,
+      "SAG": 12,
+      "CHA": 7
+    },
+    "skills": {
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise",
+        "note": "Avantage si fondé sur l’ouïe ou l’odorat"
+      },
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-ombre",
@@ -1477,7 +1599,23 @@
       "Épuisement",
       "Paralysé",
       "Pétrifié"
-    ]
+    ],
+    "abilities": {
+      "FOR": 6,
+      "DEX": 14,
+      "CON": 13,
+      "INT": 6,
+      "SAG": 10,
+      "CHA": 8
+    },
+    "skills": {
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise",
+        "note": "+6 en lumière faible ou dans les ténèbres"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-bandit",
@@ -1519,7 +1657,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1. Humanoïde polyvalent pour brigands, pirates et hommes de main."
+    "notes": "Profil SRD 5.1. Humanoïde polyvalent pour brigands, pirates et hommes de main.",
+    "abilities": {
+      "FOR": 11,
+      "DEX": 12,
+      "CON": 12,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 10
+    },
+    "skills": {},
+    "saveMods": {}
   },
   {
     "id": "srd-cultiste",
@@ -1559,7 +1707,26 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1."
+    "notes": "Profil SRD 5.1.",
+    "abilities": {
+      "FOR": 11,
+      "DEX": 12,
+      "CON": 10,
+      "INT": 10,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "tromperie": {
+        "mod": 2,
+        "status": "Maîtrise"
+      },
+      "religion": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-malfrat",
@@ -1614,7 +1781,22 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "abilities": {
+      "FOR": 15,
+      "DEX": 11,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 11
+    },
+    "skills": {
+      "intimidation": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-veteran",
@@ -1671,7 +1853,26 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1. Excellent soldat professionnel ou mercenaire."
+    "notes": "Profil SRD 5.1. Excellent soldat professionnel ou mercenaire.",
+    "abilities": {
+      "FOR": 16,
+      "DEX": 13,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 11,
+      "CHA": 10
+    },
+    "skills": {
+      "athletisme": {
+        "mod": 5,
+        "status": "Maîtrise"
+      },
+      "perception": {
+        "mod": 2,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "srd-loup",
@@ -1716,7 +1917,27 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1."
+    "notes": "Profil SRD 5.1.",
+    "abilities": {
+      "FOR": 12,
+      "DEX": 15,
+      "CON": 12,
+      "INT": 3,
+      "SAG": 12,
+      "CHA": 6
+    },
+    "skills": {
+      "perception": {
+        "mod": 3,
+        "status": "Maîtrise",
+        "note": "Avantage si fondé sur l’ouïe ou l’odorat"
+      },
+      "discretion": {
+        "mod": 4,
+        "status": "Maîtrise"
+      }
+    },
+    "saveMods": {}
   },
   {
     "id": "gobelin-veteran",
