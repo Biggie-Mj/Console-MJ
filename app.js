@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '3.6.1';
+const APP_VERSION = '4.0.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -600,12 +600,12 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 
 function exportData(){
-  const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.6.1-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.6.1 créé.');
+  const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
-  if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});if(Array.isArray(data.savedEncounters))state.savedEncounters=data.savedEncounters;if(Array.isArray(data.trash))state.trash=data.trash;}
+  if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});if(Array.isArray(data.savedEncounters))state.savedEncounters=data.savedEncounters;if(Array.isArray(data.trash))state.trash=data.trash;if(Array.isArray(data.sessionLibrary))state.sessionLibrary=data.sessionLibrary;}
   else if(Array.isArray(data))data.forEach(m=>state.monsters.push(normalizeMonster(m)));else if(data.name)state.monsters.push(normalizeMonster(data));else throw new Error('Format non reconnu');
   const known=new Set(state.monsters.map(m=>m.id));SAMPLE_MONSTERS.map(normalizeMonster).forEach(m=>{if(!known.has(m.id))state.monsters.push(m);});saveState();render();log('Import JSON effectué.');
 }
@@ -804,3 +804,108 @@ render=function(){
 
 
 render();
+
+/* =========================================================
+   ENCOUNTER V4 — Flux de session, ciblage mémorisé,
+   command center et stockage IndexedDB
+   ========================================================= */
+
+// Migration douce : les données historiques restent compatibles.
+state.version='4.0.0';
+state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
+state.encounter.lastTargets=state.encounter.lastTargets||{};
+state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
+ui.homeVisible=true;
+ui.sessionOnly=false;
+ui.rememberedTargetId=null;
+
+// -------- IndexedDB : miroir robuste + récupération si localStorage est absent --------
+const V4_DB='encounter-console-v4';
+const V4_DB_VERSION=1;
+const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
+function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
+async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.0.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+const saveStateV361=saveState;
+saveState=function(){state.version='4.0.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+const writeBackupStoreV361=writeBackupStore;
+writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
+async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
+
+// -------- Accueil / lanceur de session --------
+const setModeV361=setMode;
+setMode=function(mode){if(mode==='home'){ui.homeVisible=true;closeDrawers();render();return;}ui.homeVisible=false;setModeV361(mode);};
+function renderHome(){const home=$('#homeView');if(!home)return;home.classList.toggle('hidden',!ui.homeVisible);$('.roundbar')?.classList.toggle('hidden',ui.homeVisible);if(ui.homeVisible){$('#prepView')?.classList.add('hidden');$('#combatView')?.classList.add('hidden');$('#quickBar')?.classList.add('hidden');document.body.classList.remove('combat-mode');$('#btnModePrep')?.classList.remove('active');$('#btnModeCombat')?.classList.remove('active');}$('#btnModeHome')?.classList.toggle('active',ui.homeVisible);if(!ui.homeVisible)return;const participants=state.encounter.participants.filter(p=>!isLair(p));const resume=$('#btnHomeResume');resume.disabled=!participants.length;$('#homeResumeMeta').textContent=participants.length?`${state.encounter.name} · round ${state.encounter.round} · ${participants.length} participant(s)`:'Aucune rencontre active';$('#homeSavedMeta').textContent=`${state.savedEncounters.length} rencontre${state.savedEncounters.length>1?'s':''} sauvegardée${state.savedEncounters.length>1?'s':''}`;$('#homeSessionCount').textContent=state.sessionLibrary.length;const recent=[...state.savedEncounters].sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))).slice(0,5);$('#homeSavedEncounters').innerHTML=recent.length?recent.map(r=>`<article class="home-saved-card"><div><strong>${esc(r.name)}</strong><small>${r.encounter?.participants?.length||0} participant(s) · ${new Date(r.updatedAt).toLocaleString('fr-FR')}</small></div><div><button class="ghost small" data-home-load="${r.id}">Préparer</button><button class="primary small" data-home-launch="${r.id}">⚔</button></div></article>`).join(''):'<p class="session-empty">Aucune rencontre sauvegardée.</p>';const sm=state.sessionLibrary.map(id=>state.monsters.find(m=>m.id===id)).filter(Boolean);$('#homeSessionLibrary').innerHTML=sm.length?sm.map(m=>`<article class="home-session-card"><div><strong>${esc(m.name)}</strong><small>${esc(m.subtitle||m.type||'Profil')} · ${m.hp} PV · CA ${m.ac}</small></div><span class="cr-badge">${m.category==='character'?'PJ':m.category==='companion'?'COMP.':m.category==='npc'?'PNJ':m.isBoss||m.legendaryActions?.length?'BOSS':`FP ${esc(m.cr||'—')}`}</span></article>`).join(''):'<p class="session-empty">Aucun profil épinglé pour cette session.</p>';}
+
+$('#btnModeHome')?.addEventListener('click',()=>setMode('home'));
+$('#btnHomeResume')?.addEventListener('click',()=>{if(state.ui.mode==='combat'){ui.homeVisible=false;render();}else setMode('combat');});
+$('#btnHomeSaved')?.addEventListener('click',openEncounterManager);
+$('#btnHomeManageSaved')?.addEventListener('click',openEncounterManager);
+$('#btnHomeNew')?.addEventListener('click',()=>{newEncounter();setMode('prep');});
+$('#btnHomeOpenLibrary')?.addEventListener('click',()=>{ui.sessionOnly=false;ui.homeVisible=false;state.ui.mode='prep';openDrawer('library');render();});
+
+// -------- Bibliothèque de session --------
+function toggleSessionPin(id){const m=state.monsters.find(x=>x.id===id);if(!m)return;const on=state.sessionLibrary.includes(id);mutate(()=>{state.sessionLibrary=on?state.sessionLibrary.filter(x=>x!==id):[...state.sessionLibrary,id];},`${m.name} ${on?'retiré de':'ajouté à'} la bibliothèque de session.`);}
+const openDrawerV361=openDrawer;
+openDrawer=function(name){if(name==='library'&&state.ui.mode==='combat'&&state.sessionLibrary.length)ui.sessionOnly=true;if(name==='library')renderLibrary();openDrawerV361(name);};
+renderLibrary=function(){
+  const q=$('#monsterSearch').value.trim().toLowerCase(),locked=isLocked(),tag=ui.libraryTag;
+  const ms=state.monsters.filter(m=>(ui.libraryFilter==='all'||m.category===ui.libraryFilter)&&(!ui.favoritesOnly||m.favorite)&&(!ui.sessionOnly||state.sessionLibrary.includes(m.id))&&(!tag||categoriesForMonster(m).includes(tag))&&`${m.name} ${m.type} ${m.cr} ${m.source} ${m.subtitle} ${(m.tags||[]).join(' ')}`.toLowerCase().includes(q));
+  $('#monsterLibrary').innerHTML=ms.map(m=>{const isChar=m.category==='character',isComp=m.category==='companion',isNpc=m.category==='npc',boss=!!(m.isBoss||m.legendaryActions?.length),pinned=state.sessionLibrary.includes(m.id),cardClass=isChar?'character-card':isComp?'companion-card':isNpc?'npc-card':'',badgeClass=boss?'boss-badge':isChar?'character-badge':isComp?'companion-badge':isNpc?'npc-badge':'',badge=boss?'BOSS':isChar?'PJ':isComp?'COMP.':isNpc?'PNJ':`FP ${esc(m.cr||'—')}`;return `<article class="library-card ${cardClass} ${boss?'boss-library-card':''} ${pinned?'session-pinned':''}"><div class="library-title"><h3>${esc(m.name)}</h3><div class="library-title-badges"><button class="session-pin ${pinned?'on':''}" data-session-pin="${m.id}" title="Bibliothèque de session">${pinned?'📌 Session':'＋ Session'}</button><button class="favorite-star ${m.favorite?'on':''}" data-favorite="${m.id}" title="Favori">${m.favorite?'★':'☆'}</button><span class="cr-badge ${badgeClass}">${badge}</span></div></div><div class="library-meta">${esc(m.subtitle||[m.size,m.type].filter(Boolean).join(' · '))} · CA ${m.ac} · ${m.hp} PV${m.lairActions.length?' · 🏰 repaire':''}</div>${m.tags?.length?`<div class="tag-list">${m.tags.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}${m.source?`<div class="source-badge">${esc(m.source)}</div>`:''}<div class="library-actions"><button class="primary small" data-add-monster="${m.id}" ${locked?'disabled':''}>+ Ajouter</button><button class="ghost small" data-edit-monster="${m.id}" ${locked?'disabled':''}>Modifier</button></div></article>`;}).join('')||'<p class="muted">Aucun résultat.</p>';
+  $('#btnCreateMonster').disabled=locked;$$('[data-library-filter]').forEach(b=>b.classList.toggle('active',b.dataset.libraryFilter===ui.libraryFilter));const sel=$('#libraryTagFilter');if(sel){const old=ui.libraryTag;sel.innerHTML='<option value="">Toutes les catégories</option>'+tagsForLibrary().map(x=>`<option ${x===old?'selected':''}>${esc(x)}</option>`).join('');}$('#btnFavoriteFilter')?.classList.toggle('active',ui.favoritesOnly);$('#btnSessionOnly')?.classList.toggle('active',ui.sessionOnly);};
+$('#btnSessionOnly')?.addEventListener('click',()=>{ui.sessionOnly=!ui.sessionOnly;renderLibrary();});
+
+// -------- Ciblage avec mémoire de la dernière cible --------
+const startTargetingV361=startTargeting;
+startTargeting=function(pid,aid,section,mode='normal'){startTargetingV361(pid,aid,section,mode);if(ui.targeting){const remembered=state.encounter.lastTargets?.[pid];const actor=state.encounter.participants.find(x=>x.id===pid),target=state.encounter.participants.find(x=>x.id===remembered),a=currentTargetingAbility();ui.targeting.rememberedTargetId=target&&eligibleTarget(actor,target,a)?remembered:null;ui.rememberedTargetId=ui.targeting.rememberedTargetId;render();}};
+targetClassFor=function(p){if(!ui.targeting||isLair(p))return'';const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();if(!eligibleTarget(actor,p,a))return'target-ineligible';return p.id===ui.targeting.rememberedTargetId?'target-eligible target-remembered':'target-eligible';};
+renderTargeting=function(){const bar=$('#targetingBanner');if(!bar)return;if(!ui.targeting){bar.classList.add('hidden');bar.innerHTML='';document.body.classList.remove('targeting-mode');return;}const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();if(!actor||!a){ui.targeting=null;return renderTargeting();}document.body.classList.add('targeting-mode');bar.classList.remove('hidden');const pos=ui.targeting.steps?.length?` · attaque ${ui.targeting.step+1}/${ui.targeting.steps.length}`:'',remembered=state.encounter.participants.find(x=>x.id===ui.targeting.rememberedTargetId);bar.innerHTML=`<div><span class="eyebrow">CIBLAGE</span><strong>${esc(actor.name)} — ${esc(a.name)}${pos}</strong><small>Les cibles valides sont surveillées. Touche une cible pour résoudre l’action.</small></div>${remembered?`<div class="remembered-target-cta"><small>Cible précédente : ${esc(remembered.name)}</small><button class="primary small" data-remembered-target="${remembered.id}">Réutiliser</button></div>`:''}<button class="ghost" id="btnCancelTargeting">Annuler</button>`;};
+
+// Résolution V4 : cible mémorisée + feedback avant/après PV.
+resolveTargetSelection=function(targetId){
+  if(!ui.targeting)return false;const t=ui.targeting,actor=state.encounter.participants.find(x=>x.id===t.actorId),target=state.encounter.participants.find(x=>x.id===targetId),m=modelFor(actor),a=currentTargetingAbility();if(!actor||!target||!m||!a)return false;if(!eligibleTarget(actor,target,a)){toast('Cette cible n’est pas valide pour cette action.');return true;}
+  checkpoint();const hpBefore=target.hp,tempBefore=target.tempHp;let msg=`${actor.name} — ${a.name} → ${target.name}`,flash='miss',outcome='';
+  if(a.kind==='attack'||(a.kind==='recharge'&&a.bonus!=null)){const r=rollD20(t.mode),bonus=Number(a.bonus)||0,total=r.roll+bonus,crit=r.roll===20,hit=crit||total>=effectiveAc(target);outcome=hit?(crit?'CRITIQUE':'TOUCHÉ'):'RATÉ';msg+=`\n${total} vs CA ${effectiveAc(target)} → ${outcome}`;if(hit&&a.damage){const dmg=rollDamageCrit(a.damage,crit),ap=applyDamageDirect(target,dmg.total,a.damageType);msg+=`\n${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''} · ${target.name} : ${hpBefore} → ${target.hp} PV`;flash=ap.amount>0?'damage':'miss';}}
+  else if(a.kind==='save'||(a.kind==='recharge'&&a.dc!=null)){const mod=getTargetSaveMod(target,a);if(mod==null){outcome='À RÉSOUDRE';msg+=`\nJS ${a.save||'?'} DD ${a.dc||'?'} à résoudre manuellement`;}else{const r=rollD20(),total=r.roll+mod,ok=total>=(a.dc||10);outcome=ok?'JS RÉUSSI':'JS ÉCHOUÉ';msg+=`\nJS ${a.save||'?'} : ${total} vs DD ${a.dc} → ${outcome}`;if(a.damage){const dmg=rollExpression(a.damage),half=/moiti[ée]/i.test(a.detail||''),raw=ok?(half?Math.floor(dmg.total/2):0):dmg.total,ap=applyDamageDirect(target,raw,a.damageType);msg+=`\n${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''} · ${target.name} : ${hpBefore} → ${target.hp} PV`;flash=ap.amount>0?'damage':'miss';}}}
+  else if(a.kind==='heal'){const heal=rollExpression(a.damage),given=applyHealDirect(target,heal.total);outcome=given>0?'SOIGNÉ':'AUCUN SOIN';msg+=`\n+${given} PV · ${target.name} : ${hpBefore} → ${target.hp} PV`;flash=given>0?'heal':'miss';}
+  if(tempBefore!==target.tempHp)msg+=` · PV temp. ${tempBefore} → ${target.tempHp}`;setTargetFlash(target.id,flash);state.encounter.lastTargets=state.encounter.lastTargets||{};state.encounter.lastTargets[actor.id]=target.id;if(a.kind==='recharge'){actor.abilityState[a.id]=actor.abilityState[a.id]||{};actor.abilityState[a.id].ready=false;}
+  const isMulti=!!t.steps?.length,finalMulti=isMulti&&t.step>=t.steps.length-1;consumeEconomyAfterResolution(actor,a,t.section,{forceAction:finalMulti});actionLog(msg,a.name);$('#actionPopup')?.classList.add('v4-feedback');
+  if(isMulti&&!finalMulti){t.step++;t.rememberedTargetId=target.id;state.encounter.selectedId=actor.id;saveState();render();return true;}ui.targeting=null;state.encounter.selectedId=actor.id;saveState();render();if($('#legendaryDialog').open){const ending=activeParticipant(),bosses=eligibleLegendaryBosses(ending);if(bosses.length)renderLegendaryDialog(ending,bosses);else{$('#legendaryDialog').close();actualAdvanceTurn();}}return true;
+};
+
+// Feedback enrichi pour la barre rapide.
+applyDamageMany=function(ids,amount,type=''){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const before=p.hp,r=resolveDamageAmount(p,amount,type);let left=r.amount;if(p.tempHp>0){const used=Math.min(p.tempHp,left);p.tempHp-=used;left-=used;}p.hp=Math.max(0,p.hp-left);checkPhaseTransition(p);setTargetFlash(p.id,r.amount>0?'damage':'miss');details.push(`${p.name}: ${before} → ${p.hp} PV · ${r.amount} dégâts${r.reason?` (${r.reason})`:''}`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=details.join('\n');log(msg);saveState();render();showActionPopup(msg,`${amount} dégâts${type?` ${type}`:''}`);};
+applyHealMany=function(ids,amount){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const before=p.hp;p.hp=Math.min(p.maxHp,p.hp+amount);const given=p.hp-before;setTargetFlash(p.id,given>0?'heal':'miss');details.push(`${p.name}: ${before} → ${p.hp} PV · +${given}`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=details.join('\n');log(msg);saveState();render();showActionPopup(msg,'Soins');};
+
+// -------- Command center du tour actif --------
+function endTurnHints(p){const hints=[];(p.conditions||[]).forEach(c=>{if(c.durationType==='saveEnd')hints.push(`${c.name} : JS ${c.saveAbility||'?'} DD ${c.dc||'?'}`);else if(c.durationType==='untilEnd')hints.push(`${c.name} prend fin`);else if(c.durationType==='rounds')hints.push(`${c.name} : ${c.remaining} tour(s) restant(s)`);});const m=modelFor(p);(m?.traits||[]).filter(t=>t.timing==='end').forEach(t=>hints.push(t.name));return hints;}
+function turnCommandCenter(p){const active=activeParticipant(),isActive=p.id===active?.id,m=modelFor(p),phase=currentPhase(p,m),next=nextPhase(p,m),notices=(state.encounter.turnNotices||[]).filter(n=>n.participantId===p.id).map(n=>n.text),end=endTurnHints(p),resources=(m?.resources||[]).slice(0,3).map(r=>`${r.name} ${p.resourceState?.[r.id]??r.start}/${r.max}`);const action=attacksPerAction(p)>1?`A ${Math.min(attacksPerAction(p),p.attackProgress||0)}/${attacksPerAction(p)}${p.actionUsed?' · engagée':''}`:`A ${p.actionUsed?'utilisée':'prête'}`;return `<section class="turn-command-center ${isActive?'':'not-active'}"><div class="turn-command-top"><div class="turn-command-title"><strong>${isActive?'▶ TOUR ACTIF':'Créature sélectionnée'}</strong><small>${esc(p.name)}${phase?` · ${esc(phase.name)}`:''}</small></div><div class="turn-command-vitals"><span class="hp">PV ${p.hp}/${p.maxHp}</span><span>CA ${effectiveAc(p)}</span><span>${action}</span><span>B ${p.bonusActionUsed?'×':'✓'} · R ${p.reactionUsed?'×':'✓'}</span></div></div><div class="turn-command-grid"><div class="turn-command-block ${notices.length?'attention':''}"><b>Début / maintenant</b><small class="${notices.length?'':'turn-command-empty'}">${notices.length?notices.slice(0,3).map(esc).join('<br>'):'Aucun rappel immédiat'}</small></div><div class="turn-command-block ${end.length?'attention':''}"><b>Fin du tour</b><small class="${end.length?'':'turn-command-empty'}">${end.length?end.slice(0,3).map(esc).join('<br>'):'Aucun rappel de fin'}</small></div><div class="turn-command-block ${next?'danger':''}"><b>${next?'Prochaine phase':'Ressources'}</b><small>${next?`${esc(next.name)} à ${next.threshold} PV · ${Math.max(0,p.hp-next.threshold)} PV avant seuil`:resources.length?resources.map(esc).join('<br>'):'Aucune ressource critique'}</small></div></div></section>`;}
+const renderDetailV4Base=renderDetail;
+renderDetail=function(){renderDetailV4Base();const p=selectedParticipant();if(!p||isLair(p))return;const host=$('#activeDetail .detail-header');if(host&&!$('#activeDetail .turn-command-center'))host.insertAdjacentHTML('afterend',turnCommandCenter(p));};
+
+// -------- Rencontres : duplication et variantes rapides --------
+function duplicateSavedEncounter(id,kind='copy'){const rec=state.savedEncounters.find(x=>x.id===id);if(!rec)return;const factor=kind==='light'?.85:kind==='hard'?1.15:1,suffix=kind==='light'?'Allégée':kind==='hard'?'Brutale':'Copie',copy=clone(rec),newId=uid('enc');copy.id=newId;copy.name=`${rec.name} — ${suffix}`;copy.updatedAt=new Date().toISOString();copy.encounter.savedId=newId;copy.encounter.name=copy.name;if(factor!==1){(copy.encounter.participants||[]).forEach(p=>{if(p.kind==='lair')return;const model=state.monsters.find(m=>m.id===p.modelId),enemy=p.kind==='enemy'||model?.category==='enemy'||p.bossOverride||model?.isBoss||model?.legendaryActions?.length;if(!enemy)return;const ratio=p.maxHp?Math.max(0,p.hp/p.maxHp):1;p.maxHp=Math.max(1,Math.round(p.maxHp*factor));p.hp=Math.min(p.maxHp,Math.max(0,Math.round(p.maxHp*ratio)));});}mutate(()=>state.savedEncounters.unshift(copy),`Variante « ${copy.name} » créée.`);renderEncounterManager();}
+renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)return;el.innerHTML=state.savedEncounters.length?state.savedEncounters.map(r=>`<article class="saved-encounter-card"><div><strong>${esc(r.name)}</strong><small>${r.encounter.participants?.length||0} participant(s) · modifiée ${new Date(r.updatedAt).toLocaleString('fr-FR')}</small><div class="variant-actions"><button class="ghost variant-chip" data-duplicate-encounter="${r.id}">Dupliquer</button><button class="ghost variant-chip light" data-variant-light="${r.id}">Allégée −15% PV ennemis</button><button class="ghost variant-chip hard" data-variant-hard="${r.id}">Brutale +15% PV ennemis</button></div></div><div class="encounter-main-actions"><button data-load-encounter="${r.id}">Charger</button><button class="primary" data-launch-encounter="${r.id}">⚔ Lancer</button><button class="danger ghost" data-delete-saved="${r.id}">Corbeille</button></div></article>`).join(''):'<p class="muted">Aucune rencontre sauvegardée.</p>';};
+
+// Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
+const blankStateV4Base=blankState;
+blankState=function(){const s=blankStateV4Base();s.version='4.0.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
+
+// -------- Render V4 global --------
+const renderV4Base=render;
+render=function(){renderV4Base();renderHome();renderTargeting();};
+
+// Délégation V4 (capture pour rester fluide avec les gestionnaires existants).
+addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.sessionPin){e.preventDefault();e.stopImmediatePropagation();toggleSessionPin(b.dataset.sessionPin);return;}if(b.dataset.rememberedTarget){e.preventDefault();e.stopImmediatePropagation();resolveTargetSelection(b.dataset.rememberedTarget);return;}if(b.dataset.homeLoad){e.preventDefault();e.stopImmediatePropagation();ui.homeVisible=false;loadSavedEncounter(b.dataset.homeLoad,false);return;}if(b.dataset.homeLaunch){e.preventDefault();e.stopImmediatePropagation();ui.homeVisible=false;loadSavedEncounter(b.dataset.homeLaunch,true);return;}if(b.dataset.duplicateEncounter){e.preventDefault();e.stopImmediatePropagation();duplicateSavedEncounter(b.dataset.duplicateEncounter,'copy');return;}if(b.dataset.variantLight){e.preventDefault();e.stopImmediatePropagation();duplicateSavedEncounter(b.dataset.variantLight,'light');return;}if(b.dataset.variantHard){e.preventDefault();e.stopImmediatePropagation();duplicateSavedEncounter(b.dataset.variantHard,'hard');return;}},true);
+
+// Migration initiale et affichage du lanceur. Si localStorage a été effacé,
+// on laisse d'abord IndexedDB restaurer l'état avant toute écriture.
+async function v4Init(){
+  await v4HydrateStorage();
+  if(!localStorage.getItem('encounter-v4-migrated')){forceBackup('Migration vers ENCOUNTER V4');localStorage.setItem('encounter-v4-migrated','1');}
+  saveState();
+  render();
+}
+v4Init();

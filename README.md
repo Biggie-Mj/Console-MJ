@@ -1,45 +1,78 @@
-# ENCOUNTER — Console MJ D&D 5e V3.6.1
+# ENCOUNTER — Console MJ D&D 5e V4
 
-V3.6.1 reprend la V3.6 « Correctifs ergonomiques » et conserve la même clé de sauvegarde locale `encounter-console-v1`.
+La V4 conserve les fonctions de la V3.6.1 et ajoute une couche de pilotage pensée pour réduire les manipulations pendant une partie sur iPad paysage.
 
+## Nouveautés V4
 
-## Nouveau logo d’application — V3.6.1
+### 1. Lanceur de session
+Au démarrage, ENCOUNTER affiche désormais un accueil avec trois accès directs :
+- Reprendre le combat en cours ;
+- Rencontres préparées ;
+- Nouvelle rencontre.
 
-La PWA utilise désormais le logo retenu pour ENCOUNTER : **écran de Maître de Jeu bleu nuit, liserés dorés et dé polyédrique central**.
+Les rencontres récentes peuvent aussi être chargées ou lancées directement depuis cet écran.
 
-Fichiers remplacés :
+### 2. Bibliothèque de session
+Chaque profil de la bibliothèque possède un bouton `Session` permettant de l’épingler. En combat, le tiroir Bibliothèque privilégie automatiquement ces profils afin de retrouver rapidement les PJ, PNJ et adversaires utiles à la session. Le filtre `Session` peut être désactivé à tout moment pour revenir à la bibliothèque complète.
 
-- `apple-touch-icon.png` — 180 × 180, pour l’écran d’accueil iPhone/iPad ;
-- `icon-192.png` — 192 × 192, pour la PWA ;
-- `icon-512.png` — 512 × 512, pour la PWA ;
-- `icon-1024.png` — 1024 × 1024, source haute résolution conservée dans le paquet.
+### 3. Cible mémorisée
+Lorsqu’une action nécessite une cible, la dernière cible valide utilisée par cette créature est mémorisée. Pendant la prochaine attaque, elle est mise en évidence et peut être reprise avec le bouton `Réutiliser`. Pour les multiattaques, la cible de l’attaque précédente est proposée pour l’attaque suivante sans lancer automatiquement le jet.
 
-Le cache du service worker a été incrémenté afin que GitHub Pages récupère les nouvelles icônes. Sur iOS, si l’ancienne icône reste affichée, supprime le raccourci ENCOUNTER de l’écran d’accueil puis ajoute-le de nouveau depuis Safari.
+### 4. Command Center du tour actif
+La fiche sélectionnée affiche un résumé immédiat :
+- PV / CA ;
+- Action, action bonus et réaction ;
+- progression des attaques multiples ;
+- rappels de début/fin de tour ;
+- prochaine phase de boss ou ressources principales.
 
-## Correctifs et ajouts
+L’objectif est de réunir les informations des 10 prochaines secondes de jeu au même endroit.
 
-- une seule pastille **BOSS** sur les lignes de combat ;
-- pop-up d’action affiché **6 secondes**, centré en haut, ou jusqu’au toucher/clic ;
-- marqueurs **A / B / R** déplacés à côté de la catégorie de la créature ;
-- surbrillance de cible pendant **2,5 s** : **verte = soin**, **rouge = dégâts**, **blanche = attaque ratée / aucun effet** ;
-- profils SRD intégrés complétés avec les six caractéristiques et leurs compétences maîtrisées ;
-- toute instance d’une rencontre peut être modifiée séparément (nom, rôle, CA, PV actuels/max, PV temporaires, initiative, vitesse, BOSS), y compris un membre d’un groupe ;
-- les modifications d’instance n’altèrent pas le modèle source de la bibliothèque.
+### 5. Rencontres duplicables et variantes
+Dans `Rencontres sauvegardées`, chaque rencontre peut maintenant être :
+- dupliquée à l’identique ;
+- créée en variante **Allégée** (-15 % de PV maximum pour les adversaires) ;
+- créée en variante **Brutale** (+15 % de PV maximum pour les adversaires).
 
-## Mise à jour GitHub Pages
+Les autres statistiques ne sont pas modifiées automatiquement.
 
-Remplace à la racine du dépôt : `index.html`, `styles.css`, `app.js`, `builtins.js`, `service-worker.js`, `manifest.webmanifest`, `README.md` et le dossier `data`. Conserve également les icônes PWA et `.nojekyll`.
+### 6. Retour d’action enrichi
+Le pop-up conserve les réglages de la V3.6 (haut-centre, 6 secondes, fermeture au toucher) mais affiche maintenant les informations essentielles de résolution, notamment les PV avant/après de la cible lorsqu’un soin ou des dégâts sont appliqués.
 
-Après publication, ouvre une fois le site avec Internet afin que le nouveau service worker mette à jour le cache hors connexion. Si l’ancienne version reste affichée, ferme/réouvre l’application installée ou recharge le site en ligne.
+### 7. Stockage renforcé
+La V4 conserve `localStorage` pour rester compatible avec toutes les versions précédentes et ajoute un miroir IndexedDB. Si le stockage principal du navigateur est perdu mais que le stockage IndexedDB est encore disponible, ENCOUNTER peut restaurer automatiquement l’état le plus récent. Les backups continuent également d’être conservés et sont recopiés dans IndexedDB.
 
-Le contenu SRD 5.1 reste sous CC-BY-4.0 ; voir `LICENSE-SRD.txt`.
+### 8. PWA / hors connexion
+Le cache du service worker passe à la V4. Le nouveau logo validé en V3.6.1 reste utilisé pour :
+- `apple-touch-icon.png` ;
+- `icon-192.png` ;
+- `icon-512.png` ;
+- `icon-1024.png`.
 
+## Mise à jour depuis V3.6.1
 
-## Correctifs V3.6
+1. Dans ENCOUNTER, faire **Exporter JSON** par sécurité.
+2. Décompresser le ZIP V4.
+3. Remplacer à la racine du dépôt GitHub tous les fichiers par ceux du ZIP.
+4. Faire `Commit changes`.
+5. Attendre la publication GitHub Pages.
+6. Ouvrir une fois ENCOUNTER avec Internet pour que le nouveau service worker mette le cache à jour.
+7. Fermer puis relancer l’application installée sur l’iPad.
 
-- Pop-up d’action centré en haut, affiché 6 secondes ou jusqu’au toucher.
-- PV rendus prioritaires visuellement en combat, notamment dans les groupes ; CA devient secondaire.
-- La bibliothèque reste ouverte après chaque ajout et se ferme en touchant hors du tiroir.
-- Une action d’Attaque est marquée dépensée dès la première attaque, mais les attaques supplémentaires autorisées restent accessibles jusqu’à la limite de l’action.
-- Surbrillances dégâts/soins/raté : 2,5 secondes.
-- Suppression individuelle des backups depuis le menu Backups.
+La clé historique `encounter-console-v1` est conservée : la V4 doit donc retrouver automatiquement la bibliothèque, les participants, les rencontres sauvegardées et la corbeille de la version précédente.
+
+## Fichiers principaux
+- `index.html`
+- `styles.css`
+- `app.js`
+- `builtins.js`
+- `manifest.webmanifest`
+- `service-worker.js`
+- `apple-touch-icon.png`
+- `icon-192.png`
+- `icon-512.png`
+- `icon-1024.png`
+- `data/`
+
+## SRD
+Les profils issus du SRD 5.1 restent soumis à l’attribution indiquée dans `LICENSE-SRD.txt`.
