@@ -1,8 +1,28 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = 2.5;
+const APP_VERSION = 3;
+const BACKUP_KEY = 'encounter-console-backups-v3';
+const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
+
+const SKILLS = [
+  {name:'Athlétisme',key:'athletisme',ability:'FOR'},{name:'Acrobaties',key:'acrobaties',ability:'DEX'},{name:'Escamotage',key:'escamotage',ability:'DEX'},{name:'Discrétion',key:'discretion',ability:'DEX'},
+  {name:'Arcanes',key:'arcanes',ability:'INT'},{name:'Histoire',key:'histoire',ability:'INT'},{name:'Investigation',key:'investigation',ability:'INT'},{name:'Nature',key:'nature',ability:'INT'},{name:'Religion',key:'religion',ability:'INT'},
+  {name:'Dressage',key:'dressage',ability:'SAG'},{name:'Intuition',key:'intuition',ability:'SAG'},{name:'Médecine',key:'medecine',ability:'SAG'},{name:'Perception',key:'perception',ability:'SAG'},{name:'Survie',key:'survie',ability:'SAG'},
+  {name:'Intimidation',key:'intimidation',ability:'CHA'},{name:'Persuasion',key:'persuasion',ability:'CHA'},{name:'Représentation',key:'representation',ability:'CHA'},{name:'Tromperie',key:'tromperie',ability:'CHA'}
+];
+const PROFILE_SKILLS = {
+ 'pj-pik-ekrok':{
+  athletisme:{mod:0},acrobaties:{mod:1},escamotage:{mod:1},discretion:{mod:1,note:'Désavantage en demi-plate'},arcanes:{mod:2},histoire:{mod:2},investigation:{mod:2},nature:{mod:5,status:'Maîtrise'},religion:{mod:5,status:'Maîtrise'},dressage:{mod:5},intuition:{mod:8,status:'Maîtrise'},medecine:{mod:11,status:'Expertise'},perception:{mod:8,status:'Maîtrise'},survie:{mod:5},intimidation:{mod:-1},persuasion:{mod:-1},representation:{mod:-1},tromperie:{mod:-1}},
+ 'pj-tuskhan-sand-ivoire':{
+  athletisme:{mod:7,status:'Maîtrise'},acrobaties:{mod:2},escamotage:{mod:2},discretion:{mod:2},arcanes:{mod:-1},histoire:{mod:-1},investigation:{mod:-1,note:'Avantage si fondé sur l’odorat'},nature:{mod:-1},religion:{mod:-1},dressage:{mod:1},intuition:{mod:4,status:'Maîtrise'},medecine:{mod:1},perception:{mod:4,status:'Maîtrise',note:'Avantage si fondé sur l’odorat'},survie:{mod:1,note:'Avantage si fondé sur l’odorat'},intimidation:{mod:0},persuasion:{mod:3,status:'Maîtrise'},representation:{mod:0},tromperie:{mod:0}},
+ 'pj-wonq':{
+  athletisme:{mod:0,status:'Touche-à-tout'},acrobaties:{mod:3,status:'Touche-à-tout'},escamotage:{mod:3,status:'Touche-à-tout'},discretion:{mod:3,status:'Touche-à-tout'},arcanes:{mod:3,status:'Maîtrise'},histoire:{mod:6,status:'Expertise'},investigation:{mod:1,status:'Touche-à-tout'},nature:{mod:1,status:'Touche-à-tout'},religion:{mod:1,status:'Touche-à-tout'},dressage:{mod:2,status:'Touche-à-tout'},intuition:{mod:7,status:'Expertise'},medecine:{mod:2,status:'Touche-à-tout'},perception:{mod:4,status:'Maîtrise'},survie:{mod:2,status:'Touche-à-tout'},intimidation:{mod:6,status:'Touche-à-tout'},persuasion:{mod:8,status:'Maîtrise'},representation:{mod:6,status:'Touche-à-tout'},tromperie:{mod:6,status:'Touche-à-tout'}},
+ 'pj-silas-veyr':{
+  athletisme:{mod:-1},acrobaties:{mod:2},escamotage:{mod:5,status:'Maîtrise'},discretion:{mod:2,note:'Désavantage en demi-plate'},arcanes:{mod:8,status:'Maîtrise'},histoire:{mod:5},investigation:{mod:8,status:'Maîtrise'},nature:{mod:5},religion:{mod:5},dressage:{mod:1},intuition:{mod:1},medecine:{mod:4,status:'Maîtrise'},perception:{mod:4,status:'Maîtrise'},survie:{mod:1},intimidation:{mod:0},persuasion:{mod:0},representation:{mod:0},tromperie:{mod:0}}
+};
+
 const CONDITIONS = ['Aveuglé','Charmé','Assourdi','Effrayé','Empoisonné','Entravé','Étourdi','Inconscient','Invisible','Paralysé','Pétrifié','À terre','Agrippé','Incapacité','Épuisement'];
 const DAMAGE_TYPES = ['acide','contondants','feu','force','foudre','froid','nécrotiques','perforants','poison','psychiques','radiants','tonnerre','tranchants'];
 const uid = (p='id') => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
@@ -34,7 +54,7 @@ function normalizeAbility(a={}){
   return {
     id:a.id||uid('ab'),name:a.name||'Capacité',detail:a.detail||'',kind:a.kind||'text',economy:a.economy||'',
     bonus:numOrNull(a.bonus),damage:a.damage||'',damageType:a.damageType||'',dc:numOrNull(a.dc),save:(a.save||'').toUpperCase(),
-    cost:Number(a.cost)||1,recharge:a.recharge||'',sequence:a.sequence||'',timing:a.timing||''
+    cost:Number(a.cost)||1,recharge:a.recharge||'',sequence:a.sequence||'',timing:a.timing||'',target:a.target||'auto'
   };
 }
 function normalizeResource(r={}){
@@ -64,8 +84,10 @@ function normalizeMonster(m={}){
   const abilities={}; ABILITIES.forEach(a=>{if(m.abilities?.[a]!=null&&m.abilities[a]!=='')abilities[a]=Number(m.abilities[a]);});
   const saveMods=Object.assign({},parseSaveString(m.saves||''),m.saveMods||{});
   return {
-    id:m.id||uid('monster'),category:['character','companion'].includes(m.category)?m.category:'enemy',source:m.source||'',subtitle:m.subtitle||'',name:m.name||'Adversaire',type:m.type||'',size:m.size||'',cr:String(m.cr??''),
+    id:m.id||uid('monster'),category:['character','companion','npc','enemy'].includes(m.category)?m.category:'enemy',source:m.source||'',subtitle:m.subtitle||'',name:m.name||'Adversaire',type:m.type||'',size:m.size||'',cr:String(m.cr??''),
+    favorite:!!m.favorite,tags:splitList(m.tags),isBoss:!!m.isBoss,
     ac:Number(m.ac)||10,hp:Math.max(1,Number(m.hp)||1),initiative:Number(m.initiative)||0,speed:m.speed||'',saves:m.saves||'',abilities,saveMods,
+    skills:Object.assign({},PROFILE_SKILLS[m.id]||{},m.skills||{}),attacksPerAction:Math.max(1,Number(m.attacksPerAction)||0),
     damageResistances:splitList(m.damageResistances?.length?m.damageResistances:m.resistances),
     damageVulnerabilities:splitList(m.damageVulnerabilities?.length?m.damageVulnerabilities:m.vulnerabilities),
     damageImmunities:splitList(m.damageImmunities?.length?m.damageImmunities:legacyImm.damage),
@@ -81,7 +103,7 @@ function normalizeParticipant(p={}){
     id:p.id||uid('p'),modelId:p.modelId||null,groupId:p.groupId||null,name:p.name||'Participant',baseName:p.baseName||p.name||'Participant',kind:p.kind||'enemy',
     ac:Number(p.ac)||10,maxHp:Math.max(1,Number(p.maxHp)||1),hp:Math.max(0,Number.isFinite(Number(p.hp))?Number(p.hp):1),tempHp:Math.max(0,Number(p.tempHp)||0),initiative:Number(p.initiative)||0,
     conditions:(p.conditions||[]).map(normalizeCondition),actionUsed:!!p.actionUsed,bonusActionUsed:!!p.bonusActionUsed,reactionUsed:!!p.reactionUsed,
-    legendaryRemaining:Number(p.legendaryRemaining)||0,currentPhaseId:p.currentPhaseId||null,abilityState:p.abilityState||{},resourceState:p.resourceState||{},companionOf:p.companionOf||null,lairOwnerId:p.lairOwnerId||null
+    legendaryRemaining:Number(p.legendaryRemaining)||0,currentPhaseId:p.currentPhaseId||null,abilityState:p.abilityState||{},resourceState:p.resourceState||{},companionOf:p.companionOf||null,lairOwnerId:p.lairOwnerId||null,bossOverride:!!p.bossOverride,attackProgress:Math.max(0,Number(p.attackProgress)||0)
   };
 }
 function mergeBuiltinEnhancements(stored,builtin){
@@ -101,12 +123,12 @@ function mergeBuiltinEnhancements(stored,builtin){
   return s;
 }
 function blankState(){
-  return {version:APP_VERSION,ui:{mode:'prep',locked:false},encounter:{name:'Rencontre sans titre',round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null},monsters:clone(SAMPLE_MONSTERS).map(normalizeMonster)};
+  return {version:APP_VERSION,ui:{mode:'prep',locked:false,density:'comfortable'},encounter:{name:'Rencontre sans titre',savedId:null,round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null},monsters:clone(SAMPLE_MONSTERS).map(normalizeMonster),savedEncounters:[],trash:[]};
 }
 function loadState(){
   try{
     const raw=localStorage.getItem(STORAGE_KEY); if(!raw)return blankState();
-    const s=JSON.parse(raw); s.version=APP_VERSION;s.ui=Object.assign({mode:'prep',locked:false},s.ui||{});
+    const s=JSON.parse(raw); s.version=APP_VERSION;s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];
     if(!s.monsters?.length)s.monsters=clone(SAMPLE_MONSTERS);
     const builtinMap=new Map(SAMPLE_MONSTERS.map(x=>[x.id,x]));
     s.monsters=s.monsters.map(m=>mergeBuiltinEnhancements(m,builtinMap.get(m.id)));
@@ -119,9 +141,9 @@ function loadState(){
 
 let state=loadState();
 let undoStack=[];
-const ui={detailTab:'actions',multiMode:false,multiSelection:new Set(),drawer:null,libraryFilter:'all',quickMode:'damage',conditionName:CONDITIONS[0],checkDc:15,pendingAdvance:false};
+const ui={detailTab:'actions',multiMode:false,multiSelection:new Set(),drawer:null,libraryFilter:'all',libraryTag:'',favoritesOnly:false,quickMode:'damage',conditionName:CONDITIONS[0],checkDc:15,pendingAdvance:false,targeting:null};
 
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));maybeAutoBackup();}
 function checkpoint(){undoStack.push(JSON.stringify(state));if(undoStack.length>50)undoStack.shift();}
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2200);}
 function log(msg){state.encounter.log.unshift({id:uid('log'),time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),text:msg});state.encounter.log=state.encounter.log.slice(0,220);}
@@ -131,7 +153,7 @@ function modelFor(p){return p?.modelId?state.monsters.find(m=>m.id===p.modelId):
 function isLair(p){return p?.kind==='lair';}
 function makeParticipant(monster,n=1,initiative=10,groupId=null,companionOf=null){
   const m=normalizeMonster(monster),abilityState={},resourceState={};[...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions].forEach(a=>abilityState[a.id]={ready:true});m.resources.forEach(r=>resourceState[r.id]=r.start);
-  return {id:uid('p'),modelId:m.id,groupId,name:groupId?`${m.name} ${n}`:m.name,baseName:m.name,kind:m.category==='enemy'?'enemy':'ally',ac:m.ac,maxHp:m.hp,hp:m.hp,tempHp:0,initiative:Number(initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:m.legendaryMax,currentPhaseId:null,abilityState,resourceState,companionOf,lairOwnerId:null};
+  return {id:uid('p'),modelId:m.id,groupId,name:groupId?`${m.name} ${n}`:m.name,baseName:m.name,kind:m.category==='enemy'?'enemy':m.category==='character'?'player':'ally',ac:m.ac,maxHp:m.hp,hp:m.hp,tempHp:0,initiative:Number(initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:m.legendaryMax,currentPhaseId:null,abilityState,resourceState,companionOf,lairOwnerId:null,bossOverride:false,attackProgress:0};
 }
 function makeLairParticipant(owner,m){return {id:uid('lair'),modelId:m.id,groupId:null,name:`Repaire — ${owner.baseName}`,baseName:`Repaire — ${owner.baseName}`,kind:'lair',ac:0,maxHp:1,hp:1,tempHp:0,initiative:m.lairInitiative??20,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:0,currentPhaseId:null,abilityState:{},resourceState:{},companionOf:null,lairOwnerId:owner.id};}
 function sortedParticipants(){
@@ -267,9 +289,9 @@ function resolveDamageAmount(p,amount,type){
   amount=Math.max(0,Number(amount)||0);if(!amount||!type)return{amount,reason:''};const k=normKey(type),imm=effectiveDamageImmunities(p).some(x=>normKey(x)===k),res=effectiveDamageResistances(p).some(x=>normKey(x)===k),vul=(modelFor(p)?.damageVulnerabilities||[]).some(x=>normKey(x)===k);if(imm)return{amount:0,reason:'immunité'};if(res&&vul)return{amount,reason:'résistance + vulnérabilité : annulation'};if(res)return{amount:Math.floor(amount/2),reason:'résistance'};if(vul)return{amount:amount*2,reason:'vulnérabilité'};return{amount,reason:''};
 }
 function applyDamageMany(ids,amount,type=''){
-  amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];mutate(()=>{ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const r=resolveDamageAmount(p,amount,type);let left=r.amount;if(p.tempHp>0){const used=Math.min(p.tempHp,left);p.tempHp-=used;left-=used;}p.hp=Math.max(0,p.hp-left);checkPhaseTransition(p);details.push(`${p.name}: ${r.amount}${r.reason?` (${r.reason})`:''}`);});if(ids.length===1)state.encounter.selectedId=ids[0];},`${amount} dégâts${type?` ${type}`:''} → ${details.join(' · ')}`);
+  amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const r=resolveDamageAmount(p,amount,type);let left=r.amount;if(p.tempHp>0){const used=Math.min(p.tempHp,left);p.tempHp-=used;left-=used;}p.hp=Math.max(0,p.hp-left);checkPhaseTransition(p);details.push(`${p.name}: ${r.amount}${r.reason?` (${r.reason})`:''}`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=`${amount} dégâts${type?` ${type}`:''} → ${details.join(' · ')}`;log(msg);saveState();render();if(typeof showActionPopup==='function')showActionPopup(msg,'Dégâts');
 }
-function applyHealMany(ids,amount){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;mutate(()=>{ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;p.hp=Math.min(p.maxHp,p.hp+amount);});if(ids.length===1)state.encounter.selectedId=ids[0];},ids.length===1?`${state.encounter.participants.find(p=>p.id===ids[0])?.name||'Cible'} récupère ${amount} PV.`:`${amount} PV rendus à ${ids.length} cibles.`);}
+function applyHealMany(ids,amount){amount=Math.max(0,Number(amount)||0);if(!amount||!ids.length)return;const details=[];checkpoint();ids.forEach(id=>{const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;const before=p.hp;p.hp=Math.min(p.maxHp,p.hp+amount);details.push(`${p.name}: +${p.hp-before} PV`);});if(ids.length===1)state.encounter.selectedId=ids[0];const msg=details.join(' · ');log(msg);saveState();render();if(typeof showActionPopup==='function')showActionPopup(msg,'Soins');}
 function applyQuickAmount(amount){const ids=currentTargetIds();if(!ids.length)return toast('Sélectionne une cible.');if(ui.quickMode==='heal')applyHealMany(ids,amount);else applyDamageMany(ids,amount,$('#quickDamageType').value);}
 function removeParticipant(id){if(structuralGuard())return;const p=state.encounter.participants.find(x=>x.id===id);if(!p)return;mutate(()=>{const ids=new Set([id]);if(!isLair(p))state.encounter.participants.filter(x=>x.lairOwnerId===id).forEach(x=>ids.add(x.id));state.encounter.participants=state.encounter.participants.filter(x=>!ids.has(x.id));ids.forEach(x=>ui.multiSelection.delete(x));if(ids.has(state.encounter.selectedId))state.encounter.selectedId=null;state.encounter.currentTurn=Math.min(state.encounter.currentTurn,Math.max(0,sortedParticipants().length-1));},`${p.name} est retiré du combat.`);}
 
@@ -324,12 +346,12 @@ function renderConditionModal(){
 function updateConditionOptionVisibility(){const v=$('#conditionDuration').value;$('#conditionRoundsWrap').classList.toggle('hidden',v!=='rounds');$('#conditionSaveWrap').classList.toggle('hidden',v!=='saveEnd');$('#conditionDcWrap').classList.toggle('hidden',v!=='saveEnd');}
 function openConditionDialog(){if(!currentTargetIds().length)return toast('Sélectionne une cible.');ui.conditionName=CONDITIONS[0];$('#conditionDuration').value='indefinite';$('#conditionRounds').value=1;$('#conditionSaveAbility').value='CON';$('#conditionDc').value=15;$('#conditionSource').value='';renderConditionModal();$('#conditionDialog').showModal();}
 
-function rollCharacter(pid,ability,isSave){const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p);if(!p||!m?.abilities?.[ability])return;const dc=Math.max(1,Number($('#checkDc')?.value)||ui.checkDc);ui.checkDc=dc;const mod=isSave?(m.saveMods?.[ability]??abilityMod(m.abilities[ability])):abilityMod(m.abilities[ability]),r=rollD20(),total=r.roll+mod,ok=total>=dc;log(`${p.name} — ${isSave?'JS':'test'} ${ability} DD ${dc} : ${r.roll} ${signed(mod)} = ${total} → ${ok?'RÉUSSITE':'ÉCHEC'}.`);saveState();renderLog();toast(`${ability} ${total} vs DD ${dc} — ${ok?'RÉUSSITE':'ÉCHEC'}`);}
+function rollCharacter(pid,ability,isSave){const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p);if(!p||m?.abilities?.[ability]==null)return;const dc=Math.max(1,Number($('#checkDc')?.value)||ui.checkDc);ui.checkDc=dc;const mod=isSave?(m.saveMods?.[ability]??abilityMod(m.abilities[ability])):abilityMod(m.abilities[ability]),r=rollD20(),total=r.roll+mod,ok=total>=dc,msg=`${p.name} — ${isSave?'JS':'test'} ${ability} DD ${dc} : ${r.roll} ${signed(mod)} = ${total} → ${ok?'RÉUSSITE':'ÉCHEC'}.`;actionLog(msg,isSave?'Jet de sauvegarde':'Test de caractéristique');saveState();renderLog();}
 
 function openAddMonster(id){if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;$('#addMonsterName').textContent=m.name;const f=$('#addMonsterForm');f.reset();f.elements.monsterId.value=id;f.elements.initiative.value=m.initiative||10;f.elements.count.value=1;const single=m.category!=='enemy';f.elements.count.max=single?1:50;f.elements.count.disabled=single;f.elements.sharedInitiative.checked=true;f.elements.sharedInitiative.closest('label').classList.toggle('hidden',single);const comp=$('#companionOption');if(comp){const show=id==='pj-silas-veyr';comp.classList.toggle('hidden',!show);f.elements.includeCompanion.checked=show;}const lair=$('#lairOption');if(lair){const show=!!m.lairActions.length;lair.classList.toggle('hidden',!show);f.elements.includeLair.checked=show;}$('#addMonsterDialog').showModal();}
 function addMonsterToCombat(id,count,initiative,shared,includeCompanion=false,includeLair=false){
   if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;count=m.category==='enemy'?Math.max(1,Math.min(50,Number(count)||1)):1;const groupId=count>1?uid('group'):null,wantsCompanion=id==='pj-silas-veyr'&&includeCompanion&&state.monsters.some(x=>x.id==='comp-crasseuse');mutate(()=>{let main=null;for(let i=1;i<=count;i++){const ini=shared?Number(initiative)||0:(Number(initiative)||0)+rollDie(6)-3,p=makeParticipant(m,count>1?i:1,ini,groupId);state.encounter.participants.push(p);if(i===1)main=p;}if(wantsCompanion&&main){const cm=state.monsters.find(x=>x.id==='comp-crasseuse');state.encounter.participants.push(makeParticipant(cm,1,main.initiative,null,main.id));}if(includeLair&&m.lairActions.length&&main)state.encounter.participants.push(makeLairParticipant(main,m));state.encounter.currentTurn=0;state.encounter.selectedId=sortedParticipants()[0]?.id||null;},`${count} × ${m.name} ajouté${count>1?'s':''}${wantsCompanion?' avec C.R.A.S.S.E.U.S.E.':''}${includeLair&&m.lairActions.length?' + repaire':''}.`);closeDrawers();}
-function addPlayer(data){if(structuralGuard())return;const p={id:uid('p'),modelId:null,groupId:null,name:data.name,baseName:data.name,kind:'ally',ac:Number(data.ac)||10,maxHp:Math.max(1,Number(data.hp)||1),hp:Math.max(1,Number(data.hp)||1),tempHp:0,initiative:Number(data.initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:0,currentPhaseId:null,abilityState:{},resourceState:{},companionOf:null,lairOwnerId:null};mutate(()=>{state.encounter.participants.push(p);state.encounter.selectedId=p.id;},`${p.name} rejoint le combat.`);}
+function addPlayer(data){if(structuralGuard())return;const p={id:uid('p'),modelId:null,groupId:null,name:data.name,baseName:data.name,kind:data.role==='pj'?'player':'ally',ac:Number(data.ac)||10,maxHp:Math.max(1,Number(data.hp)||1),hp:Math.max(1,Number(data.hp)||1),tempHp:0,initiative:Number(data.initiative)||0,conditions:[],actionUsed:false,bonusActionUsed:false,reactionUsed:false,legendaryRemaining:0,currentPhaseId:null,abilityState:{},resourceState:{},companionOf:null,lairOwnerId:null,bossOverride:false,attackProgress:0};mutate(()=>{state.encounter.participants.push(p);state.encounter.selectedId=p.id;},`${p.name} rejoint le combat.`);}
 
 function addDynamicRow(type,data={}){const map={traits:'#traitsRows',actions:'#actionsRows',reactions:'#reactionsRows',legendaryActions:'#legendaryRows',lairActions:'#lairRows',phases:'#phasesRows',resources:'#resourcesRows'},container=$(map[type]);if(!container)return;const tpl=$(type==='phases'?'#phaseRowTemplate':type==='resources'?'#resourceRowTemplate':'#abilityRowTemplate'),node=tpl.content.firstElementChild.cloneNode(true);node.dataset.rowType=type;node.dataset.rowId=data.id||uid(type==='phases'?'phase':type==='resources'?'res':'ab');node.querySelectorAll('[data-field]').forEach(el=>{const k=el.dataset.field;if(data[k]!=null)el.value=Array.isArray(data[k])?formatList(data[k]):data[k];});container.appendChild(node);}
 function clearEditorRows(){['#traitsRows','#actionsRows','#reactionsRows','#legendaryRows','#lairRows','#phasesRows','#resourcesRows'].forEach(s=>$(s).innerHTML='');}
@@ -407,5 +429,214 @@ $('#addPlayerForm').addEventListener('submit',e=>{e.preventDefault();addPlayer(O
 $('#conditionForm').addEventListener('submit',e=>{e.preventDefault();const duration=$('#conditionDuration').value,data={name:ui.conditionName,durationType:duration,remaining:duration==='rounds'?Math.max(1,Number($('#conditionRounds').value)||1):null,saveAbility:duration==='saveEnd'?$('#conditionSaveAbility').value:'',dc:duration==='saveEnd'?Math.max(1,Number($('#conditionDc').value)||15):null,source:$('#conditionSource').value.trim()};addConditionMany(currentTargetIds(),data);$('#conditionDialog').close();});
 $('#monsterForm').addEventListener('submit',e=>{e.preventDefault();saveMonsterFromForm();});$('#btnDeleteMonster').addEventListener('click',()=>deleteMonster($('#monsterForm').elements.monsterId.value));
 $('#importForm').addEventListener('submit',e=>{e.preventDefault();try{importData($('#importText').value);$('#importDialog').close();toast('Import réussi.');}catch(err){alert('Import impossible : '+err.message);}});
+
+
+/* =========================================================
+   ENCOUNTER V3 — Confort Premium
+   ========================================================= */
+let lastBackupAt=0;
+function backupStore(){try{return JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');}catch{return[];}}
+function writeBackupStore(items){try{localStorage.setItem(BACKUP_KEY,JSON.stringify(items.slice(0,12)));}catch(err){console.warn('Backup local impossible',err);}}
+function forceBackup(reason='Backup automatique'){
+  const snapshot={id:uid('backup'),createdAt:new Date().toISOString(),reason,name:state.encounter?.name||'Rencontre',state:clone(state)};
+  const items=backupStore();items.unshift(snapshot);writeBackupStore(items);lastBackupAt=Date.now();return snapshot;
+}
+function maybeAutoBackup(){const now=Date.now();if(now-lastBackupAt<BACKUP_INTERVAL)return;forceBackup('Sauvegarde automatique');}
+function restoreBackup(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');state=b.state;state.version=APP_VERSION;state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});state.savedEncounters=state.savedEncounters||[];state.trash=state.trash||[];localStorage.setItem(STORAGE_KEY,JSON.stringify(state));render();renderBackupDialog();toast('Backup restauré.');}
+
+function showActionPopup(msg,title='Résolution'){
+  const box=$('#actionPopup');if(!box)return;$('#actionPopupTitle').textContent=title;$('#actionPopupText').textContent=msg;box.classList.add('show');clearTimeout(showActionPopup.t);showActionPopup.t=setTimeout(()=>box.classList.remove('show'),3600);
+}
+function actionLog(msg,title='Action'){log(msg);showActionPopup(msg,title);}
+
+function isBossParticipant(p){const m=modelFor(p);return !!(p?.bossOverride||m?.isBoss||m?.legendaryActions?.length);}
+function participantRole(p){const m=modelFor(p);if(isBossParticipant(p))return'boss';if(m?.category==='character'||p.kind==='player')return'pj';if(m?.category==='companion')return'companion';if(m?.category==='npc'||p.kind==='ally')return'npc';return'enemy';}
+function roleClass(p){return `role-${participantRole(p)}`;}
+function roleLabel(p){return ({boss:'BOSS',pj:'PJ',companion:'COMP.',npc:'PNJ',enemy:'ADVERSAIRE'})[participantRole(p)]||'PARTICIPANT';}
+
+// Remplace le normaliseur V2.5 pour ajouter compétences, catégories, favoris et multiattaque.
+const normalizeMonsterV25=normalizeMonster;
+normalizeMonster=function(m={}){
+  const base=normalizeMonsterV25(m);
+  base.category=['character','companion','npc','enemy'].includes(m.category)?m.category:base.category;
+  base.favorite=!!m.favorite;base.tags=splitList(m.tags);base.isBoss=!!m.isBoss;
+  const mergedSkills=Object.assign({},PROFILE_SKILLS[base.id]||{},m.skills||{});base.skills={};
+  SKILLS.forEach(sk=>{const raw=mergedSkills[sk.key];if(raw==null)return;if(typeof raw==='number')base.skills[sk.key]={mod:Number(raw),status:'',note:''};else base.skills[sk.key]={mod:Number(raw.mod)||0,status:raw.status||'',note:raw.note||''};});
+  const multiCounts=(base.actions||[]).filter(a=>a.kind==='multiattack').map(a=>parseMultiSequence(a.sequence).reduce((n,x)=>n+x.count,0)).filter(Boolean);
+  base.attacksPerAction=Math.max(1,Number(m.attacksPerAction)||0,...multiCounts,base.id==='pj-tuskhan-sand-ivoire'?2:1);
+  return base;
+};
+// Renormalise l'état déjà chargé avant l'override.
+state.monsters=state.monsters.map(normalizeMonster);state.encounter.participants=state.encounter.participants.map(normalizeParticipant);
+state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});state.savedEncounters=state.savedEncounters||[];state.trash=state.trash||[];
+
+function categoriesForMonster(m){const cats=[...(m.tags||[])];if(m.category==='character')cats.push('PJ');else if(m.category==='companion')cats.push('Compagnons');else if(m.category==='npc')cats.push('PNJ alliés');else cats.push('Adversaires');if(m.isBoss||m.legendaryActions?.length)cats.push('Boss');if(/SRD 5\.1/i.test(m.source||''))cats.push('SRD 5.1');else if(/dossier utilisateur/i.test(m.source||''))cats.push('Dossiers utilisateur');const types=['Aberration','Artificiel','Bête','Céleste','Dragon','Élémentaire','Fée','Fiélon','Géant','Humanoïde','Monstruosité','Mort-vivant','Plante','Vase'];types.forEach(t=>{if(normKey(m.type).includes(normKey(t)))cats.push(t);});return [...new Set(cats.filter(Boolean))];}
+function tagsForLibrary(){return [...new Set(state.monsters.flatMap(categoriesForMonster))].sort((a,b)=>a.localeCompare(b,'fr'));}
+function toggleFavorite(id){const m=state.monsters.find(x=>x.id===id);if(!m)return;const willFavorite=!m.favorite;mutate(()=>m.favorite=willFavorite,`${m.name} ${willFavorite?'ajouté aux':'retiré des'} favoris.`);}
+function renderLibrary(){
+  const q=$('#monsterSearch').value.trim().toLowerCase(),locked=isLocked(),tag=ui.libraryTag;
+  const ms=state.monsters.filter(m=>(ui.libraryFilter==='all'||m.category===ui.libraryFilter)&&(!ui.favoritesOnly||m.favorite)&&(!tag||categoriesForMonster(m).includes(tag))&&`${m.name} ${m.type} ${m.cr} ${m.source} ${m.subtitle} ${(m.tags||[]).join(' ')}`.toLowerCase().includes(q));
+  $('#monsterLibrary').innerHTML=ms.map(m=>{const isChar=m.category==='character',isComp=m.category==='companion',isNpc=m.category==='npc',boss=!!(m.isBoss||m.legendaryActions?.length),cardClass=isChar?'character-card':isComp?'companion-card':isNpc?'npc-card':'',badgeClass=boss?'boss-badge':isChar?'character-badge':isComp?'companion-badge':isNpc?'npc-badge':'',badge=boss?'BOSS':isChar?'PJ':isComp?'COMP.':isNpc?'PNJ':`FP ${esc(m.cr||'—')}`;return `<article class="library-card ${cardClass} ${boss?'boss-library-card':''}"><div class="library-title"><h3>${esc(m.name)}</h3><div class="library-title-badges"><button class="favorite-star ${m.favorite?'on':''}" data-favorite="${m.id}" title="Favori">${m.favorite?'★':'☆'}</button><span class="cr-badge ${badgeClass}">${badge}</span></div></div><div class="library-meta">${esc(m.subtitle||[m.size,m.type].filter(Boolean).join(' · '))} · CA ${m.ac} · ${m.hp} PV${m.lairActions.length?' · 🏰 repaire':''}</div>${m.tags?.length?`<div class="tag-list">${m.tags.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}${m.source?`<div class="source-badge">${esc(m.source)}</div>`:''}<div class="library-actions"><button class="primary small" data-add-monster="${m.id}" ${locked?'disabled':''}>+ Ajouter</button><button class="ghost small" data-edit-monster="${m.id}" ${locked?'disabled':''}>Modifier</button></div></article>`;}).join('')||'<p class="muted">Aucun résultat.</p>';
+  $('#btnCreateMonster').disabled=locked;$$('[data-library-filter]').forEach(b=>b.classList.toggle('active',b.dataset.libraryFilter===ui.libraryFilter));
+  const sel=$('#libraryTagFilter');if(sel){const old=ui.libraryTag;sel.innerHTML='<option value="">Toutes les catégories</option>'+tagsForLibrary().map(x=>`<option ${x===old?'selected':''}>${esc(x)}</option>`).join('');}
+  $('#btnFavoriteFilter')?.classList.toggle('active',ui.favoritesOnly);
+}
+
+function targetRule(a){if(a.target&&a.target!=='auto')return a.target;if(a.kind==='heal')return'ally';if(['attack','save','recharge','multiattack'].includes(a.kind))return'enemy';return'none';}
+function participantSide(p){if(isLair(p)){const owner=state.encounter.participants.find(x=>x.id===p.lairOwnerId);return owner?participantSide(owner):'enemy';}return participantRole(p)==='enemy'||participantRole(p)==='boss'?'enemy':'ally';}
+function eligibleTarget(actor,target,a){if(!actor||!target||isLair(target)||target.hp<=0&&a.kind!=='heal')return false;const rule=targetRule(a);if(rule==='any')return true;if(rule==='self')return actor.id===target.id;if(rule==='ally')return participantSide(actor)===participantSide(target);if(rule==='enemy')return participantSide(actor)!==participantSide(target);return false;}
+function targetClassFor(p){if(!ui.targeting||isLair(p))return'';const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();return eligibleTarget(actor,p,a)?'target-eligible':'target-ineligible';}
+function currentTargetingAbility(){if(!ui.targeting)return null;const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),m=modelFor(actor);if(!m)return null;if(ui.targeting.steps?.length){const id=ui.targeting.steps[ui.targeting.step];return [...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions].find(x=>x.id===id)||null;}return [...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions,...m.traits].find(x=>x.id===ui.targeting.abilityId)||null;}
+function renderTargeting(){const bar=$('#targetingBanner');if(!bar)return;if(!ui.targeting){bar.classList.add('hidden');bar.innerHTML='';document.body.classList.remove('targeting-mode');return;}const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();if(!actor||!a){ui.targeting=null;return renderTargeting();}document.body.classList.add('targeting-mode');bar.classList.remove('hidden');const pos=ui.targeting.steps?.length?` · cible ${ui.targeting.step+1}/${ui.targeting.steps.length}`:'';bar.innerHTML=`<div><span class="eyebrow">CIBLAGE</span><strong>${esc(actor.name)} — ${esc(a.name)}${pos}</strong><small>Les cibles possibles sont mises en évidence. Touche une cible pour résoudre l’action.</small></div><button class="ghost" id="btnCancelTargeting">Annuler</button>`;}
+function cancelTargeting(){ui.targeting=null;render();}
+function startTargeting(pid,aid,section,mode='normal'){
+  const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p);if(!p||!m)return;const a=[...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions,...m.traits].find(x=>x.id===aid);if(!a)return;
+  if(a.kind==='multiattack'){
+    const steps=[];parseMultiSequence(a.sequence).forEach(item=>{const attack=m.actions.find(x=>x.name===item.name);if(attack)for(let i=0;i<item.count;i++)steps.push(attack.id);});
+    if(!steps.length)return toast('Séquence de multiattaque incomplète.');ui.targeting={actorId:pid,abilityId:aid,rootAbilityId:aid,section,mode,steps,step:0};
+  }else ui.targeting={actorId:pid,abilityId:aid,section,mode,steps:null,step:0};
+  state.encounter.selectedId=pid;saveState();render();
+}
+function getTargetSaveMod(target,ability){const m=modelFor(target),a=ability.save;if(!a)return 0;if(m?.saveMods?.[a]!=null)return Number(m.saveMods[a]);if(m?.abilities?.[a]!=null)return abilityMod(m.abilities[a]);const raw=prompt(`Modificateur du JS ${a} de ${target.name} :`,'0');if(raw===null)return null;return Number(raw)||0;}
+function rollDamageCrit(expr,crit=false){if(!crit)return rollExpression(expr);const doubled=String(expr||'').replace(/(\d*)d(\d+)/gi,(_,n,d)=>`${(Number(n)||1)*2}d${d}`);return rollExpression(doubled);}
+function applyDamageDirect(target,amount,type=''){const r=resolveDamageAmount(target,amount,type);let left=r.amount;if(target.tempHp>0){const used=Math.min(target.tempHp,left);target.tempHp-=used;left-=used;}target.hp=Math.max(0,target.hp-left);checkPhaseTransition(target);return r;}
+function applyHealDirect(target,amount){const before=target.hp;target.hp=Math.min(target.maxHp,target.hp+Math.max(0,amount));return target.hp-before;}
+function attacksPerAction(p){return Math.max(1,Number(modelFor(p)?.attacksPerAction)||1);}
+function consumeEconomyAfterResolution(p,a,section,{forceAction=false}={}){
+  if(section==='legendary'){p.legendaryRemaining=Math.max(0,p.legendaryRemaining-(a.cost||1));return;}if(section==='lair'){p.actionUsed=true;return;}if(section==='reaction'){p.reactionUsed=true;return;}
+  const eco=abilityEconomy(a,section);if(eco==='bonus'){p.bonusActionUsed=true;return;}if(eco==='reaction'){p.reactionUsed=true;return;}if(eco!=='action')return;
+  if(forceAction||a.kind!=='attack'){p.actionUsed=true;p.attackProgress=attacksPerAction(p);return;}
+  p.attackProgress=(p.attackProgress||0)+1;if(p.attackProgress>=attacksPerAction(p))p.actionUsed=true;
+}
+function resolveTargetSelection(targetId){
+  if(!ui.targeting)return false;const t=ui.targeting,actor=state.encounter.participants.find(x=>x.id===t.actorId),target=state.encounter.participants.find(x=>x.id===targetId),m=modelFor(actor),a=currentTargetingAbility();if(!actor||!target||!m||!a)return false;if(!eligibleTarget(actor,target,a)){toast('Cette cible n’est pas valide pour cette action.');return true;}
+  checkpoint();let msg=`${actor.name} — ${a.name} → ${target.name}`;let success=true;
+  if(a.kind==='attack'||(a.kind==='recharge'&&a.bonus!=null)){
+    const r=rollD20(t.mode),bonus=Number(a.bonus)||0,total=r.roll+bonus,crit=r.roll===20,hit=crit||total>=effectiveAc(target);msg+=` : d20 ${r.detail} ${signed(bonus)} = ${total} vs CA ${effectiveAc(target)} → ${hit?'TOUCHÉ':'RATÉ'}`;
+    if(hit&&a.damage){const dmg=rollDamageCrit(a.damage,crit),ap=applyDamageDirect(target,dmg.total,a.damageType);msg+=` · ${crit?'CRITIQUE · ':''}${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''} [${dmg.detail}]`;}
+    success=hit;
+  }else if(a.kind==='save'||(a.kind==='recharge'&&a.dc!=null)){
+    const mod=getTargetSaveMod(target,a);if(mod==null){msg+=` : JS ${a.save||'?'} DD ${a.dc||'?'} à résoudre manuellement`;success=false;}else{const r=rollD20(),total=r.roll+mod,ok=total>=(a.dc||10);msg+=` : JS ${a.save||'?'} ${r.roll} ${signed(mod)} = ${total} vs DD ${a.dc} → ${ok?'RÉUSSITE':'ÉCHEC'}`;if(a.damage){const dmg=rollExpression(a.damage),half=/moiti[ée]/i.test(a.detail||''),raw=ok?(half?Math.floor(dmg.total/2):0):dmg.total,ap=applyDamageDirect(target,raw,a.damageType);msg+=` · ${ap.amount} dégâts ${a.damageType||''}${ap.reason?` (${ap.reason})`:''}`;}success=!ok;}
+  }else if(a.kind==='heal'){const heal=rollExpression(a.damage),given=applyHealDirect(target,heal.total);msg+=` : +${given} PV [${heal.detail}]`;}
+  if(a.kind==='recharge'){actor.abilityState[a.id]=actor.abilityState[a.id]||{};actor.abilityState[a.id].ready=false;}
+  const isMulti=!!t.steps?.length,finalMulti=isMulti&&t.step>=t.steps.length-1;
+  consumeEconomyAfterResolution(actor,a,t.section,{forceAction:finalMulti});actionLog(msg,a.name);
+  if(isMulti&&!finalMulti){t.step++;state.encounter.selectedId=actor.id;saveState();render();return true;}
+  ui.targeting=null;state.encounter.selectedId=actor.id;saveState();render();
+  if($('#legendaryDialog').open){const ending=activeParticipant(),bosses=eligibleLegendaryBosses(ending);if(bosses.length)renderLegendaryDialog(ending,bosses);else{$('#legendaryDialog').close();actualAdvanceTurn();}}
+  return true;
+}
+
+function abilityCard(p,a,section){
+  const st=p.abilityState?.[a.id]||{ready:true},eco=abilityEconomy(a,section),economySpent=eco==='action'?p.actionUsed:eco==='bonus'?p.bonusActionUsed:eco==='reaction'?p.reactionUsed:false;
+  const unavailable=(a.kind==='recharge'&&!st.ready)||(section==='legendary'&&p.legendaryRemaining<(a.cost||1))||(section==='lair'&&p.actionUsed)||(section!=='legendary'&&section!=='lair'&&economySpent),tags=[];
+  if(a.bonus!=null)tags.push(`${signed(a.bonus)}`);if(a.dc!=null)tags.push(`${a.save||'JS'} DD ${a.dc}`);if(a.damage)tags.push(`${a.kind==='heal'?'Soins ':''}${a.damage}${a.damageType?` ${a.damageType}`:''}`);if(a.kind==='recharge')tags.push(`Recharge ${a.recharge||'5–6'}`);if(a.kind==='multiattack'&&a.sequence)tags.push(a.sequence);if(section==='legendary')tags.push(`${a.cost||1} ★`);if(eco!=='none'&&section!=='legendary'&&section!=='lair')tags.push(eco==='bonus'?'Action bonus':eco==='reaction'?'Réaction':'Action');
+  if(a.kind==='attack'&&eco==='action'&&attacksPerAction(p)>1&&!p.actionUsed)tags.push(`Attaque ${(p.attackProgress||0)+1}/${attacksPerAction(p)}`);
+  const label=a.kind==='attack'?'Cibler':a.kind==='heal'?'Cibler & soigner':a.kind==='multiattack'?'Lancer la multiattaque':'Utiliser';
+  return `<article class="ability-card ${unavailable?'unavailable':''}"><div class="ability-head"><div><b>${esc(a.name)}</b><small>${esc(tags.join(' · '))}</small></div>${a.kind==='recharge'&&!st.ready?'<span class="status-badge">Recharge en attente</span>':''}</div>${a.detail?`<p>${esc(a.detail)}</p>`:''}<div class="ability-buttons">${a.kind==='recharge'&&!st.ready?`<button class="primary" data-recharge="${p.id}|${a.id}">🎲 Tester maintenant</button>`:`<button class="primary" ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|normal">${label}</button>`}${a.kind==='attack'?`<button ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|adv">Avantage</button><button ${unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|dis">Désav.</button>`:''}</div></article>`;
+}
+function useAbility(pid,aid,section,mode='normal'){
+  const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p);if(!p||!m)return;const a=[...m.traits,...m.actions,...m.reactions,...m.legendaryActions,...m.lairActions].find(x=>x.id===aid);if(!a)return;const st=p.abilityState[aid]||(p.abilityState[aid]={ready:true});
+  if(a.kind==='recharge'&&!st.ready)return toast('Cette capacité doit d’abord se recharger.');if(section==='reaction'&&p.reactionUsed)return toast('Réaction déjà utilisée.');if(section==='legendary'&&p.legendaryRemaining<(a.cost||1))return toast('Pas assez d’actions légendaires.');
+  if(targetRule(a)!=='none'&&['attack','heal','save','recharge','multiattack'].includes(a.kind))return startTargeting(pid,aid,section,mode);
+  checkpoint();let text=`${p.name} — ${a.name}${a.detail?` : ${a.detail}`:''}`;if(a.kind==='recharge')st.ready=false;consumeEconomyAfterResolution(p,a,section,{forceAction:a.kind==='multiattack'});actionLog(text,a.name);saveState();render();
+}
+
+function economyStrip(p){const max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0),actionLabel=p.actionUsed?'utilisée':max>1&&progress?`${progress}/${max} attaques`:'disponible';return `<div class="economy-strip"><button class="economy-marker action ${p.actionUsed?'spent':''}" data-economy="${p.id}|action"><span>●</span><b>Action</b><small>${actionLabel}</small></button><button class="economy-marker bonus ${p.bonusActionUsed?'spent':''}" data-economy="${p.id}|bonus"><span>◆</span><b>Action bonus</b><small>${p.bonusActionUsed?'utilisée':'disponible'}</small></button><button class="economy-marker reaction ${p.reactionUsed?'spent':''}" data-economy="${p.id}|reaction"><span>↯</span><b>Réaction</b><small>${p.reactionUsed?'utilisée':'disponible'}</small></button></div>`;}
+const processStartTurnV25=processStartTurn;
+processStartTurn=function(p,silent=false){processStartTurnV25(p,silent);if(p)p.attackProgress=0;};
+const toggleEconomyV25=toggleEconomy;
+toggleEconomy=function(pid,eco){const p=state.encounter.participants.find(x=>x.id===pid);if(!p)return;if(eco!=='action')return toggleEconomyV25(pid,eco);mutate(()=>{p.actionUsed=!p.actionUsed;p.attackProgress=p.actionUsed?attacksPerAction(p):0;},`${p.name} — action ${p.actionUsed?'marquée utilisée':'rendue disponible'}.`);};
+
+function skillData(m,sk){const own=m?.skills?.[sk.key];if(own!=null)return typeof own==='number'?{mod:Number(own),status:'',note:''}:own;if(m?.abilities?.[sk.ability]!=null)return{mod:abilityMod(m.abilities[sk.ability]),status:'',note:''};return null;}
+function rollSkill(pid,key){const p=state.encounter.participants.find(x=>x.id===pid),m=modelFor(p),sk=SKILLS.find(x=>x.key===key),data=sk&&skillData(m,sk);if(!p||!sk||!data)return;const dc=Math.max(1,Number($('#checkDc')?.value)||ui.checkDc);ui.checkDc=dc;const r=rollD20(),total=r.roll+Number(data.mod),ok=total>=dc,msg=`${p.name} — ${sk.name} (${sk.ability}) DD ${dc} : ${r.roll} ${signed(data.mod)} = ${total} → ${ok?'RÉUSSITE':'ÉCHEC'}${data.note?` · ${data.note}`:''}.`;actionLog(msg,'Test de compétence');saveState();renderLog();}
+function characterChecks(p,m){
+  if(!m||!Object.keys(m.abilities||{}).length)return'';
+  const abilityRows=ABILITIES.map(a=>{const score=m.abilities[a];if(score==null)return'';const mod=abilityMod(score),save=m.saveMods?.[a]??mod;return `<div class="check-row"><div><b>${a}</b><span>${score} (${signed(mod)})</span></div><button data-ability-check="${p.id}|${a}">Test ${signed(mod)}</button><button data-save-check="${p.id}|${a}">JS ${signed(save)}</button></div>`;}).join('');
+  const skillRows=SKILLS.map(sk=>{const d=skillData(m,sk);if(!d)return'';return `<button class="skill-check" data-skill-check="${p.id}|${sk.key}"><span><b>${esc(sk.name)}</b><small>${sk.ability}${d.status?` · ${esc(d.status)}`:''}${d.note?` · ${esc(d.note)}`:''}</small></span><strong>${signed(d.mod)}</strong></button>`;}).join('');
+  return `<section class="detail-section checks-section"><div class="section-title-row"><h3>Tests & sauvegardes</h3><label class="dc-field">DD <input id="checkDc" type="number" min="1" value="${ui.checkDc}" inputmode="numeric"></label></div><div class="checks-grid">${abilityRows}</div></section><section class="detail-section"><h3>Compétences</h3><p class="muted tiny">Les 18 compétences utilisent les bonus finaux de la fiche ; maîtrise, expertise et Touche-à-tout sont déjà intégrés.</p><div class="skill-grid">${skillRows}</div></section>`;
+}
+
+function saveEncounterSnapshot(asNew=false){if(!state.encounter.participants.length&&!confirm('Sauvegarder une rencontre vide ?'))return;let id=!asNew?state.encounter.savedId:null;let name=state.encounter.name;if(asNew||!id){name=prompt('Nom de la rencontre sauvegardée :',state.encounter.name)||state.encounter.name;id=uid('enc');}const snap=clone(state.encounter);snap.name=name;snap.savedId=id;const record={id,name,updatedAt:new Date().toISOString(),encounter:snap};const idx=state.savedEncounters.findIndex(x=>x.id===id);mutate(()=>{if(idx>=0)state.savedEncounters[idx]=record;else state.savedEncounters.unshift(record);state.encounter.savedId=id;state.encounter.name=name;},`Rencontre « ${name} » sauvegardée.`);renderEncounterManager();}
+function loadSavedEncounter(id,launch=false){const rec=state.savedEncounters.find(x=>x.id===id);if(!rec)return;forceBackup('Avant chargement de rencontre');checkpoint();state.encounter=clone(rec.encounter);state.encounter.savedId=id;state.ui.mode=launch?'combat':'prep';state.ui.locked=false;state.encounter.currentTurn=0;state.encounter.selectedId=sortedParticipants()[0]?.id||null;if(launch&&activeParticipant())processStartTurn(activeParticipant(),true);saveState();render();$('#encounterManagerDialog')?.close();toast(`Rencontre « ${rec.name} » ${launch?'lancée':'chargée'}.`);}
+function deleteSavedEncounter(id){const idx=state.savedEncounters.findIndex(x=>x.id===id);if(idx<0)return;const rec=state.savedEncounters[idx];mutate(()=>{state.trash.unshift({id:uid('trash'),kind:'encounter',label:rec.name,deletedAt:new Date().toISOString(),data:rec});state.savedEncounters.splice(idx,1);if(state.encounter.savedId===id)state.encounter.savedId=null;},`Rencontre « ${rec.name} » placée dans la corbeille.`);renderEncounterManager();}
+function renderEncounterManager(){const el=$('#savedEncounterList');if(!el)return;el.innerHTML=state.savedEncounters.length?state.savedEncounters.map(r=>`<article class="saved-encounter-card"><div><strong>${esc(r.name)}</strong><small>${r.encounter.participants?.length||0} participant(s) · modifiée ${new Date(r.updatedAt).toLocaleString('fr-FR')}</small></div><div><button data-load-encounter="${r.id}">Charger</button><button class="primary" data-launch-encounter="${r.id}">⚔ Lancer</button><button class="danger ghost" data-delete-saved="${r.id}">Corbeille</button></div></article>`).join(''):'<p class="muted">Aucune rencontre sauvegardée.</p>';}
+function openEncounterManager(){renderEncounterManager();$('#encounterManagerDialog').showModal();}
+
+function pushTrash(kind,label,data){state.trash.unshift({id:uid('trash'),kind,label,deletedAt:new Date().toISOString(),data:clone(data)});state.trash=state.trash.slice(0,80);}
+function renderTrash(){const el=$('#trashList');if(!el)return;el.innerHTML=state.trash.length?state.trash.map(x=>`<article class="trash-card"><div><strong>${esc(x.label)}</strong><small>${x.kind} · ${new Date(x.deletedAt).toLocaleString('fr-FR')}</small></div><button class="primary small" data-restore-trash="${x.id}">Restaurer</button></article>`).join(''):'<p class="muted">La corbeille est vide.</p>';}
+function restoreTrash(id){const idx=state.trash.findIndex(x=>x.id===id);if(idx<0)return;const item=state.trash[idx];mutate(()=>{if(item.kind==='monster')state.monsters.push(normalizeMonster(item.data));else if(item.kind==='participant'){(item.data.participants||[item.data]).forEach(p=>state.encounter.participants.push(normalizeParticipant(p)));}else if(item.kind==='encounter')state.savedEncounters.unshift(item.data);state.trash.splice(idx,1);},`${item.label} restauré depuis la corbeille.`);renderTrash();}
+function removeParticipant(id){if(structuralGuard())return;const p=state.encounter.participants.find(x=>x.id===id);if(!p)return;mutate(()=>{const ids=new Set([id]);if(!isLair(p))state.encounter.participants.filter(x=>x.lairOwnerId===id).forEach(x=>ids.add(x.id));const removed=state.encounter.participants.filter(x=>ids.has(x.id));pushTrash('participant',p.name,{participants:removed});state.encounter.participants=state.encounter.participants.filter(x=>!ids.has(x.id));ids.forEach(x=>ui.multiSelection.delete(x));if(ids.has(state.encounter.selectedId))state.encounter.selectedId=null;state.encounter.currentTurn=Math.min(state.encounter.currentTurn,Math.max(0,sortedParticipants().length-1));},`${p.name} est placé dans la corbeille.`);}
+function deleteMonster(id){if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;if(!confirm(`Placer « ${m.name} » dans la corbeille ?`))return;mutate(()=>{pushTrash('monster',m.name,m);state.monsters=state.monsters.filter(x=>x.id!==id);state.encounter.participants.filter(p=>p.modelId===id).forEach(p=>p.modelId=null);},`${m.name} placé dans la corbeille.`);$('#monsterEditor').close();}
+
+function renderBackupDialog(){const el=$('#backupList');if(!el)return;const items=backupStore();el.innerHTML=items.length?items.map(b=>`<article class="backup-card"><div><strong>${esc(b.name)}</strong><small>${esc(b.reason)} · ${new Date(b.createdAt).toLocaleString('fr-FR')}</small></div><button data-restore-backup="${b.id}" class="primary small">Restaurer</button></article>`).join(''):'<p class="muted">Aucun backup disponible.</p>';}
+
+function renderSingleCard(p,active){
+  if(isLair(p))return `<article class="combat-card lair-card ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''}"><button class="select-hit" data-select="${p.id}"></button><div class="combat-card-main"><span class="turn-dot">🏰</span><div class="combat-ident"><strong>${esc(p.name)}</strong><small>Action de repaire · ${modelFor(p)?.lairActions.length||0} option(s)</small></div><span class="ini-badge">${p.initiative}</span></div><div class="lair-card-foot">Initiative spéciale de repaire</div></article>`;
+  const selected=p.id===state.encounter.selectedId,multiSelected=ui.multiSelection.has(p.id),phase=currentPhase(p),pct=hpPct(p),boss=isBossParticipant(p);
+  return `<article class="combat-card ${roleClass(p)} ${targetClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${selected?'selected':''} ${p.hp<=0?'dead':''}"><button class="select-hit" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`} aria-label="Sélectionner ${esc(p.name)}"></button><div class="combat-card-main">${ui.multiMode?`<span class="multi-check ${multiSelected?'on':''}">${multiSelected?'✓':''}</span>`:'<span class="turn-dot"></span>'}<div class="combat-ident"><div class="combat-name-line"><strong>${esc(p.name)}</strong>${boss?'<span class="boss-name-badge">BOSS</span>':''}<span class="role-name-badge">${roleLabel(p)}</span></div><small>${modelFor(p)?.category==='character'?esc(modelFor(p)?.subtitle||'Personnage'):modelFor(p)?.category==='companion'?esc(modelFor(p)?.subtitle||'Compagnon'):modelFor(p)?.category==='npc'?esc(modelFor(p)?.subtitle||'PNJ allié'):p.kind==='enemy'?esc(modelFor(p)?.type||'Adversaire'):'PJ / PNJ'} · CA ${effectiveAc(p)}</small></div><span class="ini-badge">${p.initiative}</span></div><div class="hp-line"><div class="hpbar"><div class="hpfill ${hpClass(p)}" style="width:${pct}%"></div></div><div class="hptext">${p.hp}${p.tempHp?` +${p.tempHp}`:''}/${p.maxHp}</div></div><div class="economy-mini"><i class="eco-action ${p.actionUsed?'spent':''}">A${attacksPerAction(p)>1&&!p.actionUsed?` ${p.attackProgress||0}/${attacksPerAction(p)}`:''}</i><i class="eco-bonus ${p.bonusActionUsed?'spent':''}">B</i><i class="eco-reaction ${p.reactionUsed?'spent':''}">R</i></div><div class="condition-pills">${p.hp<=0?'<span class="pill dead-pill">0 PV</span>':''}${phase?`<span class="pill phase-pill">${esc(phase.name)}</span>`:''}${p.conditions.slice(0,3).map(c=>`<span class="pill">${esc(c.name)}${conditionShort(c)}</span>`).join('')}${p.conditions.length>3?`<span class="pill">+${p.conditions.length-3}</span>`:''}</div></article>`;
+}
+function renderGroupCard(members,active){
+  const first=members[0],activeInside=members.some(p=>p.id===active?.id),alive=members.filter(p=>p.hp>0).length,ini=first.initiative,allSelected=members.every(p=>ui.multiSelection.has(p.id)),sharedInitiative=new Set(members.map(p=>p.initiative)).size===1,worst=members.reduce((a,b)=>hpPct(a)<hpPct(b)?a:b,members[0]);
+  return `<article class="group-card ${roleClass(first)} ${hpBandClass(worst)} ${activeInside?'active':''}"><div class="group-head"><button class="group-title" ${ui.multiMode?`data-multi-group="${first.groupId}"`:`data-select="${activeInside?active.id:first.id}"`}><span class="group-icon">${ui.multiMode?(allSelected?'☑':'☐'):'▾'}</span><span><strong>${esc(first.baseName)}</strong><small>${alive}/${members.length} actifs · ${sharedInitiative?'initiative commune':'initiatives individuelles'}</small></span></button><span class="ini-badge">${sharedInitiative?ini:'×'}</span></div><div class="group-members">${members.map((p,i)=>`<button class="member-chip ${roleClass(p)} ${targetClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''} ${ui.multiSelection.has(p.id)?'multi-selected':''}" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`}><span>${i+1}</span><b>${p.hp>0?p.hp:'☠'}</b><small>/${p.maxHp}</small></button>`).join('')}</div></article>`;
+}
+
+const renderPrepV25=renderPrep;
+renderPrep=function(){renderPrepV25();$$('#prepParticipants .prep-row').forEach(row=>{const id=row.querySelector('[data-select]')?.dataset.select||row.dataset.select;if(!id)return;const p=state.encounter.participants.find(x=>x.id===id),m=modelFor(p);if(!p||isLair(p)||!(m?.category==='enemy'||p.kind==='enemy'))return;const remove=row.querySelector('[data-remove]');if(!remove)return;const b=document.createElement('button');b.type='button';b.className=`boss-toggle small ${isBossParticipant(p)?'active':''}`;b.dataset.toggleBoss=id;b.textContent=isBossParticipant(p)?'BOSS ✓':'BOSS';remove.before(b);});};
+function toggleBossInstance(id){const p=state.encounter.participants.find(x=>x.id===id);if(!p||isLair(p))return;mutate(()=>p.bossOverride=!p.bossOverride,`${p.name} ${p.bossOverride?'devient':'cesse d’être'} un BOSS pour cette rencontre.`);}
+
+const renderDetailV25=renderDetail;
+renderDetail=function(){renderDetailV25();const p=selectedParticipant();if(!p||isLair(p))return;const h=$('#activeDetail .detail-header h2');if(h&&isBossParticipant(p)&&!h.querySelector('.boss-name-badge'))h.insertAdjacentHTML('beforeend',' <span class="boss-name-badge">BOSS</span>');};
+const renderV25=render;
+render=function(){document.body.classList.toggle('density-compact',state.ui.density==='compact');renderV25();renderTargeting();const d=$('#btnDensity');if(d)d.textContent=`Densité : ${state.ui.density==='compact'?'Compacte':'Confortable'}`;};
+
+function saveMonsterFromForm(){
+  if(structuralGuard())return;const f=$('#monsterForm'),id=f.elements.monsterId.value||uid('monster'),existing=state.monsters.find(x=>x.id===id),abilities={},saveMods={},skills={};ABILITIES.forEach(a=>{if(f.elements[`ability_${a}`].value!=='')abilities[a]=Number(f.elements[`ability_${a}`].value);if(f.elements[`save_${a}`].value!=='')saveMods[a]=Number(f.elements[`save_${a}`].value);});SKILLS.forEach(sk=>{const val=f.elements[`skill_${sk.key}`]?.value,status=f.elements[`skillstatus_${sk.key}`]?.value||'';if(val!=='')skills[sk.key]={mod:Number(val),status,note:existing?.skills?.[sk.key]?.note||''};});
+  const m=normalizeMonster({id,category:f.elements.category.value,source:f.elements.source.value,subtitle:f.elements.subtitle.value,tags:splitList(f.elements.tags.value),favorite:f.elements.favorite.checked,isBoss:f.elements.isBoss.checked,name:f.elements.name.value,type:f.elements.type.value,size:f.elements.size.value,cr:f.elements.cr.value,ac:f.elements.ac.value,hp:f.elements.hp.value,initiative:f.elements.initiative.value,speed:f.elements.speed.value,attacksPerAction:f.elements.attacksPerAction.value,saves:f.elements.saves.value,abilities,saveMods,skills,damageVulnerabilities:splitList(f.elements.damageVulnerabilities.value),damageResistances:splitList(f.elements.damageResistances.value),damageImmunities:splitList(f.elements.damageImmunities.value),conditionImmunities:splitList(f.elements.conditionImmunities.value),senses:f.elements.senses.value,notes:f.elements.notes.value,legendaryMax:f.elements.legendaryMax.value,lairInitiative:f.elements.lairInitiative.value,traits:collectRows('#traitsRows','traits'),actions:collectRows('#actionsRows','actions'),reactions:collectRows('#reactionsRows','reactions'),legendaryActions:collectRows('#legendaryRows','legendaryActions'),lairActions:collectRows('#lairRows','lairActions'),phases:collectRows('#phasesRows','phases'),resources:collectRows('#resourcesRows','resources')});m.legendaryMax=m.legendaryActions.length?(Number(f.elements.legendaryMax.value)||3):0;mutate(()=>{const idx=state.monsters.findIndex(x=>x.id===id);if(idx>=0)state.monsters[idx]=m;else state.monsters.push(m);},`${m.name} ${existing?'modifié':'créé'} dans la bibliothèque.`);$('#monsterEditor').close();
+}
+const openMonsterEditorV25=openMonsterEditor;
+openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monsterForm'),m=id?state.monsters.find(x=>x.id===id):null;if(m){if(f.elements.tags)f.elements.tags.value=formatList(m.tags);if(f.elements.favorite)f.elements.favorite.checked=!!m.favorite;if(f.elements.isBoss)f.elements.isBoss.checked=!!m.isBoss;if(f.elements.attacksPerAction)f.elements.attacksPerAction.value=m.attacksPerAction||1;SKILLS.forEach(sk=>{const d=m.skills?.[sk.key];if(f.elements[`skill_${sk.key}`])f.elements[`skill_${sk.key}`].value=d?.mod??'';if(f.elements[`skillstatus_${sk.key}`])f.elements[`skillstatus_${sk.key}`].value=d?.status||'';});}else{if(f.elements.attacksPerAction)f.elements.attacksPerAction.value=1;}};
+
+
+function exportData(){
+  const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3 créé.');
+}
+function importData(raw){
+  if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
+  if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});if(Array.isArray(data.savedEncounters))state.savedEncounters=data.savedEncounters;if(Array.isArray(data.trash))state.trash=data.trash;}
+  else if(Array.isArray(data))data.forEach(m=>state.monsters.push(normalizeMonster(m)));else if(data.name)state.monsters.push(normalizeMonster(data));else throw new Error('Format non reconnu');
+  const known=new Set(state.monsters.map(m=>m.id));SAMPLE_MONSTERS.map(normalizeMonster).forEach(m=>{if(!known.has(m.id))state.monsters.push(m);});saveState();render();log('Import JSON effectué.');
+}
+function newEncounter(){if(state.encounter.participants.length&&!confirm('Créer une nouvelle rencontre ? La bibliothèque sera conservée.'))return;forceBackup('Avant nouvelle rencontre');mutate(()=>{state.encounter={name:'Rencontre sans titre',savedId:null,round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null};ui.multiSelection.clear();ui.multiMode=false;ui.targeting=null;},'Nouvelle rencontre créée.');}
+function resetAll(){if(!confirm('Réinitialiser toute l’application, bibliothèque comprise ?'))return;forceBackup('Avant réinitialisation complète');checkpoint();state=blankState();ui.multiSelection.clear();ui.targeting=null;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));render();toast('Application réinitialisée. Un backup a été conservé.');}
+
+// V3 : événements supplémentaires en délégation globale.
+addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.closest('#moreMenu')&&t.id!=='btnMore')$('#moreMenu')?.classList.add('hidden');
+  if(ui.targeting&&t.dataset.select){e.preventDefault();e.stopImmediatePropagation();resolveTargetSelection(t.dataset.select);return;}
+  if(t.id==='btnCancelTargeting'){cancelTargeting();return;}
+  if(t.dataset.favorite){toggleFavorite(t.dataset.favorite);return;}
+  if(t.dataset.skillCheck){const [pid,key]=t.dataset.skillCheck.split('|');rollSkill(pid,key);return;}
+  if(t.dataset.toggleBoss){toggleBossInstance(t.dataset.toggleBoss);return;}
+  if(t.dataset.loadEncounter){loadSavedEncounter(t.dataset.loadEncounter,false);return;}
+  if(t.dataset.launchEncounter){loadSavedEncounter(t.dataset.launchEncounter,true);return;}
+  if(t.dataset.deleteSaved){deleteSavedEncounter(t.dataset.deleteSaved);return;}
+  if(t.dataset.restoreTrash){restoreTrash(t.dataset.restoreTrash);return;}
+  if(t.dataset.restoreBackup){restoreBackup(t.dataset.restoreBackup);return;}
+},true);
+
+$('#btnEncounterManager')?.addEventListener('click',openEncounterManager);$('#btnPrepEncounters')?.addEventListener('click',openEncounterManager);
+$('#btnSaveEncounter')?.addEventListener('click',()=>saveEncounterSnapshot(false));$('#btnSaveEncounterAs')?.addEventListener('click',()=>saveEncounterSnapshot(true));
+$('#btnBackups')?.addEventListener('click',()=>{renderBackupDialog();$('#backupDialog').showModal();});$('#btnBackupNow')?.addEventListener('click',()=>{forceBackup('Backup manuel');renderBackupDialog();toast('Backup créé.');});
+$('#btnTrash')?.addEventListener('click',()=>{renderTrash();$('#trashDialog').showModal();});$('#btnEmptyTrash')?.addEventListener('click',()=>{if(confirm('Vider définitivement la corbeille ?'))mutate(()=>state.trash=[], 'Corbeille vidée.');renderTrash();});
+$('#btnDensity')?.addEventListener('click',()=>{state.ui.density=state.ui.density==='compact'?'comfortable':'compact';saveState();render();});
+$('#btnFavoriteFilter')?.addEventListener('click',()=>{ui.favoritesOnly=!ui.favoritesOnly;renderLibrary();});$('#libraryTagFilter')?.addEventListener('change',e=>{ui.libraryTag=e.target.value;renderLibrary();});
+
+// Démarre avec un backup de migration V3 et maintient des snapshots périodiques.
+if(!backupStore().length)forceBackup('Migration vers V3');
+setInterval(maybeAutoBackup,BACKUP_INTERVAL);
+// Les opérations sensibles créent leur propre backup dans newEncounter(), resetAll() et importData().
 
 render();

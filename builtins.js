@@ -1,6 +1,6 @@
 'use strict';
 
-// Bibliothèque intégrée ENCOUNTER V2.5.
+// Bibliothèque intégrée ENCOUNTER V3.
 // Les profils SRD sont issus du SRD 5.1 français (règles 5e 2014) sous CC-BY-4.0.
 // Les quatre personnages et le compagnon C.R.A.S.S.E.U.S.E. sont transcrits depuis les dossiers fournis par l'utilisateur.
 window.ENCOUNTER_BUILTINS = [
@@ -337,6 +337,7 @@ window.ENCOUNTER_BUILTINS = [
     tuskhan.abilities={FOR:18,DEX:14,CON:16,INT:8,SAG:12,CHA:10};
     tuskhan.saveMods={FOR:7,DEX:2,CON:6,INT:-1,SAG:1,CHA:0};
     setAbility(tuskhan,'Second souffle',{economy:'bonus'});
+    ['Sursaut d’activité','Attaque provocante','Attaque précise','Attaque renversante','Festin de la Dette'].forEach(n=>setAbility(tuskhan,n,{economy:'none'}));
     setAbility(tuskhan,'Faim 3 — Contrôle',{timing:'start'});
   }
   const wonq = byId('pj-wonq');
