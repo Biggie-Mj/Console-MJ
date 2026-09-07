@@ -67,7 +67,8 @@
         "kind": "attack",
         "bonus": 10,
         "damage": "1d8+5",
-        "damageType": "force"
+        "damageType": "force",
+        "economy": "bonus"
       },
       {
         "name": "Masse d’armes",
@@ -90,7 +91,8 @@
         "detail": "Action bonus, portée 18 m. Disciple de la Vie inclus.",
         "kind": "heal",
         "damage": "1d4+8",
-        "damageType": "PV"
+        "damageType": "PV",
+        "economy": "bonus"
       },
       {
         "name": "Soin des blessures N1",
@@ -188,7 +190,23 @@
         "reset": "aube"
       }
     ],
-    "notes": "PJ niveau 8 de Clifftop. Valeurs et capacités transcrites depuis le dossier Pik Ekrok fourni par l’utilisateur."
+    "notes": "PJ niveau 8 de Clifftop. Valeurs et capacités transcrites depuis le dossier Pik Ekrok fourni par l’utilisateur.",
+    "abilities": {
+      "FOR": 10,
+      "DEX": 12,
+      "CON": 14,
+      "INT": 14,
+      "SAG": 20,
+      "CHA": 8
+    },
+    "saveMods": {
+      "FOR": 0,
+      "DEX": 1,
+      "CON": 2,
+      "INT": 2,
+      "SAG": 8,
+      "CHA": 2
+    }
   },
   {
     "id": "pj-tuskhan-sand-ivoire",
@@ -231,7 +249,8 @@
       {
         "name": "Faim 3 — Contrôle",
         "detail": "Au début du tour : JS SAG DD 15. En cas d’échec, la lame désigne la créature blessée la plus proche à 9 m ; refuser inflige 5d6 psychiques, supprime la réaction jusqu’au prochain tour et ramène la Faim à 1.",
-        "kind": "text"
+        "kind": "text",
+        "timing": "start"
       }
     ],
     "actions": [
@@ -272,7 +291,8 @@
         "detail": "Action bonus, 1/repos court ou long.",
         "kind": "heal",
         "damage": "1d10+3",
-        "damageType": "PV"
+        "damageType": "PV",
+        "economy": "bonus"
       },
       {
         "name": "Sursaut d’activité",
@@ -342,7 +362,23 @@
         "reset": "repos court/long → 0"
       }
     ],
-    "notes": "PJ niveau 8 de Clifftop. La Faim est un compteur 0–3 : utilise +/− dans l’onglet État plutôt qu’une ressource à dépenser."
+    "notes": "PJ niveau 8 de Clifftop. La Faim est un compteur 0–3 : utilise +/− dans l’onglet État plutôt qu’une ressource à dépenser.",
+    "abilities": {
+      "FOR": 18,
+      "DEX": 14,
+      "CON": 16,
+      "INT": 8,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": 7,
+      "DEX": 2,
+      "CON": 6,
+      "INT": -1,
+      "SAG": 1,
+      "CHA": 0
+    }
   },
   {
     "id": "pj-wonq",
@@ -370,7 +406,8 @@
       {
         "name": "Contes de l’Au-delà",
         "detail": "Action bonus : dépense 1 Inspiration bardique et lance 1d8 sur la table des Contes ; conserve un seul conte. Action : offre le conte à une créature vue à 9 m.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "bonus"
       },
       {
         "name": "Inspiration bardique d8",
@@ -423,7 +460,8 @@
         "detail": "Action bonus, portée 18 m. Le focaliseur spirituel peut ajouter +1d6 à un jet de soins.",
         "kind": "heal",
         "damage": "1d4+5",
-        "damageType": "PV"
+        "damageType": "PV",
+        "economy": "bonus"
       },
       {
         "name": "Lueurs féeriques",
@@ -459,12 +497,14 @@
       {
         "name": "Esquive hadozee",
         "detail": "Quand Wonq subit des dégâts : réduit les dégâts de 1d6+3. 3 utilisations par repos long.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       },
       {
         "name": "Planeur",
         "detail": "Quand Wonq chute d’au moins 3 m : se déplace horizontalement jusqu’à 9 m vers un espace libre vu et ne subit aucun dégât de chute.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       }
     ],
     "legendaryActions": [],
@@ -538,7 +578,23 @@
         "reset": "repos long"
       }
     ],
-    "notes": "PJ niveau 8 de Clifftop. Devise : « Un absent n’est pas un mort. »"
+    "notes": "PJ niveau 8 de Clifftop. Devise : « Un absent n’est pas un mort. »",
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 14,
+      "INT": 10,
+      "SAG": 12,
+      "CHA": 20
+    },
+    "saveMods": {
+      "FOR": -1,
+      "DEX": 5,
+      "CON": 2,
+      "INT": 0,
+      "SAG": 1,
+      "CHA": 8
+    }
   },
   {
     "id": "pj-silas-veyr",
@@ -626,7 +682,8 @@
         "detail": "Action bonus, portée 18 m. Érudit alchimique inclus.",
         "kind": "heal",
         "damage": "1d4+10",
-        "damageType": "PV"
+        "damageType": "PV",
+        "economy": "bonus"
       },
       {
         "name": "Rayon empoisonné N1",
@@ -694,24 +751,28 @@
       {
         "name": "Ordonner C.R.A.S.S.E.U.S.E.",
         "detail": "Action bonus : ordonne à C.R.A.S.S.E.U.S.E. d’effectuer une action autre qu’Esquiver, notamment Choc ou une action utilitaire.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "bonus"
       }
     ],
     "reactions": [
       {
         "name": "Trait de génie",
         "detail": "Ajoute +5 au test ou au jet de sauvegarde de Silas ou d’une créature vue à 9 m. Dépense 1 utilisation.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       },
       {
         "name": "Absorption des éléments",
         "detail": "Quand Silas subit acide, froid, feu, foudre ou tonnerre : résistance à ce type jusqu’au début de son prochain tour, y compris contre les dégâts déclencheurs.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       },
       {
         "name": "Armure de mousse",
         "detail": "1 charge de Mousse : réduit les dégâts reçus de 1d8+5.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       },
       {
         "name": "Réaction moussante",
@@ -720,7 +781,8 @@
         "dc": 16,
         "save": "DEX",
         "damage": "3d6",
-        "damageType": "acide"
+        "damageType": "acide",
+        "economy": "reaction"
       }
     ],
     "legendaryActions": [],
@@ -782,7 +844,23 @@
         "reset": "repos long"
       }
     ],
-    "notes": "PJ niveau 8 de Clifftop. Contrôleur-soutien alchimique. C.R.A.S.S.E.U.S.E. occupe un influx actif lorsqu’elle existe. En l’ajoutant au combat, ENCOUNTER peut aussi ajouter automatiquement son homoncule."
+    "notes": "PJ niveau 8 de Clifftop. Contrôleur-soutien alchimique. C.R.A.S.S.E.U.S.E. occupe un influx actif lorsqu’elle existe. En l’ajoutant au combat, ENCOUNTER peut aussi ajouter automatiquement son homoncule.",
+    "abilities": {
+      "FOR": 8,
+      "DEX": 14,
+      "CON": 15,
+      "INT": 20,
+      "SAG": 12,
+      "CHA": 10
+    },
+    "saveMods": {
+      "FOR": -1,
+      "DEX": 2,
+      "CON": 5,
+      "INT": 8,
+      "SAG": 1,
+      "CHA": 0
+    }
   },
   {
     "id": "comp-crasseuse",
@@ -842,14 +920,38 @@
       {
         "name": "Conduit magique",
         "detail": "Quand Silas lance un sort de portée contact et que C.R.A.S.S.E.U.S.E. est à 36 m ou moins, elle peut utiliser sa réaction pour délivrer le sort à sa place.",
-        "kind": "text"
+        "kind": "text",
+        "economy": "reaction"
       }
     ],
     "legendaryActions": [],
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Créature Réactive d’Assistance, de Soutien, de Surveillance, d’Exploration, Utilitaire, Semi-autonome et Expérimentale. Petit cylindre noir et laiton à visage digital bleu. Avertissement : « NE PAS LAISSER ENTRE LES MAINS DE FOOF HOON. »"
+    "notes": "Créature Réactive d’Assistance, de Soutien, de Surveillance, d’Exploration, Utilitaire, Semi-autonome et Expérimentale. Petit cylindre noir et laiton à visage digital bleu. Avertissement : « NE PAS LAISSER ENTRE LES MAINS DE FOOF HOON. »",
+    "abilities": {
+      "FOR": 4,
+      "DEX": 15,
+      "CON": 12,
+      "INT": 10,
+      "SAG": 10,
+      "CHA": 7
+    },
+    "saveMods": {
+      "FOR": -3,
+      "DEX": 5,
+      "CON": 1,
+      "INT": 0,
+      "SAG": 0,
+      "CHA": -2
+    },
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Empoisonné",
+      "Épuisement"
+    ]
   },
   {
     "id": "srd-gobelin",
@@ -1083,7 +1185,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Vulnérabilité : dégâts contondants. Profil SRD 5.1 français."
+    "notes": "Vulnérabilité : dégâts contondants. Profil SRD 5.1 français.",
+    "damageVulnerabilities": [
+      "contondants"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Empoisonné",
+      "Épuisement"
+    ]
   },
   {
     "id": "srd-zombi",
@@ -1123,7 +1235,13 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Empoisonné"
+    ]
   },
   {
     "id": "srd-goule",
@@ -1165,7 +1283,15 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Charmé",
+      "Empoisonné",
+      "Épuisement"
+    ]
   },
   {
     "id": "srd-araignee-geante",
@@ -1327,7 +1453,31 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Vulnérabilité : radiants. Profil SRD 5.1 français."
+    "notes": "Vulnérabilité : radiants. Profil SRD 5.1 français.",
+    "damageVulnerabilities": [
+      "radiants"
+    ],
+    "damageResistances": [
+      "acide",
+      "feu",
+      "foudre",
+      "froid",
+      "tonnerre"
+    ],
+    "damageImmunities": [
+      "nécrotiques",
+      "poison"
+    ],
+    "conditionImmunities": [
+      "À terre",
+      "Agrippé",
+      "Effrayé",
+      "Empoisonné",
+      "Entravé",
+      "Épuisement",
+      "Paralysé",
+      "Pétrifié"
+    ]
   },
   {
     "id": "srd-bandit",
@@ -1438,7 +1588,9 @@
       {
         "name": "Multiattaque",
         "detail": "Effectue deux attaques de masse.",
-        "kind": "text"
+        "kind": "multiattack",
+        "sequence": "Masse*2",
+        "economy": "action"
       },
       {
         "name": "Masse",
@@ -1485,7 +1637,9 @@
       {
         "name": "Multiattaque",
         "detail": "Effectue deux attaques d’épée longue et, s’il a une épée courte dégainée, une attaque d’épée courte supplémentaire.",
-        "kind": "text"
+        "kind": "multiattack",
+        "sequence": "Épée longue*2;Épée courte*1",
+        "economy": "action"
       },
       {
         "name": "Épée longue",
@@ -1699,6 +1853,13 @@
     ],
     "actions": [
       {
+        "name": "Multiattaque",
+        "detail": "Effectue deux attaques de Morsure.",
+        "kind": "multiattack",
+        "sequence": "Morsure*2",
+        "economy": "action"
+      },
+      {
         "name": "Morsure",
         "detail": "Une tête mord une cible à portée.",
         "kind": "attack",
@@ -1769,16 +1930,65 @@
         "name": "Phase II — Le chant se brise",
         "threshold": 150,
         "ac": 18,
-        "note": "La fausse hydre se cabre et devient plus agressive."
+        "legendaryMax": 3,
+        "speed": "12 m",
+        "addResistances": [
+          "contondants"
+        ],
+        "note": "La Fausse Hydre se cabre, accélère et durcit sa masse."
       },
       {
         "name": "Phase III — Faim absolue",
         "threshold": 70,
         "ac": 19,
-        "note": "Les cous s’entrelacent et la créature abandonne toute prudence."
+        "legendaryMax": 4,
+        "speed": "15 m",
+        "addResistances": [
+          "contondants",
+          "perforants",
+          "tranchants"
+        ],
+        "note": "Les cous s’entrelacent et la créature abandonne toute prudence. Elle récupère 4 actions légendaires au début de son tour."
       }
     ],
     "resources": [],
-    "notes": "Boss maison de démonstration en trois phases."
+    "notes": "Boss maison de démonstration en trois phases.",
+    "damageResistances": [
+      "psychiques"
+    ],
+    "conditionImmunities": [
+      "Charmé",
+      "Effrayé"
+    ],
+    "lairInitiative": 20,
+    "lairActions": [
+      {
+        "name": "Clameur souterraine",
+        "detail": "Le chant rebondit dans les galeries. Une créature choisie fait un JS SAG DD 17 ; en cas d’échec, elle est Effrayée jusqu’à la fin de son prochain tour.",
+        "kind": "save",
+        "dc": 17,
+        "save": "SAG",
+        "economy": "lair"
+      },
+      {
+        "name": "Éboulement organique",
+        "detail": "Une zone de 3 m devient terrain difficile. Les créatures dans la zone font un JS DEX DD 17 ou subissent 3d6 contondants et tombent À terre.",
+        "kind": "save",
+        "dc": 17,
+        "save": "DEX",
+        "damage": "3d6",
+        "damageType": "contondants",
+        "economy": "lair"
+      },
+      {
+        "name": "Cou surgissant",
+        "detail": "Une tête jaillit d’une galerie et effectue une attaque de Morsure contre une cible à portée.",
+        "kind": "attack",
+        "bonus": 9,
+        "damage": "2d10+5",
+        "damageType": "perforants",
+        "economy": "lair"
+      }
+    ]
   }
 ]

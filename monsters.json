@@ -231,7 +231,17 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Vulnérabilité : dégâts contondants. Profil SRD 5.1 français."
+    "notes": "Vulnérabilité : dégâts contondants. Profil SRD 5.1 français.",
+    "damageVulnerabilities": [
+      "contondants"
+    ],
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Empoisonné",
+      "Épuisement"
+    ]
   },
   {
     "id": "srd-zombi",
@@ -271,7 +281,13 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Empoisonné"
+    ]
   },
   {
     "id": "srd-goule",
@@ -313,7 +329,15 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Profil SRD 5.1 français."
+    "notes": "Profil SRD 5.1 français.",
+    "damageImmunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "Charmé",
+      "Empoisonné",
+      "Épuisement"
+    ]
   },
   {
     "id": "srd-araignee-geante",
@@ -475,7 +499,31 @@
     "legendaryMax": 0,
     "phases": [],
     "resources": [],
-    "notes": "Vulnérabilité : radiants. Profil SRD 5.1 français."
+    "notes": "Vulnérabilité : radiants. Profil SRD 5.1 français.",
+    "damageVulnerabilities": [
+      "radiants"
+    ],
+    "damageResistances": [
+      "acide",
+      "feu",
+      "foudre",
+      "froid",
+      "tonnerre"
+    ],
+    "damageImmunities": [
+      "nécrotiques",
+      "poison"
+    ],
+    "conditionImmunities": [
+      "À terre",
+      "Agrippé",
+      "Effrayé",
+      "Empoisonné",
+      "Entravé",
+      "Épuisement",
+      "Paralysé",
+      "Pétrifié"
+    ]
   },
   {
     "id": "srd-bandit",
@@ -586,7 +634,9 @@
       {
         "name": "Multiattaque",
         "detail": "Effectue deux attaques de masse.",
-        "kind": "text"
+        "kind": "multiattack",
+        "sequence": "Masse*2",
+        "economy": "action"
       },
       {
         "name": "Masse",
@@ -633,7 +683,9 @@
       {
         "name": "Multiattaque",
         "detail": "Effectue deux attaques d’épée longue et, s’il a une épée courte dégainée, une attaque d’épée courte supplémentaire.",
-        "kind": "text"
+        "kind": "multiattack",
+        "sequence": "Épée longue*2;Épée courte*1",
+        "economy": "action"
       },
       {
         "name": "Épée longue",
@@ -847,6 +899,13 @@
     ],
     "actions": [
       {
+        "name": "Multiattaque",
+        "detail": "Effectue deux attaques de Morsure.",
+        "kind": "multiattack",
+        "sequence": "Morsure*2",
+        "economy": "action"
+      },
+      {
         "name": "Morsure",
         "detail": "Une tête mord une cible à portée.",
         "kind": "attack",
@@ -917,16 +976,65 @@
         "name": "Phase II — Le chant se brise",
         "threshold": 150,
         "ac": 18,
-        "note": "La fausse hydre se cabre et devient plus agressive."
+        "legendaryMax": 3,
+        "speed": "12 m",
+        "addResistances": [
+          "contondants"
+        ],
+        "note": "La Fausse Hydre se cabre, accélère et durcit sa masse."
       },
       {
         "name": "Phase III — Faim absolue",
         "threshold": 70,
         "ac": 19,
-        "note": "Les cous s’entrelacent et la créature abandonne toute prudence."
+        "legendaryMax": 4,
+        "speed": "15 m",
+        "addResistances": [
+          "contondants",
+          "perforants",
+          "tranchants"
+        ],
+        "note": "Les cous s’entrelacent et la créature abandonne toute prudence. Elle récupère 4 actions légendaires au début de son tour."
       }
     ],
     "resources": [],
-    "notes": "Boss maison de démonstration en trois phases."
+    "notes": "Boss maison de démonstration en trois phases.",
+    "damageResistances": [
+      "psychiques"
+    ],
+    "conditionImmunities": [
+      "Charmé",
+      "Effrayé"
+    ],
+    "lairInitiative": 20,
+    "lairActions": [
+      {
+        "name": "Clameur souterraine",
+        "detail": "Le chant rebondit dans les galeries. Une créature choisie fait un JS SAG DD 17 ; en cas d’échec, elle est Effrayée jusqu’à la fin de son prochain tour.",
+        "kind": "save",
+        "dc": 17,
+        "save": "SAG",
+        "economy": "lair"
+      },
+      {
+        "name": "Éboulement organique",
+        "detail": "Une zone de 3 m devient terrain difficile. Les créatures dans la zone font un JS DEX DD 17 ou subissent 3d6 contondants et tombent À terre.",
+        "kind": "save",
+        "dc": 17,
+        "save": "DEX",
+        "damage": "3d6",
+        "damageType": "contondants",
+        "economy": "lair"
+      },
+      {
+        "name": "Cou surgissant",
+        "detail": "Une tête jaillit d’une galerie et effectue une attaque de Morsure contre une cible à portée.",
+        "kind": "attack",
+        "bonus": 9,
+        "damage": "2d10+5",
+        "damageType": "perforants",
+        "economy": "lair"
+      }
+    ]
   }
 ]

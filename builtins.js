@@ -1,6 +1,6 @@
 'use strict';
 
-// Bibliothèque intégrée ENCOUNTER V2.1.
+// Bibliothèque intégrée ENCOUNTER V2.5.
 // Les profils SRD sont issus du SRD 5.1 français (règles 5e 2014) sous CC-BY-4.0.
 // Les quatre personnages et le compagnon C.R.A.S.S.E.U.S.E. sont transcrits depuis les dossiers fournis par l'utilisateur.
 window.ENCOUNTER_BUILTINS = [
@@ -315,3 +315,89 @@ window.ENCOUNTER_BUILTINS = [
     phases:[{name:'Phase II — Le chant se brise',threshold:150,ac:18,note:'La fausse hydre se cabre et devient plus agressive.'},{name:'Phase III — Faim absolue',threshold:70,ac:19,note:'Les cous s’entrelacent et la créature abandonne toute prudence.'}],resources:[],notes:'Boss maison de démonstration en trois phases.'
   }
 ];
+
+// ——— ENCOUNTER V2.5 : métadonnées structurées et automatisations ———
+(() => {
+  const byId = id => window.ENCOUNTER_BUILTINS.find(m => m.id === id);
+  const setAbility = (m, name, patch) => {
+    if (!m) return;
+    const a = [...(m.actions||[]), ...(m.reactions||[]), ...(m.legendaryActions||[]), ...(m.lairActions||[]), ...(m.traits||[])].find(x => x.name === name);
+    if (a) Object.assign(a, patch);
+  };
+
+  const pik = byId('pj-pik-ekrok');
+  if (pik) {
+    pik.abilities={FOR:10,DEX:12,CON:14,INT:14,SAG:20,CHA:8};
+    pik.saveMods={FOR:0,DEX:1,CON:2,INT:2,SAG:8,CHA:2};
+    setAbility(pik,'Arme spirituelle',{economy:'bonus'});
+    setAbility(pik,'Mot de guérison N1',{economy:'bonus'});
+  }
+  const tuskhan = byId('pj-tuskhan-sand-ivoire');
+  if (tuskhan) {
+    tuskhan.abilities={FOR:18,DEX:14,CON:16,INT:8,SAG:12,CHA:10};
+    tuskhan.saveMods={FOR:7,DEX:2,CON:6,INT:-1,SAG:1,CHA:0};
+    setAbility(tuskhan,'Second souffle',{economy:'bonus'});
+    setAbility(tuskhan,'Faim 3 — Contrôle',{timing:'start'});
+  }
+  const wonq = byId('pj-wonq');
+  if (wonq) {
+    wonq.abilities={FOR:8,DEX:14,CON:14,INT:10,SAG:12,CHA:20};
+    wonq.saveMods={FOR:-1,DEX:5,CON:2,INT:0,SAG:1,CHA:8};
+    ['Mot de guérison N1','Contes de l’Au-delà'].forEach(n=>setAbility(wonq,n,{economy:'bonus'}));
+    (wonq.reactions||[]).forEach(a=>a.economy='reaction');
+  }
+  const silas = byId('pj-silas-veyr');
+  if (silas) {
+    silas.abilities={FOR:8,DEX:14,CON:15,INT:20,SAG:12,CHA:10};
+    silas.saveMods={FOR:-1,DEX:2,CON:5,INT:8,SAG:1,CHA:0};
+    ['Mot de guérison N1','Ordonner C.R.A.S.S.E.U.S.E.'].forEach(n=>setAbility(silas,n,{economy:'bonus'}));
+    (silas.reactions||[]).forEach(a=>a.economy='reaction');
+  }
+  const crasseuse = byId('comp-crasseuse');
+  if (crasseuse) {
+    crasseuse.abilities={FOR:4,DEX:15,CON:12,INT:10,SAG:10,CHA:7};
+    crasseuse.saveMods={FOR:-3,DEX:5,CON:1,INT:0,SAG:0,CHA:-2};
+    crasseuse.damageImmunities=['poison'];
+    crasseuse.conditionImmunities=['Empoisonné','Épuisement'];
+    (crasseuse.reactions||[]).forEach(a=>a.economy='reaction');
+  }
+
+  // Défenses SRD dont l'automatisation peut être appliquée sans ambiguïté.
+  const squelette=byId('srd-squelette');
+  if(squelette){squelette.damageVulnerabilities=['contondants'];squelette.damageImmunities=['poison'];squelette.conditionImmunities=['Empoisonné','Épuisement'];}
+  const zombi=byId('srd-zombi');
+  if(zombi){zombi.damageImmunities=['poison'];zombi.conditionImmunities=['Empoisonné'];}
+  const goule=byId('srd-goule');
+  if(goule){goule.damageImmunities=['poison'];goule.conditionImmunities=['Charmé','Empoisonné','Épuisement'];}
+  const ombre=byId('srd-ombre');
+  if(ombre){
+    // Les résistances physiques du profil SRD dépendent de la nature magique de l'attaque : elles restent dans le texte libre.
+    // Seules les résistances sans condition sont automatisées ici.
+    ombre.damageVulnerabilities=['radiants'];
+    ombre.damageResistances=['acide','feu','foudre','froid','tonnerre'];
+    ombre.damageImmunities=['nécrotiques','poison'];
+    ombre.conditionImmunities=['À terre','Agrippé','Effrayé','Empoisonné','Entravé','Épuisement','Paralysé','Pétrifié'];
+  }
+
+  const malfrat=byId('srd-malfrat');
+  setAbility(malfrat,'Multiattaque',{kind:'multiattack',sequence:'Masse*2',economy:'action'});
+  const veteran=byId('srd-veteran');
+  setAbility(veteran,'Multiattaque',{kind:'multiattack',sequence:'Épée longue*2;Épée courte*1',economy:'action'});
+
+  const hydra=byId('fausse-hydre-demo');
+  if (hydra) {
+    hydra.damageResistances=['psychiques'];
+    hydra.conditionImmunities=['Charmé','Effrayé'];
+    hydra.lairInitiative=20;
+    hydra.lairActions=[
+      {name:'Clameur souterraine',detail:'Le chant rebondit dans les galeries. Une créature choisie fait un JS SAG DD 17 ; en cas d’échec, elle est Effrayée jusqu’à la fin de son prochain tour.',kind:'save',dc:17,save:'SAG',economy:'lair'},
+      {name:'Éboulement organique',detail:'Une zone de 3 m devient terrain difficile. Les créatures dans la zone font un JS DEX DD 17 ou subissent 3d6 contondants et tombent À terre.',kind:'save',dc:17,save:'DEX',damage:'3d6',damageType:'contondants',economy:'lair'},
+      {name:'Cou surgissant',detail:'Une tête jaillit d’une galerie et effectue une attaque de Morsure contre une cible à portée.',kind:'attack',bonus:9,damage:'2d10+5',damageType:'perforants',economy:'lair'}
+    ];
+    hydra.actions.unshift({name:'Multiattaque',detail:'Effectue deux attaques de Morsure.',kind:'multiattack',sequence:'Morsure*2',economy:'action'});
+    hydra.phases=[
+      {name:'Phase II — Le chant se brise',threshold:150,ac:18,legendaryMax:3,speed:'12 m',addResistances:['contondants'],note:'La Fausse Hydre se cabre, accélère et durcit sa masse.'},
+      {name:'Phase III — Faim absolue',threshold:70,ac:19,legendaryMax:4,speed:'15 m',addResistances:['contondants','perforants','tranchants'],note:'Les cous s’entrelacent et la créature abandonne toute prudence. Elle récupère 4 actions légendaires au début de son tour.'}
+    ];
+  }
+})();

@@ -33,3 +33,90 @@
 .library-card.companion-card{border-color:#5f7665;background:linear-gradient(180deg,#17231b,#101711)}
 .companion-badge{border-color:#77937d!important;background:#203b29!important;color:#dff6e5!important}
 @media(max-width:720px){.library-filters{grid-template-columns:repeat(2,1fr)}}
+
+/* =========================================================
+   ENCOUNTER V2.5 — Automatisation D&D et ergonomie avancée
+   ========================================================= */
+
+/* Barre rapide : mode d'abord, valeurs ensuite. */
+.quickbar{grid-template-columns:minmax(145px,.65fr) auto auto minmax(390px,1.45fr)}
+.quick-mode{display:flex;gap:5px;min-width:0}
+.quick-mode button{min-width:86px;font:900 11px ui-sans-serif,system-ui;opacity:.55}
+.quick-mode button.active{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.08) inset,0 0 18px rgba(0,0,0,.28)}
+.quick-presets button{font-size:15px}
+.quick-amount{grid-template-columns:minmax(88px,.75fr) minmax(145px,1.15fr) auto auto}
+.quick-amount select{height:42px;border:1px solid #5b4538;border-radius:10px;background:#0e0b09;color:white;padding:7px 9px;font:700 11px ui-sans-serif,system-ui}
+
+/* Code couleur de PV : l'encadré entier transmet l'état. */
+.combat-card,.group-card,.member-chip,.active-detail{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+.hp-high{border-color:#40694f!important;box-shadow:inset 3px 0 0 #5e9d70}
+.hp-good{border-color:#6f7947!important;box-shadow:inset 3px 0 0 #9fa45a}
+.hp-warn{border-color:#9a6d36!important;box-shadow:inset 3px 0 0 #d18a42}
+.hp-critical{border-color:#9a4540!important;box-shadow:inset 3px 0 0 #d65b51}
+.hp-down{border-color:#5a3030!important;box-shadow:inset 3px 0 0 #8b3030;filter:saturate(.65)}
+.active-detail.hp-high{box-shadow:inset 4px 0 0 #5e9d70}
+.active-detail.hp-good{box-shadow:inset 4px 0 0 #9fa45a}
+.active-detail.hp-warn{box-shadow:inset 4px 0 0 #d18a42}
+.active-detail.hp-critical{box-shadow:inset 4px 0 0 #d65b51}
+.active-detail.hp-down{box-shadow:inset 4px 0 0 #8b3030}
+
+/* Économie d'action : trois marqueurs colorés, manuels et auto-cochés. */
+.economy-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:0 14px 12px}
+.economy-marker{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:0 8px;align-items:center;text-align:left;min-height:52px;padding:7px 10px;border-radius:11px;background:#15100e;font-family:ui-sans-serif,system-ui}
+.economy-marker>span{grid-row:1/3;font-size:22px;line-height:1}.economy-marker b{font-size:11px}.economy-marker small{font-size:9px;opacity:.72}
+.economy-marker.action{border-color:#8f7034;color:#f3d78b}.economy-marker.bonus{border-color:#3f7887;color:#a9e5ef}.economy-marker.reaction{border-color:#725086;color:#d9b9ed}
+.economy-marker.spent{opacity:.38;filter:saturate(.45)}.economy-marker.spent>span{transform:scale(.8)}
+.economy-mini{position:absolute;right:9px;bottom:8px;display:flex;gap:4px;pointer-events:none}
+.economy-mini i{width:18px;height:18px;border-radius:999px;display:grid;place-items:center;font:900 8px ui-sans-serif,system-ui;border:1px solid currentColor;background:#0d0a09}
+.economy-mini .eco-action{color:#d6b65f}.economy-mini .eco-bonus{color:#67bfd0}.economy-mini .eco-reaction{color:#b583d0}.economy-mini i.spent{opacity:.25;text-decoration:line-through}
+.combat-card{position:relative}
+
+/* Rappels de début / fin de tour. */
+.turn-reminders{margin:0 14px 12px;padding:10px;border:1px solid #715536;border-radius:12px;background:linear-gradient(180deg,#21180e,#15100c)}
+.turn-reminders h3{margin:2px 0 8px;font-size:14px}.reminder-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid rgba(255,255,255,.06)}
+.reminder-row:first-of-type{border-top:0}.reminder-row>span{font-size:15px}.reminder-row p{margin:0;font:11px/1.35 ui-sans-serif,system-ui}.reminder-row.done{opacity:.68}.reminder-actions{display:flex;gap:4px}.reminder-actions button{padding:5px 7px;min-height:30px;font-size:9px}
+
+/* Conditions structurées. */
+.condition-options{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:12px 0;padding:10px;border:1px solid #3e3029;border-radius:12px;background:#0e0b09}
+.condition-options label{font:800 10px ui-sans-serif,system-ui;color:#bda99c}.condition-options input,.condition-options select{width:100%;margin-top:4px;border:1px solid #4a392f;border-radius:8px;background:#0d0a09;color:white;padding:8px}
+.condition-current-list{display:grid;gap:6px;margin-top:10px}.condition-current-list h3{margin:0 0 3px;font-size:13px}.condition-active-list{display:grid;gap:7px}.condition-active{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #4a384c;border-radius:10px;background:#171019}.condition-active b{display:block;font-size:12px}.condition-active small{display:block;color:#a99aac;font:9px ui-sans-serif,system-ui;margin-top:2px}
+
+/* Tests de caractéristiques et jets de sauvegarde. */
+.checks-section .section-title-row{align-items:center}.dc-field{display:flex;align-items:center;gap:5px;font:800 10px ui-sans-serif,system-ui;color:#b9a793}.dc-field input{width:60px;border:1px solid #544034;border-radius:8px;background:#0c0a09;color:#fff;padding:6px;text-align:center;font-weight:900}
+.checks-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.check-row{display:grid;grid-template-columns:minmax(74px,.85fr) 1fr 1fr;gap:5px;align-items:center;border:1px solid #34302b;border-radius:9px;padding:6px;background:#0e0c0a}.check-row>div b{display:block;font-size:12px}.check-row>div span{display:block;color:#9f9289;font:9px ui-sans-serif,system-ui}.check-row button{padding:6px;min-height:34px;font-size:9px}
+.ability-stats-editor{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.ability-stats-editor label{display:grid;grid-template-columns:1fr;gap:3px;text-align:center;font:900 10px ui-sans-serif,system-ui;color:#bda99c}.ability-stats-editor input{width:100%;border:1px solid #4a392f;border-radius:8px;background:#0d0a09;color:white;padding:7px;text-align:center}.tiny{font-size:10px!important}
+
+/* Repaire. */
+.lair-card{border-color:#735c38!important;background:linear-gradient(180deg,#211a10,#14100c)!important}.lair-card .turn-dot{font-size:16px}.lair-card-foot{padding:7px 10px;color:#bfa777;font:9px ui-sans-serif,system-ui;border-top:1px solid rgba(255,255,255,.05)}
+.lair-chip{border-color:#7a633a!important;color:#ebcd8e!important}.lair-detail{border-color:#775d35!important}.lair-row{border-color:#6b5536!important;background:#17130d!important}
+
+/* Actions légendaires contextualisées. */
+.modal-shell{padding:14px}.legendary-modal{width:min(820px,calc(100vw - 24px))}.legendary-context-block{margin-top:10px;padding:10px;border:1px solid #5d4636;border-radius:12px;background:#120e0c}.legendary-context-block h3{margin:0}.legendary-context-block .ability-card:last-child{margin-bottom:0}
+
+/* Boss & phases améliorés. */
+.boss-alert{display:grid;grid-template-columns:1fr auto;gap:3px 12px;padding:9px 14px;border-bottom:1px solid #78443b;background:linear-gradient(90deg,#391a17,#21100f)}.boss-alert strong{font-size:12px}.boss-alert span{font-size:10px;color:#dcb1aa}.boss-alert small{grid-column:1/-1;color:#c39c83;font:9px ui-sans-serif,system-ui}.boss-alert.upcoming{border-color:#6d5736;background:linear-gradient(90deg,#2c2415,#19130e)}.boss-alert.upcoming span{color:#d2bd8d}
+.phase-modal .modal-shell{text-align:center;padding:22px}.phase-modal-mark{font-size:42px}.phase-modal h2{margin:7px 0 6px;font-size:26px}.phase-modal p{color:#cdbdb2}.phase-dialog-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:14px 0}.phase-dialog-stats span{padding:6px 9px;border:1px solid #6c503b;border-radius:999px;background:#17110e;font:800 10px ui-sans-serif,system-ui;color:#edd09b}
+.phase-row{grid-template-columns:1.1fr .55fr .5fr .6fr .75fr 1.1fr 1.1fr 1.7fr auto!important}
+.timing-badge{float:right;border:1px solid #624c36;border-radius:999px;padding:2px 6px;font:800 8px ui-sans-serif,system-ui;color:#d2b785}
+
+/* Éditeur de capacité V2.5. */
+.dynamic-row.ability-row{grid-template-columns:1.05fr 1.9fr .82fr .85fr .55fr .8fr .78fr .52fr .58fr .48fr .62fr 1.1fr .75fr auto}
+
+@media (max-width:1180px){
+  .quickbar{grid-template-columns:minmax(135px,.6fr) auto auto minmax(330px,1.35fr)}
+  .quick-mode button{min-width:72px;padding-inline:7px}
+  .dynamic-row.ability-row{grid-template-columns:repeat(4,1fr)}
+  .dynamic-row.ability-row [data-field="detail"],.dynamic-row.ability-row [data-field="sequence"]{grid-column:span 2}
+  .phase-row{grid-template-columns:repeat(4,1fr)!important}.phase-row [data-field="note"]{grid-column:span 2}
+}
+@media (max-width:900px){
+  .quickbar{grid-template-columns:auto auto 1fr}.quick-target{display:none}.quick-amount{grid-column:1/-1}
+  .checks-grid{grid-template-columns:1fr}.ability-stats-editor{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:640px){
+  .economy-strip{padding-inline:8px}.economy-marker{padding:6px;grid-template-columns:auto 1fr}.economy-marker>span{font-size:18px}.economy-marker small{display:none}
+  .condition-options{grid-template-columns:1fr}.condition-options .span2{grid-column:span 1}
+  .quickbar{grid-template-columns:1fr}.quick-mode,.quick-presets{display:grid;grid-template-columns:repeat(2,1fr)}.quick-presets{grid-template-columns:repeat(3,1fr)}.quick-amount{grid-template-columns:1fr 1fr}.quick-amount input,.quick-amount select{min-width:0}.quick-amount #btnQuickApply,.quick-amount #btnQuickState{width:100%}
+  .ability-stats-editor{grid-template-columns:repeat(2,1fr)}
+  .phase-row{grid-template-columns:1fr 1fr!important}.phase-row [data-field="note"],.phase-row [data-field="addResistances"],.phase-row [data-field="addImmunities"]{grid-column:1/-1}
+}
