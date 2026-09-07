@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = 3.6;
+const APP_VERSION = '3.6.1';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -601,7 +601,7 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 function exportData(){
   const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.6-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.6 créé.');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v3.6.1-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V3.6.1 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();

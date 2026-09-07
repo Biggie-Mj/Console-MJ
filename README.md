@@ -1,6 +1,20 @@
-# ENCOUNTER — Console MJ D&D 5e V3.6
+# ENCOUNTER — Console MJ D&D 5e V3.6.1
 
-V3.6 « Correctifs ergonomiques » reprend la V3 et conserve la même clé de sauvegarde locale `encounter-console-v1`.
+V3.6.1 reprend la V3.6 « Correctifs ergonomiques » et conserve la même clé de sauvegarde locale `encounter-console-v1`.
+
+
+## Nouveau logo d’application — V3.6.1
+
+La PWA utilise désormais le logo retenu pour ENCOUNTER : **écran de Maître de Jeu bleu nuit, liserés dorés et dé polyédrique central**.
+
+Fichiers remplacés :
+
+- `apple-touch-icon.png` — 180 × 180, pour l’écran d’accueil iPhone/iPad ;
+- `icon-192.png` — 192 × 192, pour la PWA ;
+- `icon-512.png` — 512 × 512, pour la PWA ;
+- `icon-1024.png` — 1024 × 1024, source haute résolution conservée dans le paquet.
+
+Le cache du service worker a été incrémenté afin que GitHub Pages récupère les nouvelles icônes. Sur iOS, si l’ancienne icône reste affichée, supprime le raccourci ENCOUNTER de l’écran d’accueil puis ajoute-le de nouveau depuis Safari.
 
 ## Correctifs et ajouts
 
