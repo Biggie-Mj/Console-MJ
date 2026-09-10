@@ -1,0 +1,68 @@
+/* =========================================================
+   ENCOUNTER V5 — Combat First REBUILD
+   Couche ergonomique additive au-dessus de V4.4.
+   Aucun composant V4.4 n'est supprimé par défaut.
+   ========================================================= */
+
+/* Historique */
+#btnUndo:disabled,#btnRedo:disabled,#btnUndoDrawer:disabled,#btnRedoDrawer:disabled{opacity:.32!important;filter:saturate(.4)}
+#btnRedo{position:relative;z-index:12;pointer-events:auto!important}
+
+/* Filtres de combat */
+.v5-combat-filters{flex:0 0 auto;display:flex;gap:5px;align-items:center;padding:6px 8px;border-bottom:1px solid #352a24;background:#120f0d;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.v5-combat-filters::-webkit-scrollbar{display:none}
+.v5-combat-filters button{flex:0 0 auto;min-height:34px;padding:5px 8px;font:850 9px ui-sans-serif,system-ui;white-space:nowrap;background:#171311}
+.v5-combat-filters button span{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:4px;padding:0 4px;border-radius:999px;background:#0d0b0a;color:#bbaa9f;font:850 8px ui-sans-serif,system-ui}
+.v5-combat-filters button.active{border-color:#9a7140;background:#302116;color:#ffe0a6}
+.v5-combat-filters.filter-bypassed:before{content:'Ciblage : tous visibles';flex:0 0 auto;color:#e9c56f;font:850 8px ui-sans-serif,system-ui;letter-spacing:.05em;text-transform:uppercase}
+.v5-focus-toggle{margin-left:auto!important;border-color:#4e443e!important}
+.v5-focus-toggle.active{border-color:#9870ae!important;background:#302137!important;color:#ead6f4!important}
+
+/* La nouvelle barre de filtres participe au flex vertical sans casser le scroll V4.4. */
+.combat-mode .participant-panel>.v5-combat-filters{flex:0 0 auto}
+.combat-mode .combat-list{flex:1 1 auto!important;min-height:0!important}
+
+/* Cartes : légèrement plus denses, sans retirer aucune information. */
+.combat-mode .combat-card{padding-top:8px;padding-bottom:7px}
+.combat-mode .group-members{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:6px}
+.combat-mode .member-chip{min-height:50px!important}
+@media(max-width:1180px){.combat-mode .group-members{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Sauvegardes contre la mort visibles à gauche. */
+.v5-death-inline{position:relative;z-index:5;pointer-events:auto!important;display:grid;grid-template-columns:auto auto auto auto;align-items:center;justify-content:start;gap:4px;margin-top:6px;min-height:30px!important;padding:4px 6px!important;border:1px solid #5b4d62!important;border-radius:9px!important;background:#100d12!important}
+.v5-death-inline span{display:flex;gap:1px}.v5-death-inline i{font-style:normal;font-size:11px;color:#4e4852;line-height:1}.v5-death-inline b{font:850 8px ui-monospace,SFMono-Regular,Menlo,monospace;color:#8d858f}
+.v5-death-inline i.success.lit,.v5-death-inline .success i.lit{color:#8fd6ff;text-shadow:0 0 8px rgba(78,166,221,.65)}
+.v5-death-inline i.failure.lit,.v5-death-inline .failure i.lit{color:#ff7e82;text-shadow:0 0 8px rgba(213,66,73,.65)}
+
+/* Raccourcis contextuels du participant sélectionné. */
+.v5-shortcuts{margin:0 13px 8px;padding:8px;border:1px solid #48382e;border-radius:11px;background:linear-gradient(180deg,#17120f,#100d0b)}
+.v5-shortcuts-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}.v5-shortcuts-head strong{display:block;margin-top:1px;font:850 11px ui-sans-serif,system-ui;color:#e2d5c9}.v5-last-target{max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid #5d4a36;border-radius:999px;padding:4px 7px;color:#ebc779;background:#1d160f;font:800 8px ui-sans-serif,system-ui}
+.v5-shortcut-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.v5-shortcut{min-width:0;min-height:42px!important;padding:5px 7px!important;text-align:left;background:#211812;border-color:#5b4231}.v5-shortcut span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:850 10px ui-sans-serif,system-ui}.v5-shortcut small{display:block;margin-top:2px;color:#b79970;font:800 8px ui-sans-serif,system-ui}.v5-shortcut.disabled{opacity:.36}.v5-shortcut-help{display:block;margin-top:5px;color:#8f8279;font:9px ui-sans-serif,system-ui}.v5-shortcut-empty{grid-column:1/-1;color:#92867d;font:italic 10px ui-sans-serif,system-ui}
+@media(max-width:1050px){.v5-shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Étoile de favori intégrée sans déplacer le texte de l'action. */
+.ability-card{position:relative}.ability-head>.v5-favorite-star{flex:0 0 30px;width:30px;min-width:30px;min-height:30px!important;height:30px;padding:0!important;border-radius:8px;background:#100d0b;border-color:#493c33;color:#776a60;font-size:17px;line-height:1}.ability-head>.v5-favorite-star.on{color:#ffd47b;border-color:#866434;background:#2b2014;box-shadow:0 0 10px rgba(215,168,91,.12)}.ability-head>div{flex:1;min-width:0}
+
+/* Boss : synthèse compacte, sans remplacer la fiche ni la phase V4.4. */
+.v5-boss-strip{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 13px 8px;padding:6px 8px;border:1px solid #6a3838;border-radius:10px;background:#231112;color:#d7c0b8;font:800 9px ui-sans-serif,system-ui}.v5-boss-strip span{padding:3px 6px;border-radius:999px;background:rgba(255,255,255,.035)}.v5-boss-title{color:#ff9c9c!important;background:#41191b!important;letter-spacing:.08em}.v5-boss-strip b{color:#ffd3a1}
+
+/* Ciblage : plus évident, mais les autres participants restent lisibles. */
+.targeting-mode .combat-card.target-ineligible,.targeting-mode .member-chip.target-ineligible{opacity:.48!important;filter:saturate(.55)!important}
+.targeting-mode .combat-card.target-eligible,.targeting-mode .member-chip.target-eligible{outline-width:3px!important;box-shadow:0 0 0 5px rgba(239,201,92,.16),0 0 26px rgba(239,201,92,.32)!important}
+.targeting-mode .target-remembered{outline-color:#9f7be7!important;box-shadow:0 0 0 5px rgba(159,123,231,.18),0 0 28px rgba(159,123,231,.34)!important}
+
+/* Focus optionnel : compacte seulement les espacements. Rien ne disparaît. */
+body.combat-mode.v5-focus .topbar{height:56px;padding-top:5px;padding-bottom:5px}
+body.combat-mode.v5-focus .roundbar{top:56px;padding-top:5px;padding-bottom:5px}
+body.combat-mode.v5-focus .combat-view{height:calc(100dvh - 56px - 62px - var(--quick-h));gap:7px;padding-top:7px}
+body.combat-mode.v5-focus .panel-head{padding-top:8px;padding-bottom:8px}
+body.combat-mode.v5-focus .turn-command-center{margin-bottom:8px;padding:8px 9px}
+body.combat-mode.v5-focus .v5-shortcuts{padding:6px;margin-bottom:6px}
+body.combat-mode.v5-focus .stat-grid{padding-bottom:6px}
+
+/* iPad paysage : la fiche et la liste restent chacune scrollables indépendamment. */
+@media (min-width:768px) and (orientation:landscape){
+  body.combat-mode .participant-panel,body.combat-mode .detail-panel{min-height:0;height:100%;overflow:hidden}
+  body.combat-mode .active-detail{min-height:0;overflow:hidden}
+  body.combat-mode .detail-tab-body{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+}
