@@ -1,37 +1,4 @@
-# ENCOUNTER — Console MJ D&D 5e V5 REBUILD
-
-## Pourquoi cette V5 a été reconstruite
-
-Cette V5 **ne reprend pas l’ancienne V5 défectueuse**. Elle repart directement du ZIP **V4.4 Sauvegardes Mort / Scroll / Undo** fourni comme base de référence. La bibliothèque, les fiches, le pavé PV, les PV temporaires, les sauvegardes contre la mort, la liste COMBAT scrollable, le ciblage, les groupes, les boss, les phases, les actions légendaires, les rencontres, les backups et le fonctionnement PWA de la V4.4 sont conservés.
-
-La philosophie de cette reconstruction est volontairement prudente : **aucun élément V4.4 n’est masqué ou supprimé par défaut**. Les nouveautés V5 sont une couche ergonomique ajoutée par `v5.js` et `v5.css`, chargée après la base validée.
-
-## V5 — Combat First, reconstruction sûre
-
-- **Undo / Redo reconstruits** : l’historique des 30 dernières opérations est gardé en mémoire pendant la session. Cela évite de sérialiser des dizaines de copies de l’immense bibliothèque dans `localStorage`, qui pouvait saturer le stockage iPad et rendre Annuler inopérant. Le bouton du haut et celui du Journal utilisent le même moteur. `Rétablir` apparaît aux deux endroits.
-- **État courant toujours persistant** : la rencontre, la bibliothèque et les réglages continuent d’être sauvegardés normalement dans `localStorage` et le miroir IndexedDB V4. L’historique Undo/Redo, lui, repart volontairement vide après un rechargement complet de l’application.
-- **Filtres COMBAT non destructifs** : Tous / Blessés / États / Boss. Ils filtrent uniquement la colonne des participants et sont automatiquement neutralisés pendant un ciblage afin de ne jamais cacher une cible.
-- **Sauvegardes contre la mort dans la liste** : les PJ et Felipe à 0 PV affichent directement leurs réussites/échecs dans leur carte, tout en conservant le panneau détaillé V4.4.
-- **Raccourcis d’actions** : jusqu’à 4 actions favorites par profil via ☆/★. Si aucun favori n’est défini, ENCOUNTER propose simplement les premières actions utiles sans modifier la fiche complète.
-- **Cible précédente visible** dans les raccourcis du tour. Le ciblage V4.4 reste le moteur réel ; les nouvelles indications sont uniquement ergonomiques.
-- **Synthèse Boss** : phase actuelle, prochain seuil de PV et actions légendaires restantes sont rappelés dans une bande compacte, sans remplacer les contrôles de boss existants.
-- **Mode Focus optionnel** : désactivé par défaut. Il réduit seulement les espacements pour les grands combats ; il ne cache aucune commande.
-- **iPad paysage préservé** : liste COMBAT et fiche détaillée continuent à défiler indépendamment.
-
-## Installation depuis la V4.4
-
-1. Faire **Exporter JSON** dans la V4.4 par sécurité.
-2. Décompresser ce ZIP V5.
-3. Remplacer **tout le contenu du dépôt GitHub Pages à la racine** par les fichiers du ZIP, y compris les nouveaux `v5.js` et `v5.css`.
-4. Faire **Commit changes**.
-5. Attendre le déploiement GitHub Pages.
-6. Ouvrir le site une fois avec Internet, puis fermer et relancer l’application installée sur l’iPad afin d’activer le nouveau cache PWA `encounter-v5-rebuild-1`.
-
-La clé historique `encounter-console-v1` est conservée pour la compatibilité avec les données existantes.
-
----
-
-## Historique V4.4 conservé
+# ENCOUNTER — Console MJ D&D 5e V4.4
 
 ## Correctifs V4.4
 

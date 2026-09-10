@@ -1,7 +1,7 @@
 {
   "name": "ENCOUNTER — Console MJ D&D 5e",
   "short_name": "ENCOUNTER",
-  "description": "Console MJ D&D 5e V5 Rebuild : base V4.4 conservée, Undo/Redo fiable, filtres de combat, raccourcis d’actions et ciblage renforcé.",
+  "description": "Console MJ D&D 5e V4.4 : sauvegardes contre la mort, combat scrollable, Undo unifié, pavé tactile et PV temporaires.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

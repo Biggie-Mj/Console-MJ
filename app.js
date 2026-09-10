@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '5.0.0';
+const APP_VERSION = '4.4.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -381,7 +381,7 @@ function saveMonsterFromForm(){
 function deleteMonster(id){if(structuralGuard())return;const m=state.monsters.find(x=>x.id===id);if(!m)return;if(!confirm(`Supprimer « ${m.name} » de la bibliothèque ?`))return;mutate(()=>{state.monsters=state.monsters.filter(x=>x.id!==id);state.encounter.participants.filter(p=>p.modelId===id).forEach(p=>p.modelId=null);},`${m.name} supprimé de la bibliothèque.`);$('#monsterEditor').close();}
 function exportData(){const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export JSON créé.');}
 function importData(raw){if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);checkpoint();if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});}else if(Array.isArray(data))data.forEach(m=>state.monsters.push(normalizeMonster(m)));else if(data.name)state.monsters.push(normalizeMonster(data));else throw new Error('Format non reconnu');const known=new Set(state.monsters.map(m=>m.id));SAMPLE_MONSTERS.map(normalizeMonster).forEach(m=>{if(!known.has(m.id))state.monsters.push(m);});saveState();render();log('Import JSON effectué.');}
-function newEncounter(){if(state.encounter.participants.length&&!confirm('Créer une nouvelle rencontre ? La bibliothèque sera conservée.'))return;mutate(()=>{state.encounter={name:'Rencontre sans titre',round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null,lastTargets:{}};ui.multiSelection.clear();ui.multiMode=false;},'Nouvelle rencontre créée.');}
+function newEncounter(){if(state.encounter.participants.length&&!confirm('Créer une nouvelle rencontre ? La bibliothèque sera conservée.'))return;mutate(()=>{state.encounter={name:'Rencontre sans titre',round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null};ui.multiSelection.clear();ui.multiMode=false;},'Nouvelle rencontre créée.');}
 function resetAll(){if(!confirm('Réinitialiser toute l’application, bibliothèque comprise ?'))return;checkpoint();state=blankState();ui.multiSelection.clear();saveState();render();toast('Application réinitialisée.');}
 function renderPendingPhase(){const pending=state.encounter.pendingPhase,dlg=$('#phaseDialog');if(!pending||dlg.open)return;const p=state.encounter.participants.find(x=>x.id===pending.participantId),m=modelFor(p),ph=m?.phases.find(x=>x.id===pending.phaseId);if(!p||!ph){state.encounter.pendingPhase=null;saveState();return;}$('#phaseDialogTitle').textContent=`${p.name} — ${ph.name}`;$('#phaseDialogText').textContent=ph.note||'Le boss change de phase.';const stats=[];if(ph.ac!=null)stats.push(`CA ${ph.ac}`);if(ph.speed)stats.push(`Vitesse ${ph.speed}`);if(ph.legendaryMax!=null)stats.push(`${ph.legendaryMax} actions légendaires`);if(ph.addResistances.length)stats.push(`Résistances : ${formatList(ph.addResistances)}`);if(ph.addImmunities.length)stats.push(`Immunités : ${formatList(ph.addImmunities)}`);$('#phaseDialogStats').innerHTML=stats.map(x=>`<span>${esc(x)}</span>`).join('');dlg.showModal();state.encounter.pendingPhase=null;saveState();}
 function closeDialogById(id){const d=document.getElementById(id);if(d?.open)d.close();}
@@ -612,16 +612,16 @@ openMonsterEditor=function(id=null){openMonsterEditorV25(id);const f=$('#monster
 
 
 function exportData(){
-  const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[],actionFavorites:state.actionFavorites||{}};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v5-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V5 créé.');
+  const data={app:'ENCOUNTER',version:APP_VERSION,exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v4-4-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V4.4 créé.');
 }
 function importData(raw){
   if(!String(raw).trim())throw new Error('Aucune donnée JSON fournie.');const data=JSON.parse(raw);forceBackup('Avant import JSON');checkpoint();
-  if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});if(Array.isArray(data.savedEncounters))state.savedEncounters=data.savedEncounters;if(Array.isArray(data.trash))state.trash=data.trash;if(Array.isArray(data.sessionLibrary))state.sessionLibrary=data.sessionLibrary;if(data.actionFavorites&&typeof data.actionFavorites==='object')state.actionFavorites=data.actionFavorites;}
+  if(data.app==='ENCOUNTER'&&data.monsters){state.monsters=data.monsters.map(normalizeMonster);if(data.encounter)state.encounter=Object.assign(blankState().encounter,data.encounter,{participants:(data.encounter.participants||[]).map(normalizeParticipant)});if(Array.isArray(data.savedEncounters))state.savedEncounters=data.savedEncounters;if(Array.isArray(data.trash))state.trash=data.trash;if(Array.isArray(data.sessionLibrary))state.sessionLibrary=data.sessionLibrary;}
   else if(Array.isArray(data))data.forEach(m=>state.monsters.push(normalizeMonster(m)));else if(data.name)state.monsters.push(normalizeMonster(data));else throw new Error('Format non reconnu');
   const known=new Set(state.monsters.map(m=>m.id));SAMPLE_MONSTERS.map(normalizeMonster).forEach(m=>{if(!known.has(m.id))state.monsters.push(m);});saveState();render();log('Import JSON effectué.');
 }
-function newEncounter(){if(state.encounter.participants.length&&!confirm('Créer une nouvelle rencontre ? La bibliothèque sera conservée.'))return;forceBackup('Avant nouvelle rencontre');mutate(()=>{state.encounter={name:'Rencontre sans titre',savedId:null,round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null,lastTargets:{}};ui.multiSelection.clear();ui.multiMode=false;ui.targeting=null;},'Nouvelle rencontre créée.');}
+function newEncounter(){if(state.encounter.participants.length&&!confirm('Créer une nouvelle rencontre ? La bibliothèque sera conservée.'))return;forceBackup('Avant nouvelle rencontre');mutate(()=>{state.encounter={name:'Rencontre sans titre',savedId:null,round:1,currentTurn:0,selectedId:null,participants:[],log:[],turnNotices:[],pendingPhase:null};ui.multiSelection.clear();ui.multiMode=false;ui.targeting=null;},'Nouvelle rencontre créée.');}
 function resetAll(){if(!confirm('Réinitialiser toute l’application, bibliothèque comprise ?'))return;forceBackup('Avant réinitialisation complète');checkpoint();state=blankState();ui.multiSelection.clear();ui.targeting=null;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));render();toast('Application réinitialisée. Un backup a été conservé.');}
 
 // V3 : événements supplémentaires en délégation globale.
@@ -823,7 +823,7 @@ render();
    ========================================================= */
 
 // Migration douce : les données historiques restent compatibles.
-state.version='5.0.0';
+state.version='4.4.0';
 state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
 state.encounter.lastTargets=state.encounter.lastTargets||{};
 state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
@@ -838,9 +838,9 @@ const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
 function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
 async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
-function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='5.0.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.4.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
 const saveStateV361=saveState;
-saveState=function(){state.version='5.0.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+saveState=function(){state.version='4.4.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
 const writeBackupStoreV361=writeBackupStore;
 writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
 async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
@@ -902,7 +902,7 @@ renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)retur
 
 // Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
 const blankStateV4Base=blankState;
-blankState=function(){const s=blankStateV4Base();s.version='5.0.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+blankState=function(){const s=blankStateV4Base();s.version='4.4.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
 restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
 
 // -------- Render V4 global --------
@@ -954,7 +954,7 @@ undo=function(){
   try{
     const parsed=JSON.parse(snap);
     state=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
-    state.version='5.0.0';
+    state.version='4.4.0';
     ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:Date.now(),state:clone(state)});
@@ -1059,7 +1059,7 @@ const v43InitMigration=()=>{
     if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V4.3 — Undo, pavé PV et PV temporaires');
     localStorage.setItem('encounter-v43-migrated','1');
   }
-  state.version='5.0.0';v43SetQuickValue('');render();
+  state.version='4.4.0';v43SetQuickValue('');render();
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v43InitMigration,{once:true});else v43InitMigration();
 
@@ -1091,7 +1091,7 @@ function v44ResetDeathTracker(p){
   return changed;
 }
 function v44PersistQuiet(){
-  state.version='5.0.0';state.savedAt=Date.now();
+  state.version='4.4.0';state.savedAt=Date.now();
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){console.warn(err);}
   if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});
 }
@@ -1221,7 +1221,7 @@ function v44Undo(){
   const snap=undoStack.pop();v44WriteUndo();
   try{
     const parsed=JSON.parse(snap),restored=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
-    state=restored;state.version='5.0.0';state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+    state=restored;state.version='4.4.0';state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
     ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
     v44PersistQuiet();render();toast('Dernière action annulée.');return true;
   }catch(err){console.error(err);toast('Impossible de restaurer la dernière action.');return false;}
@@ -1244,7 +1244,7 @@ const renderV44Base=render;
 render=function(){v44ResetLivingDeathTrackers();renderV44Base();};
 
 function v44Init(){
-  state.version='5.0.0';
+  state.version='4.4.0';
   state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
   v44RewireUndoButtons();
   if(!localStorage.getItem('encounter-v44-migrated')){
