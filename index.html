@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0c0b0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ENCOUNTER V4.4 — Console MJ D&D 5e</title>
+  <title>ENCOUNTER V5 — Console MJ D&D 5e</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -20,7 +20,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">⚔</div>
-      <div><h1>ENCOUNTER</h1><p>Console MJ · V4.4</p></div>
+      <div><h1>ENCOUNTER</h1><p>Console MJ · V5</p></div>
     </div>
     <div class="mode-switch" aria-label="Mode d'utilisation">
       <button id="btnModeHome" class="mode-btn">⌂ Accueil</button>
@@ -28,7 +28,7 @@
       <button id="btnModeCombat" class="mode-btn">⚔ Combat</button>
     </div>
     <div class="top-actions">
-      <button id="btnUndo" class="ghost persistent-action">↶ Annuler</button>
+      <button id="btnUndo" class="ghost persistent-action">↶ Annuler</button><button id="btnRedo" class="ghost persistent-action" title="Rétablir la dernière action annulée">↷ Rétablir</button>
       <button id="btnEncounterManager" class="ghost">💾 Rencontres</button>
       <button id="btnLibraryDrawer" class="ghost">☰ Bibliothèque</button>
       <button id="btnJournalDrawer" class="ghost">≡ Journal</button>
@@ -64,7 +64,7 @@
   <main id="homeView" class="home-view hidden">
     <section class="home-hero panel-soft">
       <div class="home-brand-block">
-        <span class="eyebrow">ENCOUNTER V4.4</span>
+        <span class="eyebrow">ENCOUNTER V5</span>
         <h2>Que veux-tu faire ?</h2>
         <p>Accès direct à la partie en cours, aux rencontres préparées et à une nouvelle préparation.</p>
       </div>
@@ -133,6 +133,12 @@
           <span id="multiCount" class="count-badge hidden">0</span>
         </div>
       </div>
+      <div id="combatFilters" class="combat-filters" role="group" aria-label="Filtrer les participants du combat">
+        <button type="button" class="active" data-combat-filter="all">TOUS</button>
+        <button type="button" data-combat-filter="injured">BLESSÉS</button>
+        <button type="button" data-combat-filter="states">ÉTATS</button>
+        <button type="button" data-combat-filter="boss">BOSS</button>
+      </div>
       <div id="combatList" class="combat-list"></div>
     </section>
 
@@ -143,7 +149,12 @@
     </section>
   </main>
 
-  <section id="quickBar" class="quickbar quickbar-v43 hidden">
+  <section id="quickBar" class="quickbar quickbar-v43 v5-quickbar hidden">
+    <div id="v5ActionDock" class="v5-action-dock">
+      <div class="v5-dock-actor"><span class="eyebrow">TOUR ACTIF</span><strong id="v5DockActor">—</strong><small id="v5DockTarget">Aucune cible mémorisée</small></div>
+      <div id="v5QuickActions" class="v5-quick-actions"></div>
+      <button id="btnV5OtherActions" type="button" class="ghost v5-more-actions">AUTRES…</button>
+    </div>
     <div class="quick-target"><span class="eyebrow">CIBLE</span><strong id="quickTargetName">—</strong><small id="quickTargetMeta"></small></div>
     <div class="quick-mode" role="group" aria-label="Type de modification des points de vie">
       <button id="btnQuickDamage" class="danger active" data-quick-mode="damage">DÉGÂTS</button>
@@ -176,7 +187,7 @@
 
   <aside id="journalDrawer" class="drawer drawer-right" aria-hidden="true">
     <div class="drawer-head"><div><span class="eyebrow">JOURNAL</span><h2>Historique</h2></div><button class="icon-btn" data-close-drawers>×</button></div>
-    <div class="journal-actions"><button id="btnUndoDrawer" class="ghost">↶ Annuler</button><button id="btnClearLog" class="ghost">Effacer</button></div>
+    <div class="journal-actions"><button id="btnUndoDrawer" class="ghost">↶ Annuler</button><button id="btnRedoDrawer" class="ghost">↷ Rétablir</button><button id="btnClearLog" class="ghost">Effacer</button></div>
     <div id="combatLog" class="combat-log"></div>
   </aside>
 
@@ -268,7 +279,7 @@
   </dialog>
 
   <dialog id="phaseDialog" class="modal phase-modal">
-    <div class="modal-shell"><div class="phase-modal-mark">⚠</div><span class="eyebrow">CHANGEMENT DE PHASE</span><h2 id="phaseDialogTitle"></h2><p id="phaseDialogText"></p><div id="phaseDialogStats" class="phase-dialog-stats"></div><div class="modal-actions"><button type="button" class="primary" data-dialog-close="phaseDialog">Continuer le combat</button></div></div>
+    <div class="modal-shell"><div class="phase-modal-mark">⚠</div><span class="eyebrow">CHANGEMENT DE PHASE</span><h2 id="phaseDialogTitle"></h2><p id="phaseDialogText"></p><div id="phaseDialogStats" class="phase-dialog-stats"></div><div class="modal-actions"><button type="button" class="primary" id="btnPhaseActivate">⚡ Activer la phase</button></div></div>
   </dialog>
 
 
@@ -328,7 +339,21 @@
     </div>
   </dialog>
 
-  <div id="actionPopup" class="action-popup" aria-live="assertive"><span class="eyebrow">ACTION</span><strong id="actionPopupTitle">Résolution</strong><p id="actionPopupText"></p></div>
+  <dialog id="v5NumberDialog" class="modal v5-number-modal">
+    <div class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">SAISIE TACTILE</span><h2 id="v5NumberTitle">Valeur</h2></div><button type="button" class="icon-btn" data-dialog-close="v5NumberDialog">×</button></div>
+      <div id="v5NumberDisplay" class="v5-number-display">0</div>
+      <div class="v5-number-keypad">
+        <button type="button" data-v5-number="1">1</button><button type="button" data-v5-number="2">2</button><button type="button" data-v5-number="3">3</button>
+        <button type="button" data-v5-number="4">4</button><button type="button" data-v5-number="5">5</button><button type="button" data-v5-number="6">6</button>
+        <button type="button" data-v5-number="7">7</button><button type="button" data-v5-number="8">8</button><button type="button" data-v5-number="9">9</button>
+        <button type="button" data-v5-sign="1">±</button><button type="button" data-v5-number="0">0</button><button type="button" data-v5-backspace="1">⌫</button>
+      </div>
+      <div class="modal-actions"><button id="btnV5NumberClear" type="button" class="ghost">Effacer</button><button id="btnV5NumberApply" type="button" class="primary">Appliquer</button></div>
+    </div>
+  </dialog>
+
+  <div id="actionPopup" class="action-popup" aria-live="assertive"><span class="eyebrow">ACTION</span><strong id="actionPopupTitle">Résolution</strong><p id="actionPopupText"></p><div id="actionPopupActions" class="action-popup-actions"><button id="btnPopupUndo" type="button" class="ghost">↶ Annuler</button><button id="btnPopupRedo" type="button" class="ghost">↷ Rétablir</button></div></div>
 
   <template id="abilityRowTemplate"><div class="dynamic-row ability-row"><input data-field="name" placeholder="Nom"><input data-field="detail" placeholder="Texte / effet"><select data-field="kind"><option value="text">Texte</option><option value="attack">Attaque</option><option value="heal">Soins</option><option value="save">Sauvegarde</option><option value="recharge">Recharge</option><option value="multiattack">Multiattaque</option></select><select data-field="economy"><option value="">Économie auto</option><option value="action">Action</option><option value="bonus">Action bonus</option><option value="reaction">Réaction</option><option value="none">Aucune</option></select><select data-field="target"><option value="auto">Cible auto</option><option value="enemy">Ennemi</option><option value="ally">Allié</option><option value="self">Soi</option><option value="any">Toute cible</option><option value="none">Aucune cible</option></select><input data-field="bonus" type="number" placeholder="Bonus"><input data-field="damage" placeholder="Dégâts ex. 2d10+5"><input data-field="damageType" placeholder="Type dégâts"><input data-field="dc" type="number" placeholder="DD"><input data-field="save" placeholder="JS ex. DEX"><input data-field="cost" type="number" min="1" value="1" placeholder="Coût"><input data-field="recharge" placeholder="5-6"><input data-field="sequence" placeholder="Séquence ex. Morsure*2"><select data-field="timing"><option value="">Pas de rappel</option><option value="start">Rappel début tour</option><option value="end">Rappel fin tour</option></select><button type="button" class="danger ghost small remove-row">Suppr.</button></div></template>
   <template id="resourceRowTemplate"><div class="dynamic-row resource-edit-row"><input data-field="name" placeholder="Nom de la ressource"><input data-field="max" type="number" min="0" placeholder="Max"><input data-field="start" type="number" min="0" placeholder="Départ"><input data-field="reset" placeholder="Recharge / reset"><button type="button" class="danger ghost small remove-row">Suppr.</button></div></template>

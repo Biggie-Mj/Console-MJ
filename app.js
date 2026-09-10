@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'encounter-console-v1'; // compatibilité V1/V2.x
-const APP_VERSION = '4.4.0';
+const APP_VERSION = '5.0.0';
 const BACKUP_KEY = 'encounter-console-backups-v3';
 const BACKUP_INTERVAL = 5*60*1000;
 const ABILITIES = ['FOR','DEX','CON','INT','SAG','CHA'];
@@ -823,7 +823,7 @@ render();
    ========================================================= */
 
 // Migration douce : les données historiques restent compatibles.
-state.version='4.4.0';
+state.version='5.0.0';
 state.sessionLibrary=Array.isArray(state.sessionLibrary)?state.sessionLibrary:[];
 state.encounter.lastTargets=state.encounter.lastTargets||{};
 state.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},state.ui||{});
@@ -838,9 +838,9 @@ const V4_LOCAL_AT_BOOT=!!localStorage.getItem(STORAGE_KEY);
 function v4OpenDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return resolve(null);const req=indexedDB.open(V4_DB,V4_DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function v4DbPut(key,value){try{const db=await v4OpenDb();if(!db)return;await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(err){console.warn('IndexedDB écriture impossible',err);}}
 async function v4DbGet(key){try{const db=await v4OpenDb();if(!db)return null;const val=await new Promise((res,rej)=>{const tx=db.transaction('kv','readonly');const r=tx.objectStore('kv').get(key);r.onsuccess=()=>res(r.result??null);r.onerror=()=>rej(r.error);});db.close();return val;}catch(err){console.warn('IndexedDB lecture impossible',err);return null;}}
-function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='4.4.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
+function normalizeV4State(s){if(!s||typeof s!=='object')return null;s.version='5.0.0';s.ui=Object.assign({mode:'prep',locked:false,density:'comfortable'},s.ui||{});s.monsters=(s.monsters||[]).map(normalizeMonster);s.savedEncounters=Array.isArray(s.savedEncounters)?s.savedEncounters:[];s.trash=Array.isArray(s.trash)?s.trash:[];s.sessionLibrary=Array.isArray(s.sessionLibrary)?s.sessionLibrary:[];s.encounter=Object.assign(blankState().encounter,s.encounter||{});s.encounter.participants=(s.encounter.participants||[]).map(normalizeParticipant);s.encounter.lastTargets=s.encounter.lastTargets||{};return s;}
 const saveStateV361=saveState;
-saveState=function(){state.version='4.4.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
+saveState=function(){state.version='5.0.0';state.savedAt=Date.now();saveStateV361();v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});};
 const writeBackupStoreV361=writeBackupStore;
 writeBackupStore=function(items){writeBackupStoreV361(items);v4DbPut('backups',clone(items.slice(0,12)));};
 async function v4HydrateStorage(){const rec=await v4DbGet('state'),localStamp=Number(state.savedAt)||0;if(rec?.state&&(!V4_LOCAL_AT_BOOT||Number(rec.savedAt||0)>localStamp+1000)){const restored=normalizeV4State(rec.state);if(restored){state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Données restaurées depuis le stockage renforcé.');render();}}else{v4DbPut('state',{savedAt:state.savedAt||Date.now(),state:clone(state)});}const idbBackups=await v4DbGet('backups');if(!backupStore().length&&Array.isArray(idbBackups)&&idbBackups.length){writeBackupStoreV361(idbBackups);}}
@@ -902,7 +902,7 @@ renderEncounterManager=function(){const el=$('#savedEncounterList');if(!el)retur
 
 // Les remises à zéro et restaurations anciennes sont migrées vers la structure V4.
 const blankStateV4Base=blankState;
-blankState=function(){const s=blankStateV4Base();s.version='4.4.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
+blankState=function(){const s=blankStateV4Base();s.version='5.0.0';s.sessionLibrary=[];s.encounter.lastTargets={};return s;};
 restoreBackup=function(id){const b=backupStore().find(x=>x.id===id);if(!b)return;forceBackup('Avant restauration');const restored=normalizeV4State(clone(b.state));if(!restored)return;state=restored;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveState();render();renderBackupDialog();toast('Backup restauré.');};
 
 // -------- Render V4 global --------
@@ -954,7 +954,7 @@ undo=function(){
   try{
     const parsed=JSON.parse(snap);
     state=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
-    state.version='4.4.0';
+    state.version='5.0.0';
     ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:Date.now(),state:clone(state)});
@@ -1059,7 +1059,7 @@ const v43InitMigration=()=>{
     if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V4.3 — Undo, pavé PV et PV temporaires');
     localStorage.setItem('encounter-v43-migrated','1');
   }
-  state.version='4.4.0';v43SetQuickValue('');render();
+  state.version='5.0.0';v43SetQuickValue('');render();
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v43InitMigration,{once:true});else v43InitMigration();
 
@@ -1091,7 +1091,7 @@ function v44ResetDeathTracker(p){
   return changed;
 }
 function v44PersistQuiet(){
-  state.version='4.4.0';state.savedAt=Date.now();
+  state.version='5.0.0';state.savedAt=Date.now();
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){console.warn(err);}
   if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});
 }
@@ -1221,7 +1221,7 @@ function v44Undo(){
   const snap=undoStack.pop();v44WriteUndo();
   try{
     const parsed=JSON.parse(snap),restored=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
-    state=restored;state.version='4.4.0';state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+    state=restored;state.version='5.0.0';state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
     ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;
     v44PersistQuiet();render();toast('Dernière action annulée.');return true;
   }catch(err){console.error(err);toast('Impossible de restaurer la dernière action.');return false;}
@@ -1244,7 +1244,7 @@ const renderV44Base=render;
 render=function(){v44ResetLivingDeathTrackers();renderV44Base();};
 
 function v44Init(){
-  state.version='4.4.0';
+  state.version='5.0.0';
   state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
   v44RewireUndoButtons();
   if(!localStorage.getItem('encounter-v44-migrated')){
@@ -1254,3 +1254,298 @@ function v44Init(){
   v44PersistQuiet();render();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v44Init,{once:true});else v44Init();
+
+/* =========================================================
+   ENCOUNTER V5 — COMBAT FIRST
+   Couche ergonomique finale : actions favorites, filtres,
+   ciblage renforcé, groupes compacts, Undo/Redo, pavé universel,
+   rappels actionnables et actions légendaires contextuelles.
+   ========================================================= */
+
+const V5_UNDO_KEY='encounter-console-undo-v5';
+const V5_REDO_KEY='encounter-console-redo-v5';
+ui.combatFilter=ui.combatFilter||'all';
+ui.v5DeadGroups=ui.v5DeadGroups||new Set();
+ui.v5LegendaryBossId=ui.v5LegendaryBossId||null;
+ui.v5NumberTarget=null;
+ui.v5NumberValue='';
+
+function v5EnsurePreferences(){
+  state.combatPreferences=state.combatPreferences&&typeof state.combatPreferences==='object'?state.combatPreferences:{};
+  state.combatPreferences.quickActions=state.combatPreferences.quickActions&&typeof state.combatPreferences.quickActions==='object'?state.combatPreferences.quickActions:{};
+}
+v5EnsurePreferences();
+
+function v5Persist(){
+  state.version='5.0.0';state.savedAt=Date.now();
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(err){console.warn(err);}
+  if(typeof v4DbPut==='function')v4DbPut('state',{savedAt:state.savedAt,state:clone(state)});
+}
+function v5RestoreSnapshot(snap){
+  const parsed=JSON.parse(snap),restored=typeof normalizeV4State==='function'?(normalizeV4State(parsed)||parsed):parsed;
+  state=restored;state.version='5.0.0';
+  state.encounter=state.encounter||{};state.encounter.participants=(state.encounter.participants||[]).map(normalizeParticipant);
+  v5EnsurePreferences();
+  ui.targeting=null;ui.multiSelection.clear();ui.pendingAdvance=false;ui.v5LegendaryBossId=null;
+  v5Persist();render();
+}
+function v5ReadStack(key,fallback=[]){
+  try{const raw=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(raw)?raw.filter(x=>typeof x==='string').slice(-80):fallback;}catch(_){return fallback;}
+}
+let redoStack=v5ReadStack(V5_REDO_KEY,[]);
+{
+  const old=v5ReadStack(V5_UNDO_KEY,[]);
+  if(old.length)undoStack=old;
+  else if(!undoStack.length&&typeof v44ReadUndo==='function')undoStack=v44ReadUndo();
+}
+function v5WriteHistory(){
+  try{localStorage.setItem(V5_UNDO_KEY,JSON.stringify(undoStack.slice(-80)));localStorage.setItem(V5_REDO_KEY,JSON.stringify(redoStack.slice(-80)));}catch(_){/* mémoire active en secours */}
+}
+checkpoint=function(){
+  const snap=JSON.stringify(state);
+  if(undoStack[undoStack.length-1]!==snap)undoStack.push(snap);
+  if(undoStack.length>80)undoStack.shift();
+  redoStack=[];v5WriteHistory();
+};
+function v5Undo(){
+  if(!undoStack.length)undoStack=v5ReadStack(V5_UNDO_KEY,[]);
+  if(!undoStack.length){toast('Rien à annuler.');return false;}
+  const current=JSON.stringify(state),snap=undoStack.pop();redoStack.push(current);if(redoStack.length>80)redoStack.shift();v5WriteHistory();
+  try{v5RestoreSnapshot(snap);showActionPopup('La dernière opération a été annulée.','Action annulée');return true;}catch(err){console.error(err);toast('Impossible de restaurer la dernière action.');return false;}
+}
+function v5Redo(){
+  if(!redoStack.length)redoStack=v5ReadStack(V5_REDO_KEY,[]);
+  if(!redoStack.length){toast('Rien à rétablir.');return false;}
+  const current=JSON.stringify(state),snap=redoStack.pop();undoStack.push(current);if(undoStack.length>80)undoStack.shift();v5WriteHistory();
+  try{v5RestoreSnapshot(snap);showActionPopup('L’opération annulée a été rétablie.','Action rétablie');return true;}catch(err){console.error(err);toast('Impossible de rétablir la dernière action.');return false;}
+}
+undo=v5Undo;window.ENCOUNTER_UNDO=v5Undo;window.ENCOUNTER_REDO=v5Redo;
+
+function v5UpdateHistoryButtons(){
+  ['btnUndo','btnUndoDrawer','btnPopupUndo'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!undoStack.length;});
+  ['btnRedo','btnRedoDrawer','btnPopupRedo'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!redoStack.length;});
+}
+showActionPopup=function(msg,title='Résolution'){
+  const box=$('#actionPopup');if(!box)return;
+  $('#actionPopupTitle').textContent=title;$('#actionPopupText').textContent=msg;
+  box.classList.add('show','v5-feedback');v5UpdateHistoryButtons();clearTimeout(showActionPopup.t);
+  showActionPopup.t=setTimeout(()=>box.classList.remove('show'),6000);
+};
+
+// -------- Actions favorites et dock contextuel --------
+function v5ActionPrefs(modelId){v5EnsurePreferences();return Array.isArray(state.combatPreferences.quickActions[modelId])?state.combatPreferences.quickActions[modelId]:[];}
+function v5AbilitySection(m,a){
+  if(m?.actions?.some(x=>x.id===a.id))return'action';
+  if(m?.reactions?.some(x=>x.id===a.id))return'reaction';
+  if(m?.legendaryActions?.some(x=>x.id===a.id))return'legendary';
+  if(m?.lairActions?.some(x=>x.id===a.id))return'lair';
+  return'action';
+}
+function v5AbilityById(m,id){return [...(m?.actions||[]),...(m?.reactions||[]),...(m?.legendaryActions||[]),...(m?.lairActions||[])].find(x=>x.id===id);}
+function v5QuickAbilities(p){
+  const m=modelFor(p);if(!m)return[];
+  if(isLair(p))return (m.lairActions||[]).slice(0,4).map(a=>({a,section:'lair'}));
+  const preferred=v5ActionPrefs(m.id).map(id=>v5AbilityById(m,id)).filter(Boolean);
+  const candidates=[...(m.actions||[]),...(m.reactions||[])].filter(a=>a.kind!=='text');
+  const merged=[];[...preferred,...candidates].forEach(a=>{if(a&&!merged.some(x=>x.id===a.id))merged.push(a);});
+  return merged.slice(0,4).map(a=>({a,section:v5AbilitySection(m,a)}));
+}
+function v5ToggleActionFavorite(modelId,abilityId){
+  const m=state.monsters.find(x=>x.id===modelId),a=v5AbilityById(m,abilityId);if(!m||!a)return;
+  v5EnsurePreferences();const arr=[...v5ActionPrefs(modelId)],i=arr.indexOf(abilityId);
+  if(i>=0)arr.splice(i,1);else{if(arr.length>=4)return toast('La barre rapide accepte 4 actions favorites maximum.');arr.push(abilityId);}
+  checkpoint();state.combatPreferences.quickActions[modelId]=arr;v5Persist();render();toast(i>=0?`${a.name} retiré des favoris de combat.`:`${a.name} ajouté aux favoris de combat.`);
+}
+function v5AbilityAvailability(p,a,section){
+  const st=p.abilityState?.[a.id]||{ready:true},eco=abilityEconomy(a,section),max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0);
+  const continuation=eco==='action'&&a.kind==='attack'&&p.actionUsed&&progress<max;
+  const economySpent=eco==='action'?p.actionUsed:eco==='bonus'?p.bonusActionUsed:eco==='reaction'?p.reactionUsed:false;
+  const unavailable=(a.kind==='recharge'&&!st.ready)||(section==='legendary'&&p.legendaryRemaining<(a.cost||1))||(section==='lair'&&p.actionUsed)||(section!=='legendary'&&section!=='lair'&&economySpent&&!continuation);
+  return{unavailable,continuation,eco,st,max,progress};
+}
+function v5AbilityMiniMeta(p,a,section){
+  const av=v5AbilityAvailability(p,a,section),bits=[];
+  if(section==='legendary')bits.push(`${a.cost||1} ★`);else if(av.eco==='bonus')bits.push('BONUS');else if(av.eco==='reaction')bits.push('RÉACTION');else if(av.eco==='action')bits.push(av.max>1&&a.kind==='attack'?`ATQ ${Math.min(av.max,av.progress+1)}/${av.max}`:'ACTION');
+  if(a.bonus!=null)bits.push(signed(a.bonus));if(a.dc!=null)bits.push(`DD ${a.dc}`);if(a.damage)bits.push(a.damage);if(a.kind==='recharge')bits.push(av.st.ready?'RECHARGÉ':`RCH ${a.recharge||'5–6'}`);
+  return bits.join(' · ');
+}
+abilityCard=function(p,a,section){
+  const av=v5AbilityAvailability(p,a,section),m=modelFor(p),favorites=m?v5ActionPrefs(m.id):[],isFav=favorites.includes(a.id),tags=[];
+  if(a.bonus!=null)tags.push(`${signed(a.bonus)}`);if(a.dc!=null)tags.push(`${a.save||'JS'} DD ${a.dc}`);if(a.damage)tags.push(`${a.kind==='heal'?'Soins ':''}${a.damage}${a.damageType?` ${a.damageType}`:''}`);if(a.kind==='recharge')tags.push(`Recharge ${a.recharge||'5–6'}`);if(a.kind==='multiattack'&&a.sequence)tags.push(a.sequence);if(section==='legendary')tags.push(`${a.cost||1} ★`);if(av.eco!=='none'&&section!=='legendary'&&section!=='lair')tags.push(av.eco==='bonus'?'Action bonus':av.eco==='reaction'?'Réaction':'Action');if(a.kind==='attack'&&av.eco==='action'&&av.max>1)tags.push(`Attaque ${Math.min(av.max,av.progress+1)}/${av.max}`);
+  const label=a.kind==='attack'?'Cibler':a.kind==='heal'?'Cibler & soigner':a.kind==='multiattack'?'Lancer la multiattaque':'Utiliser';
+  const star=(m&&['action','reaction'].includes(section))?`<button type="button" class="v5-action-star ${isFav?'on':''}" data-v5-star-action="${m.id}|${a.id}" title="${isFav?'Retirer':'Ajouter'} aux actions favorites">${isFav?'★':'☆'}</button>`:'';
+  return `<article class="ability-card v5-ability-card ${av.unavailable?'unavailable':''}"><div class="ability-head"><div><b>${esc(a.name)}</b><small>${esc(tags.join(' · '))}</small></div><div class="v5-ability-head-actions">${a.kind==='recharge'&&!av.st.ready?'<span class="status-badge">Recharge en attente</span>':''}${star}</div></div>${a.detail?`<p>${esc(a.detail)}</p>`:''}<div class="ability-buttons">${a.kind==='recharge'&&!av.st.ready?`<button class="primary" data-recharge="${p.id}|${a.id}">🎲 Tester maintenant</button>`:`<button class="primary" ${av.unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|normal">${label}</button>`}${a.kind==='attack'?`<button ${av.unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|adv">Avantage</button><button ${av.unavailable?'disabled':''} data-use-ability="${p.id}|${a.id}|${section}|dis">Désav.</button>`:''}</div></article>`;
+};
+function v5RememberedTarget(actor){const id=state.encounter.lastTargets?.[actor?.id];return state.encounter.participants.find(x=>x.id===id&&!isLair(x))||null;}
+function v5DockActionButton(p,a,section){
+  const av=v5AbilityAvailability(p,a,section),meta=v5AbilityMiniMeta(p,a,section),rechargeBlocked=a.kind==='recharge'&&!av.st.ready;
+  if(rechargeBlocked)return `<button type="button" class="v5-quick-action recharge" data-v5-recharge="${p.id}|${a.id}"><strong>${esc(a.name)}</strong><small>🎲 Tester ${esc(a.recharge||'5–6')}</small></button>`;
+  return `<button type="button" class="v5-quick-action ${av.eco||''}" ${av.unavailable?'disabled':''} data-v5-use="${p.id}|${a.id}|${section}"><strong>${esc(a.name)}</strong><small>${esc(meta||'Utiliser')}</small></button>`;
+}
+function v5RenderLegendaryDock(){
+  const host=$('#v5ActionDock'),actions=$('#v5QuickActions');if(!host||!actions)return;
+  const ending=activeParticipant(),bosses=eligibleLegendaryBosses(ending);
+  let selected=bosses.find(x=>x.id===ui.v5LegendaryBossId)||bosses[0]||null;ui.v5LegendaryBossId=selected?.id||null;
+  $('#v5DockActor').textContent=ending?`Fin du tour de ${ending.name}`:'Fin du tour';
+  $('#v5DockTarget').textContent=selected?`${selected.name} peut utiliser une action légendaire`:'Aucune action légendaire restante';
+  host.classList.add('legendary-context');
+  const bossTabs=bosses.length>1?`<div class="v5-legendary-boss-tabs">${bosses.map(b=>`<button type="button" class="${b.id===selected?.id?'active':''}" data-v5-legendary-boss="${b.id}">${esc(b.name)} · ${b.legendaryRemaining}★</button>`).join('')}</div>`:'';
+  const buttons=selected?(modelFor(selected)?.legendaryActions||[]).slice(0,4).map(a=>v5DockActionButton(selected,a,'legendary')).join(''):'<div class="v5-dock-empty">Toutes les actions légendaires ont été dépensées.</div>';
+  actions.innerHTML=bossTabs+buttons;
+  const more=$('#btnV5OtherActions');if(more){more.textContent='CONTINUER →';more.dataset.v5LegendaryContinue='1';}
+}
+function renderV5ActionDock(){
+  const host=$('#v5ActionDock');if(!host)return;
+  if(state.ui.mode!=='combat'){host.classList.add('hidden');return;}host.classList.remove('hidden','legendary-context');
+  const more=$('#btnV5OtherActions');if(more){more.textContent='AUTRES…';delete more.dataset.v5LegendaryContinue;}
+  if(ui.pendingAdvance){v5RenderLegendaryDock();return;}
+  const p=activeParticipant(),actions=$('#v5QuickActions');if(!p||!actions){if(actions)actions.innerHTML='';return;}
+  $('#v5DockActor').textContent=p.name;
+  const target=v5RememberedTarget(p);$('#v5DockTarget').innerHTML=target?`🎯 Cible précédente : <b>${esc(target.name)}</b>`:'🎯 Aucune cible mémorisée';
+  const quick=v5QuickAbilities(p);actions.innerHTML=quick.length?quick.map(({a,section})=>v5DockActionButton(p,a,section)).join(''):'<div class="v5-dock-empty">Aucune action enregistrée pour ce profil.</div>';
+}
+
+// -------- Filtres et cartes Combat First --------
+function v5MatchesCombatFilter(p){
+  if(ui.combatFilter==='all')return true;
+  if(ui.combatFilter==='injured')return !isLair(p)&&p.hp<p.maxHp;
+  if(ui.combatFilter==='states')return !isLair(p)&&((p.conditions||[]).length>0||(p.tempHp||0)>0||(typeof v44DeathSaveActive==='function'&&v44DeathSaveActive(p)));
+  if(ui.combatFilter==='boss'){if(isLair(p)){const owner=state.encounter.participants.find(x=>x.id===p.lairOwnerId);return !!owner&&isBossParticipant(owner);}return isBossParticipant(p);}
+  return true;
+}
+function renderV5CombatFilters(){
+  const ps=state.encounter.participants.filter(p=>!isLair(p)),counts={all:ps.length,injured:ps.filter(p=>p.hp<p.maxHp).length,states:ps.filter(p=>(p.conditions||[]).length||(p.tempHp||0)>0||(typeof v44DeathSaveActive==='function'&&v44DeathSaveActive(p))).length,boss:ps.filter(isBossParticipant).length};
+  $$('[data-combat-filter]').forEach(b=>{const key=b.dataset.combatFilter;b.classList.toggle('active',ui.combatFilter===key);b.dataset.count=String(counts[key]||0);});
+}
+function v5DeathMini(p){
+  if(!(typeof v44DeathSaveActive==='function'&&v44DeathSaveActive(p)))return'';
+  const s=Math.min(3,p.deathSuccesses||0),f=Math.min(3,p.deathFailures||0),blue=Array.from({length:3},(_,i)=>`<i class="${i<s?'lit':''}">☠</i>`).join(''),red=Array.from({length:3},(_,i)=>`<i class="${i<f?'lit':''}">☠</i>`).join('');
+  return `<button type="button" class="v5-death-mini" data-death-save-open="${p.id}" title="Sauvegardes contre la mort"><span class="successes">${blue}</span><span class="failures">${red}</span></button>`;
+}
+renderSingleCard=function(p,active){
+  if(isLair(p))return `<article class="combat-card v5-combat-card lair-card ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''}"><button class="select-hit" data-select="${p.id}"></button><div class="v5-card-top"><span class="turn-dot">🏰</span><div class="v5-card-name"><strong>${esc(p.name)}</strong><small>Repaire · ${modelFor(p)?.lairActions.length||0} option(s)</small></div><span class="ini-badge">${p.initiative}</span></div></article>`;
+  const selected=p.id===state.encounter.selectedId,multiSelected=ui.multiSelection.has(p.id),phase=currentPhase(p),boss=isBossParticipant(p),max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0),death=typeof v44DeathSaveActive==='function'&&v44DeathSaveActive(p);
+  return `<article class="combat-card v5-combat-card ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${selected?'selected':''} ${p.hp<=0?'dead':''} ${death?'death-save-active':''}"><button class="select-hit" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`} aria-label="Sélectionner ${esc(p.name)}"></button><button type="button" class="instance-edit-btn v5-edit" data-edit-participant="${p.id}" title="Modifier cette instance">✎</button><div class="v5-card-top">${ui.multiMode?`<span class="multi-check ${multiSelected?'on':''}">${multiSelected?'✓':''}</span>`:'<span class="turn-dot"></span>'}<div class="v5-card-name"><div><strong>${esc(p.name)}</strong><span class="role-name-badge">${boss?'BOSS':roleLabel(p)}</span></div><small>${phase?esc(phase.name):esc(modelFor(p)?.type||modelFor(p)?.subtitle||'Participant')}</small></div><span class="ini-badge">${p.initiative}</span></div><div class="v5-card-vitals"><div class="v5-hp-main"><strong>${p.hp}</strong><small>/${p.maxHp} PV</small>${p.tempHp?`<span class="temp-hp-inline">+${p.tempHp}</span>`:''}</div><span class="v5-ca">CA ${effectiveAc(p)}</span>${miniEconomyButtons(p)}</div>${death?v5DeathMini(p):''}<div class="v5-card-tags">${p.conditions.slice(0,2).map(c=>`<span class="pill">${esc(c.name)}${conditionShort(c)}</span>`).join('')}${p.conditions.length>2?`<span class="pill">+${p.conditions.length-2}</span>`:''}${phase?`<span class="pill phase-pill">${esc(phase.name)}</span>`:''}</div></article>`;
+};
+renderGroupCard=function(members,active){
+  const first=members[0],activeInside=members.some(p=>p.id===active?.id),alive=members.filter(p=>p.hp>0).length,dead=members.length-alive,sharedInitiative=new Set(members.map(p=>p.initiative)).size===1,allSelected=members.every(p=>ui.multiSelection.has(p.id)),showDead=ui.v5DeadGroups.has(first.groupId),visible=members.filter(v5MatchesCombatFilter).filter(p=>p.hp>0||showDead||p.id===active?.id||p.id===state.encounter.selectedId),worst=(visible.length?visible:members).reduce((a,b)=>hpPct(a)<hpPct(b)?a:b,(visible[0]||members[0]));
+  return `<article class="group-card v5-group-card ${roleClass(first)} ${hpBandClass(worst)} ${activeInside?'active':''}"><div class="group-head v5-group-head"><button class="group-title" ${ui.multiMode?`data-multi-group="${first.groupId}"`:`data-select="${activeInside?active.id:first.id}"`}><span class="group-icon">${ui.multiMode?(allSelected?'☑':'☐'):'▾'}</span><span><strong>${esc(first.baseName)}</strong><small>${alive}/${members.length} actifs${sharedInitiative?' · initiative commune':''}</small></span></button><span class="ini-badge">${sharedInitiative?first.initiative:'×'}</span></div><div class="group-members v5-group-members">${visible.map(p=>{const idx=members.indexOf(p)+1,death=typeof v44DeathSaveActive==='function'&&v44DeathSaveActive(p);return `<button class="member-chip v5-member-chip ${roleClass(p)} ${targetClassFor(p)} ${flashClassFor(p)} ${hpBandClass(p)} ${p.id===active?.id?'active':''} ${p.id===state.encounter.selectedId?'selected':''} ${ui.multiSelection.has(p.id)?'multi-selected':''} ${p.hp<=0?'dead':''}" ${ui.multiMode?`data-multi="${p.id}"`:`data-select="${p.id}"`}><span>${idx}</span><b>${p.hp>0?p.hp:'☠'}</b><small>/${p.maxHp}</small>${p.tempHp?`<em>+${p.tempHp}</em>`:''}${death?`<i class="v5-death-dot">${(p.deathSuccesses||0)}✓ ${(p.deathFailures||0)}✕</i>`:''}</button>`;}).join('')}</div>${dead&&ui.combatFilter==='all'?`<button type="button" class="v5-dead-toggle" data-v5-toggle-dead-group="${first.groupId}">${showDead?'Masquer':'Afficher'} ${dead} éliminé${dead>1?'s':''}</button>`:''}</article>`;
+};
+renderCombat=function(){
+  const entries=groupedEntries().filter(entry=>entry.members.some(v5MatchesCombatFilter)),active=activeParticipant(),host=$('#combatList');if(!host)return;
+  host.innerHTML=entries.length?entries.map(entry=>entry.type==='group'?renderGroupCard(entry.members,active):renderSingleCard(entry.members[0],active)).join(''):`<div class="empty-combat">Aucun participant pour le filtre « ${({injured:'Blessés',states:'États',boss:'Boss'})[ui.combatFilter]||'Tous'} ».</div>`;
+};
+
+// -------- Command center V5 : utile maintenant, rappels actionnables, phases --------
+function v5PhaseRail(p,m){
+  if(!m?.phases?.length)return'';const phases=[...m.phases].sort((a,b)=>b.threshold-a.threshold),cur=currentPhase(p,m),next=nextPhase(p,m);
+  return `<div class="v5-phase-rail"><div class="v5-phase-line"><span style="width:${Math.max(0,Math.min(100,hpPct(p)))}%"></span>${phases.map(ph=>`<i style="left:${Math.max(0,Math.min(100,ph.threshold/p.maxHp*100))}%" title="${esc(ph.name)} · ${ph.threshold} PV"></i>`).join('')}</div><div class="v5-phase-labels"><b>${cur?esc(cur.name):'Phase I'}</b><small>${next?`Prochaine : ${esc(next.name)} à ${next.threshold} PV`:'Phase finale'}</small></div></div>`;
+}
+turnCommandCenter=function(p){
+  const active=activeParticipant(),isActive=p.id===active?.id,m=modelFor(p),phase=currentPhase(p,m),notices=(state.encounter.turnNotices||[]).filter(n=>n.participantId===p.id),target=v5RememberedTarget(p),max=attacksPerAction(p),progress=Math.min(max,p.attackProgress||0),readyRecharge=(m?.actions||[]).filter(a=>a.kind==='recharge'&&p.abilityState?.[a.id]?.ready===false).slice(0,2),endConditions=(p.conditions||[]).filter(c=>c.durationType==='saveEnd').slice(0,2),resources=(m?.resources||[]).slice(0,3);
+  const immediate=[...notices.map(n=>`<span class="v5-reminder-line">${esc(n.text)}</span>`),...readyRecharge.map(a=>`<span class="v5-reminder-line actionable"><b>${esc(a.name)}</b><button type="button" data-recharge="${p.id}|${a.id}">🎲 Recharge</button></span>`)].slice(0,4);
+  const end=endConditions.map(c=>`<span class="v5-reminder-line actionable"><b>${esc(c.name)} · JS ${esc(c.saveAbility||'?')} DD ${c.dc||'?'}</b>${canRollConditionSave(p,c)?`<button type="button" data-condition-roll="${p.id}|${c.id}">🎲 Lancer</button>`:''}</span>`);
+  return `<section class="turn-command-center v5-command ${isActive?'':'not-active'}"><div class="turn-command-top"><div class="turn-command-title"><strong>${isActive?'▶ TOUR ACTIF':'CRÉATURE SÉLECTIONNÉE'}</strong><small>${esc(p.name)}${phase?` · ${esc(phase.name)}`:''}</small></div><div class="v5-command-vitals"><span class="hp"><b>${p.hp}</b>/${p.maxHp} PV</span>${p.tempHp?`<span class="temp">+${p.tempHp} temp.</span>`:''}<span>CA ${effectiveAc(p)}</span><span class="economy">A ${max>1?`${progress}/${max}`:(p.actionUsed?'×':'✓')} · B ${p.bonusActionUsed?'×':'✓'} · R ${p.reactionUsed?'×':'✓'}</span></div></div><div class="v5-current-target ${target?'has-target':''}"><span>🎯</span><div><small>CIBLE PRÉCÉDENTE</small><b>${target?esc(target.name):'Aucune cible mémorisée'}</b></div>${target?`<button type="button" class="ghost small" data-select="${target.id}">Voir</button>`:''}</div>${v5PhaseRail(p,m)}<div class="turn-command-grid v5-command-grid"><div class="turn-command-block ${immediate.length?'attention':''}"><b>À FAIRE / MAINTENANT</b><small>${immediate.length?immediate.join(''):'Aucun rappel immédiat'}</small></div><div class="turn-command-block ${end.length?'attention':''}"><b>FIN DU TOUR</b><small>${end.length?end.join(''):'Aucun jet à résoudre'}</small></div><div class="turn-command-block"><b>RESSOURCES</b><small>${resources.length?resources.map(r=>`${esc(r.name)} <strong>${p.resourceState?.[r.id]??r.start}/${r.max}</strong>`).join('<br>'):'Aucune ressource critique'}</small></div></div></section>`;
+};
+
+// -------- Ciblage V5 --------
+targetClassFor=function(p){
+  if(!ui.targeting||isLair(p))return'';const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();if(!eligibleTarget(actor,p,a))return'target-ineligible';return p.id===ui.targeting.rememberedTargetId?'target-eligible target-remembered':'target-eligible';
+};
+renderTargeting=function(){
+  const bar=$('#targetingBanner');if(!bar)return;if(!ui.targeting){bar.classList.add('hidden');bar.innerHTML='';document.body.classList.remove('targeting-mode');return;}
+  const actor=state.encounter.participants.find(x=>x.id===ui.targeting.actorId),a=currentTargetingAbility();if(!actor||!a){ui.targeting=null;return renderTargeting();}
+  document.body.classList.add('targeting-mode');bar.classList.remove('hidden');const pos=ui.targeting.steps?.length?` · attaque ${ui.targeting.step+1}/${ui.targeting.steps.length}`:'',remembered=state.encounter.participants.find(x=>x.id===ui.targeting.rememberedTargetId);
+  bar.innerHTML=`<div class="v5-target-copy"><span class="eyebrow">CHOISIS UNE CIBLE</span><strong>${esc(actor.name)} — ${esc(a.name)}${pos}</strong><small>Touche directement une carte à gauche. Les cibles valides restent éclairées.</small></div>${remembered?`<button class="v5-reuse-target" data-remembered-target="${remembered.id}"><span>🎯 CIBLE PRÉCÉDENTE</span><strong>${esc(remembered.name)}</strong><small>Réutiliser</small></button>`:''}<button class="ghost" id="btnCancelTargeting">Annuler</button>`;
+};
+
+// -------- Fin de tour : actions légendaires sans modal bloquant --------
+function v5RequestNextTurn(){
+  const current=activeParticipant();if(!current)return toast('Aucun participant.');
+  if(ui.pendingAdvance)return actualAdvanceTurn();
+  const bosses=eligibleLegendaryBosses(current);if(bosses.length){ui.pendingAdvance=true;ui.v5LegendaryBossId=bosses[0].id;render();toast('Actions légendaires disponibles avant le prochain tour.');return;}
+  actualAdvanceTurn();
+}
+requestNextTurn=v5RequestNextTurn;
+
+// -------- Pavé numérique universel : évite le clavier iPad --------
+function v5NumberLabel(input){const label=input.closest('label');return label?label.childNodes[0]?.textContent?.trim()||'Valeur':input.getAttribute('aria-label')||input.name||'Valeur';}
+function v5SetNumberDisplay(v){ui.v5NumberValue=String(v??'');const d=$('#v5NumberDisplay');if(d)d.textContent=ui.v5NumberValue||'0';}
+function v5OpenNumberPad(target,{title,value,min,max,step=1,allowNegative=true,onApply}={}){
+  const dlg=$('#v5NumberDialog');if(!dlg)return;ui.v5NumberTarget={target,min,max,step,allowNegative,onApply};v5SetNumberDisplay(value==null?'':value);$('#v5NumberTitle').textContent=title||'Valeur';if(!dlg.open)dlg.showModal();
+}
+function v5OpenNumberInput(input){
+  const min=input.min!==''?Number(input.min):null,max=input.max!==''?Number(input.max):null;v5OpenNumberPad(input,{title:v5NumberLabel(input),value:input.value,min,max,allowNegative:min==null||min<0,onApply:v=>{input.value=String(v);input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}});
+}
+function v5ApplyNumberPad(){
+  const cfg=ui.v5NumberTarget;if(!cfg)return $('#v5NumberDialog')?.close();let n=Number(ui.v5NumberValue||0);if(!Number.isFinite(n))n=0;if(cfg.min!=null)n=Math.max(cfg.min,n);if(cfg.max!=null)n=Math.min(cfg.max,n);if(cfg.onApply)cfg.onApply(n);else if(cfg.target){cfg.target.value=String(n);cfg.target.dispatchEvent(new Event('input',{bubbles:true}));cfg.target.dispatchEvent(new Event('change',{bubbles:true}));}ui.v5NumberTarget=null;$('#v5NumberDialog')?.close();
+}
+function v5MarkKeypadInputs(){
+  $$('input[type="number"]').forEach(input=>{if(input.closest('#monsterEditor'))return;input.readOnly=true;input.classList.add('v5-keypad-input');});
+}
+
+// -------- Export V5 avec préférences de combat --------
+function v5ExportData(){
+  v5EnsurePreferences();const data={app:'ENCOUNTER',version:'5.0.0',exportedAt:new Date().toISOString(),monsters:state.monsters,encounter:state.encounter,savedEncounters:state.savedEncounters,trash:state.trash,sessionLibrary:state.sessionLibrary||[],combatPreferences:state.combatPreferences};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`encounter-v5-${state.encounter.name.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'combat'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export V5 créé.');
+}
+const importDataV44=importData;
+importData=function(raw){const data=JSON.parse(String(raw));importDataV44(raw);if(data?.combatPreferences){state.combatPreferences=data.combatPreferences;v5EnsurePreferences();v5Persist();render();}};
+
+// -------- Délégation V5 en capture : une seule voie pour les commandes critiques --------
+addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.matches('#btnUndo,#btnUndoDrawer,#btnPopupUndo')){e.preventDefault();e.stopImmediatePropagation();v5Undo();return;}
+  if(b.matches('#btnRedo,#btnRedoDrawer,#btnPopupRedo')){e.preventDefault();e.stopImmediatePropagation();v5Redo();return;}
+  if(b.id==='btnNextTurn'){e.preventDefault();e.stopImmediatePropagation();v5RequestNextTurn();return;}
+  if(b.id==='btnExport'){e.preventDefault();e.stopImmediatePropagation();v5ExportData();return;}
+  if(b.dataset.combatFilter){e.preventDefault();e.stopImmediatePropagation();ui.combatFilter=b.dataset.combatFilter;render();return;}
+  if(b.dataset.v5StarAction){e.preventDefault();e.stopImmediatePropagation();const [mid,aid]=b.dataset.v5StarAction.split('|');v5ToggleActionFavorite(mid,aid);return;}
+  if(b.dataset.v5Use){e.preventDefault();e.stopImmediatePropagation();const [pid,aid,section]=b.dataset.v5Use.split('|');state.encounter.selectedId=pid;useAbility(pid,aid,section,'normal');return;}
+  if(b.dataset.v5Recharge){e.preventDefault();e.stopImmediatePropagation();const [pid,aid]=b.dataset.v5Recharge.split('|');testRecharge(pid,aid);return;}
+  if(b.id==='btnV5OtherActions'&&!b.dataset.v5LegendaryContinue){e.preventDefault();e.stopImmediatePropagation();const p=activeParticipant();if(p){state.encounter.selectedId=p.id;ui.detailTab='actions';saveState();render();requestAnimationFrame(()=>$('#activeDetail .detail-tab-body')?.scrollTo({top:0,behavior:'smooth'}));}return;}
+  if(b.dataset.v5LegendaryContinue){e.preventDefault();e.stopImmediatePropagation();actualAdvanceTurn();return;}
+  if(b.dataset.v5LegendaryBoss){e.preventDefault();e.stopImmediatePropagation();ui.v5LegendaryBossId=b.dataset.v5LegendaryBoss;renderV5ActionDock();return;}
+  if(b.dataset.v5ToggleDeadGroup){e.preventDefault();e.stopImmediatePropagation();const id=b.dataset.v5ToggleDeadGroup;ui.v5DeadGroups.has(id)?ui.v5DeadGroups.delete(id):ui.v5DeadGroups.add(id);renderCombat();return;}
+  if(b.dataset.v5Number!=null){e.preventDefault();e.stopImmediatePropagation();let v=String(ui.v5NumberValue||'');const sign=v.startsWith('-')?'-':'';let digits=v.replace(/\D/g,'');if(digits==='0')digits='';digits=(digits+b.dataset.v5Number).slice(0,6);v5SetNumberDisplay(sign+digits);return;}
+  if(b.dataset.v5Backspace){e.preventDefault();e.stopImmediatePropagation();v5SetNumberDisplay(String(ui.v5NumberValue||'').slice(0,-1));return;}
+  if(b.dataset.v5Sign){e.preventDefault();e.stopImmediatePropagation();const cfg=ui.v5NumberTarget;if(cfg&&!cfg.allowNegative)return;const v=String(ui.v5NumberValue||'');v5SetNumberDisplay(v.startsWith('-')?v.slice(1):'-'+(v||'0'));return;}
+  if(b.id==='btnV5NumberClear'){e.preventDefault();e.stopImmediatePropagation();v5SetNumberDisplay('');return;}
+  if(b.id==='btnV5NumberApply'){e.preventDefault();e.stopImmediatePropagation();v5ApplyNumberPad();return;}
+  if(b.dataset.sethp){const p=state.encounter.participants.find(x=>x.id===b.dataset.sethp);if(!p)return;e.preventDefault();e.stopImmediatePropagation();v5OpenNumberPad(null,{title:`PV actuels — ${p.name}`,value:p.hp,min:0,max:p.maxHp,allowNegative:false,onApply:n=>mutate(()=>{p.hp=n;if(p.hp>0&&typeof v44DeathSaveEligible==='function'&&v44DeathSaveEligible(p))v44ResetDeathTracker(p);checkPhaseTransition(p);},`${p.name} est fixé à ${n} PV.`)});return;}
+  if(b.dataset.temp){const p=state.encounter.participants.find(x=>x.id===b.dataset.temp);if(!p)return;e.preventDefault();e.stopImmediatePropagation();v5OpenNumberPad(null,{title:`PV temporaires — ${p.name}`,value:p.tempHp||0,min:0,allowNegative:false,onApply:n=>mutate(()=>{p.tempHp=n;},`${p.name} possède ${n} PV temporaires.`)});return;}
+},true);
+
+// Empêche l’ouverture du clavier iPad pour toutes les petites saisies numériques hors éditeur de monstre.
+addEventListener('click',e=>{const input=e.target.closest('input[type="number"].v5-keypad-input');if(!input)return;e.preventDefault();e.stopImmediatePropagation();v5OpenNumberInput(input);},true);
+
+// -------- Render final V5 --------
+const renderV5Base=render;
+render=function(){
+  v5EnsurePreferences();renderV5Base();renderV5CombatFilters();renderV5ActionDock();v5UpdateHistoryButtons();v5MarkKeypadInputs();
+  const next=$('#btnNextTurn');if(next)next.textContent=ui.pendingAdvance?'Passer au suivant →':'Tour suivant →';
+};
+
+function v5Init(){
+  state.version='5.0.0';v5EnsurePreferences();
+  if(!localStorage.getItem('encounter-v5-migrated')){if(typeof forceBackup==='function')forceBackup('Migration vers ENCOUNTER V5 — Combat First');localStorage.setItem('encounter-v5-migrated','1');}
+  v5Persist();render();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v5Init,{once:true});else v5Init();
+
+/* V5 — validation explicite des changements de phase de boss. */
+checkPhaseTransition=function(p){
+  const m=modelFor(p);if(!m?.phases?.length||isLair(p))return;const candidate=phaseForHp(p,m);if(!candidate)return;const cur=currentPhase(p,m);if(cur&&phaseDepth(candidate,m)<=phaseDepth(cur,m))return;
+  const pending=state.encounter.pendingPhase;if(pending?.participantId===p.id&&pending?.phaseId===candidate.id)return;
+  state.encounter.pendingPhase={participantId:p.id,phaseId:candidate.id};
+  log(`⚠ ${p.name} atteint le seuil de « ${candidate.name} » — activation à valider.`);
+};
+renderPendingPhase=function(){
+  const pending=state.encounter.pendingPhase,dlg=$('#phaseDialog');if(!pending||dlg?.open)return;const p=state.encounter.participants.find(x=>x.id===pending.participantId),m=modelFor(p),ph=m?.phases?.find(x=>x.id===pending.phaseId);if(!p||!ph){state.encounter.pendingPhase=null;v5Persist();return;}
+  $('#phaseDialogTitle').textContent=`${p.name} — ${ph.name}`;$('#phaseDialogText').textContent=ph.note||'Le boss change de phase.';const stats=[];if(ph.ac!=null)stats.push(`CA ${ph.ac}`);if(ph.speed)stats.push(`Vitesse ${ph.speed}`);if(ph.legendaryMax!=null)stats.push(`${ph.legendaryMax} actions légendaires`);if(ph.addResistances?.length)stats.push(`Résistances : ${formatList(ph.addResistances)}`);if(ph.addImmunities?.length)stats.push(`Immunités : ${formatList(ph.addImmunities)}`);$('#phaseDialogStats').innerHTML=stats.map(x=>`<span>${esc(x)}</span>`).join('');dlg.showModal();
+};
+function v5ActivatePendingPhase(){
+  const pending=state.encounter.pendingPhase;if(!pending)return $('#phaseDialog')?.close();const p=state.encounter.participants.find(x=>x.id===pending.participantId),m=modelFor(p),ph=m?.phases?.find(x=>x.id===pending.phaseId);if(!p||!ph){state.encounter.pendingPhase=null;$('#phaseDialog')?.close();v5Persist();render();return;}
+  checkpoint();p.currentPhaseId=ph.id;const cap=effectiveLegendaryMax(p,m);if(cap)p.legendaryRemaining=Math.min(p.legendaryRemaining,cap);state.encounter.pendingPhase=null;log(`⚡ ${p.name} entre dans « ${ph.name} » — phase activée.`);v5Persist();$('#phaseDialog')?.close();render();showActionPopup(`${p.name} — ${ph.name}\n${ph.note||'Changement de phase activé.'}`,'Phase de boss');
+}
+addEventListener('click',e=>{const b=e.target.closest('#btnPhaseActivate');if(!b)return;e.preventDefault();e.stopImmediatePropagation();v5ActivatePendingPhase();},true);
